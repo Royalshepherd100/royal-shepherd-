@@ -15,7 +15,6 @@ const captainForm = document.getElementById('captainForm');
 const captainEmail = document.getElementById('captainEmail');
 const captainPassword = document.getElementById('captainPassword');
 const captainCompany = document.getElementById('captainCompany');
-const captainPicture = document.getElementById('captainPicture');
 const captainVerify = document.getElementById('captainVerify');
 const captainNotice = document.getElementById('captainNotice');
 const authTabs = document.querySelectorAll('.auth-tab');
@@ -41,7 +40,6 @@ const commanderNotice = document.getElementById('commanderNotice');
 const provostForm = document.getElementById('provostForm');
 const provostEmail = document.getElementById('provostEmail');
 const provostPassword = document.getElementById('provostPassword');
-const provostPicture = document.getElementById('provostPicture');
 const provostVerify = document.getElementById('provostVerify');
 const provostNotice = document.getElementById('provostNotice');
 const commanderDashboardClose = document.getElementById('commanderDashboardClose');
@@ -69,13 +67,9 @@ const provostRequests = JSON.parse(localStorage.getItem('royalShepherdProvostReq
 const commanderSettings = JSON.parse(localStorage.getItem('royalShepherdCommanderSettings') || 'null') || {
   exco: {
     pro: '',
-    proPhoto: '',
     secBandMaster1: '',
-    secBandMaster1Photo: '',
     secBandMaster2: '',
-    secBandMaster2Photo: '',
-    treasurer: '',
-    treasurerPhoto: ''
+    treasurer: ''
   }
 };
 const provostSettings = JSON.parse(localStorage.getItem('royalShepherdProvostSettings') || 'null') || {
@@ -247,32 +241,20 @@ function buildCommanderDashboard() {
       <input type="text" name="exco-pro" value="${commanderSettings.exco.pro || ''}" />
     </label>
     <label>
-      <span>PRO Picture URL</span>
-      <input type="url" name="exco-pro-photo" value="${commanderSettings.exco.proPhoto || ''}" placeholder="https://example.com/pro-photo.jpg" />
+      <span>PRO</span>
+      <input type="text" name="exco-pro" value="${commanderSettings.exco.pro || ''}" />
     </label>
     <label>
       <span>Secretary Band Master 1</span>
       <input type="text" name="exco-secBandMaster1" value="${commanderSettings.exco.secBandMaster1 || ''}" />
     </label>
     <label>
-      <span>Secretary Band Master 1 Picture URL</span>
-      <input type="url" name="exco-secBandMaster1-photo" value="${commanderSettings.exco.secBandMaster1Photo || ''}" placeholder="https://example.com/sec1-photo.jpg" />
-    </label>
-    <label>
       <span>Secretary Band Master 2</span>
       <input type="text" name="exco-secBandMaster2" value="${commanderSettings.exco.secBandMaster2 || ''}" />
     </label>
     <label>
-      <span>Secretary Band Master 2 Picture URL</span>
-      <input type="url" name="exco-secBandMaster2-photo" value="${commanderSettings.exco.secBandMaster2Photo || ''}" placeholder="https://example.com/sec2-photo.jpg" />
-    </label>
-    <label>
       <span>Treasurer</span>
       <input type="text" name="exco-treasurer" value="${commanderSettings.exco.treasurer || ''}" />
-    </label>
-    <label>
-      <span>Treasurer Picture URL</span>
-      <input type="url" name="exco-treasurer-photo" value="${commanderSettings.exco.treasurerPhoto || ''}" placeholder="https://example.com/treasurer-photo.jpg" />
     </label>
   `;
   commanderDashboardGrid.appendChild(excoCard);
@@ -581,11 +563,10 @@ captainForm?.addEventListener('submit', (event) => {
   const email = captainEmail.value.trim();
   const password = captainPassword.value.trim();
   const companyId = captainCompany.value;
-  const pictureUrl = captainPicture.value.trim();
   const verified = captainVerify.checked;
 
-  if (!email || !password || !companyId || !verified || (captainForm.dataset.mode === 'register' && !pictureUrl)) {
-    captainNotice.textContent = 'Please complete all fields, include a picture URL for registration, and confirm your captain status.';
+  if (!email || !password || !companyId || !verified) {
+    captainNotice.textContent = 'Please complete all fields and confirm your captain status.';
     captainNotice.style.color = 'hsl(0, 70%, 60%)';
     return;
   }
@@ -601,7 +582,7 @@ captainForm?.addEventListener('submit', (event) => {
       captainNotice.style.color = 'hsl(0, 70%, 60%)';
       return;
     }
-    captainRequests[email] = { password, companyId, pictureUrl, submittedAt: new Date().toISOString(), status: 'pending' };
+    captainRequests[email] = { password, companyId, submittedAt: new Date().toISOString(), status: 'pending' };
     localStorage.setItem('royalShepherdCaptainRequests', JSON.stringify(captainRequests));
     captainNotice.textContent = 'Captain creation request submitted. Divisional Commander approval is required.';
     captainNotice.style.color = 'var(--gold-400)';
@@ -671,11 +652,10 @@ provostForm?.addEventListener('submit', (event) => {
   const mode = provostForm.dataset.mode;
   const email = provostEmail.value.trim();
   const password = provostPassword.value.trim();
-  const pictureUrl = provostPicture.value.trim();
   const verified = provostVerify.checked;
 
-  if (!email || !password || !verified || (provostForm.dataset.mode === 'register' && !pictureUrl)) {
-    provostNotice.textContent = 'Please complete all fields, include a picture URL for registration, and confirm your provost status.';
+  if (!email || !password || !verified) {
+    provostNotice.textContent = 'Please complete all fields and confirm your provost status.';
     provostNotice.style.color = 'hsl(0, 70%, 60%)';
     return;
   }
@@ -691,7 +671,7 @@ provostForm?.addEventListener('submit', (event) => {
       provostNotice.style.color = 'hsl(0, 70%, 60%)';
       return;
     }
-    provostRequests[email] = { password, pictureUrl, submittedAt: new Date().toISOString(), status: 'pending' };
+    provostRequests[email] = { password, submittedAt: new Date().toISOString(), status: 'pending' };
     localStorage.setItem('royalShepherdProvostRequests', JSON.stringify(provostRequests));
     provostNotice.textContent = 'Provost creation request submitted. Divisional Commander approval is required.';
     provostNotice.style.color = 'var(--gold-400)';
@@ -716,13 +696,9 @@ commanderDashboardForm?.addEventListener('submit', (event) => {
   const formData = new FormData(commanderDashboardForm);
 
   commanderSettings.exco.pro = formData.get('exco-pro')?.toString().trim() || '';
-  commanderSettings.exco.proPhoto = formData.get('exco-pro-photo')?.toString().trim() || '';
   commanderSettings.exco.secBandMaster1 = formData.get('exco-secBandMaster1')?.toString().trim() || '';
-  commanderSettings.exco.secBandMaster1Photo = formData.get('exco-secBandMaster1-photo')?.toString().trim() || '';
   commanderSettings.exco.secBandMaster2 = formData.get('exco-secBandMaster2')?.toString().trim() || '';
-  commanderSettings.exco.secBandMaster2Photo = formData.get('exco-secBandMaster2-photo')?.toString().trim() || '';
   commanderSettings.exco.treasurer = formData.get('exco-treasurer')?.toString().trim() || '';
-  commanderSettings.exco.treasurerPhoto = formData.get('exco-treasurer-photo')?.toString().trim() || '';
 
   Object.keys(companyData).forEach((companyId) => {
     companyData[companyId].active = (formData.get(`active-${companyId}`) || '')
@@ -762,7 +738,7 @@ commanderDashboardGrid?.addEventListener('click', (event) => {
     if (requestAction === 'approve') {
       const request = captainRequests[email];
       if (request) {
-        captainAccounts[email] = { password: request.password, companyId: request.companyId, pictureUrl: request.pictureUrl };
+        captainAccounts[email] = { password: request.password, companyId: request.companyId };
         delete captainRequests[email];
         localStorage.setItem('royalShepherdCaptains', JSON.stringify(captainAccounts));
         localStorage.setItem('royalShepherdCaptainRequests', JSON.stringify(captainRequests));
@@ -778,7 +754,7 @@ commanderDashboardGrid?.addEventListener('click', (event) => {
     if (requestAction === 'approve') {
       const request = provostRequests[email];
       if (request) {
-        provostAccounts[email] = { password: request.password, pictureUrl: request.pictureUrl };
+        provostAccounts[email] = { password: request.password };
         delete provostRequests[email];
         localStorage.setItem('royalShepherdProvostAccounts', JSON.stringify(provostAccounts));
         localStorage.setItem('royalShepherdProvostRequests', JSON.stringify(provostRequests));
