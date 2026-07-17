@@ -1,9 +1,11 @@
 :root {
+  --navy-950: hsl(223, 32%, 8%);
   --navy-900: hsl(222, 48%, 12%);
   --navy-800: hsl(223, 34%, 20%);
   --navy-700: hsl(220, 24%, 30%);
   --gold-500: hsl(42, 92%, 57%);
   --gold-400: hsl(43, 88%, 66%);
+  --gold-200: hsl(42, 100%, 78%);
   --white-100: hsl(210, 20%, 95%);
   --silver-200: hsl(210, 15%, 80%);
   --glow: rgba(253, 194, 79, 0.25);
@@ -28,6 +30,7 @@ body {
     radial-gradient(circle at top left, var(--bg-glow), transparent 35%),
     linear-gradient(135deg, var(--navy-900), hsl(223, 32%, 10%));
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 body::before {
@@ -36,7 +39,7 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: url('WhatsApp Image 2026-07-11 at 1.29.21 PM.jpeg');
+  background-image: url('WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 65vw;
@@ -171,12 +174,11 @@ h4 {
   gap: 1.2rem;
 }
 
-.nav-link {
-  position: relative;
-  padding: 0.3rem 0;
-  color: var(--silver-200);
-  transition: color 0.25s ease;
-}
+  .site-nav a,
+  .site-nav button {
+    width: auto;
+  }
+
 
 .nav-link::after {
   content: '';
@@ -230,7 +232,7 @@ h4 {
   padding-top: 8rem;
   background:
     linear-gradient(90deg, rgba(7, 17, 31, 0.96), rgba(7, 17, 31, 0.7)),
-    url('Screenshot%202026-07-11%20132711.png') center/cover no-repeat;
+    url('Screenshot-2026-07-11-132711.png') center/cover no-repeat;
   border-radius: 0 0 2rem 2rem;
 }
 
@@ -291,6 +293,8 @@ h4 {
   min-height: 430px;
   display: grid;
   place-items: center;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .ring {
@@ -299,6 +303,14 @@ h4 {
   border: 2px dashed rgba(255, 203, 79, 0.55);
   border-radius: 50%;
   animation: spin 18s linear infinite;
+  width: calc(100% - 2rem);
+  height: calc(100% - 2rem);
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .hero-image-card {
@@ -860,6 +872,14 @@ textarea:focus {
 @media (max-width: 760px) {
   .site-header {
     border-radius: 1.1rem;
+    width: 100%;
+    left: 0;
+    transform: none;
+    padding: 0.75rem 0;
+  }
+
+  .nav-wrap {
+    padding: 0.8rem 1rem;
   }
 
   .menu-toggle {
@@ -869,7 +889,8 @@ textarea:focus {
   .site-nav {
     position: fixed;
     top: 0;
-    right: -100%;
+    right: 0;
+    left: auto;
     width: min(300px, 82vw);
     height: 100vh;
     flex-direction: column;
@@ -879,11 +900,18 @@ textarea:focus {
     gap: 1.2rem;
     background: rgba(8, 13, 25, 0.98);
     border-left: 1px solid rgba(255,255,255,0.12);
-    transition: right 0.3s ease;
+    transition: transform 0.3s ease;
+    z-index: 1100;
+    transform: translateX(100%);
   }
 
   .site-nav.open {
-    right: 0;
+    transform: translateX(0);
+  }
+
+  .site-nav a,
+  .site-nav button {
+    width: 100%;
   }
 
   .menu-toggle.open span:nth-child(1) {
