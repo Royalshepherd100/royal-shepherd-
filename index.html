@@ -17,7 +17,6 @@
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-..."
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
@@ -29,7 +28,7 @@
         <a class="brand" href="#home">
           <img
             class="brand-logo"
-            src="image/WhatsApp%20Image%202026-07-11%20at%201.29.21%20PM.jpeg"
+            src="WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg"
             alt="Royal Nigeria Agbala Itura Division logo"
           />
           <span>
@@ -53,7 +52,7 @@
           <a href="#enlistment" class="nav-link cta-link">Join Division</a>
           <button type="button" class="nav-link cta-link dashboard-trigger" id="dashboardTrigger">Captain Dashboard</button>
           <button type="button" class="nav-link cta-link commander-trigger">Commander Dashboard</button>
-          <button type="button" class="nav-link cta-link provost-trigger">Provost Dashboard</button>
+          <button type="button" class="nav-link cta-link exco-trigger">EXCO Dashboard</button>
         </nav>
       </div>
     </header>
@@ -75,7 +74,7 @@
           <div class="hero-visual">
             <div class="ring"></div>
             <div class="hero-image-card">
-              <img src="image/Screenshot%202026-07-11%20132711.png" alt="Royal Shepherds emblem" />
+              <img src="Screenshot-2026-07-11-132711.png" alt="Royal Shepherds emblem" />
             </div>
           </div>
         </div>
@@ -513,10 +512,7 @@
               <option value="9">Company 9</option>
             </select>
           </label>
-          <label class="captain-confirm" id="captainConfirmWrapper">
-            <input type="checkbox" id="captainVerify" />
-            <span>I confirm I am the company captain for this company.</span>
-          </label>
+
           <p id="captainNotice" class="captain-notice"></p>
           <div class="dashboard-actions">
             <button type="submit" class="btn btn-gold">Continue</button>
@@ -530,7 +526,7 @@
       <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="commanderTitle">
         <button class="modal-close" id="commanderClose" aria-label="Close commander access">&times;</button>
         <h3 id="commanderTitle">Divisional Commander Access</h3>
-        <p class="dashboard-intro">Commander access allows approval of all captain and provost account requests, plus assignment of EXCO roles.</p>
+        <p class="dashboard-intro">Register your own commander account, then verify it by email before using the dashboard.</p>
         <div class="auth-toggle" role="tablist">
           <button type="button" class="auth-tab commander-auth-tab active" data-mode="login">Login</button>
           <button type="button" class="auth-tab commander-auth-tab" data-mode="register">Register</button>
@@ -544,10 +540,7 @@
             <span>Password</span>
             <input type="password" id="commanderPassword" required />
           </label>
-          <label class="captain-confirm">
-            <input type="checkbox" id="commanderVerify" />
-            <span>I confirm I am the Divisional Commander.</span>
-          </label>
+
           <p id="commanderNotice" class="captain-notice"></p>
           <div class="dashboard-actions">
             <button type="submit" class="btn btn-gold">Continue</button>
@@ -561,61 +554,32 @@
       <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="commanderDashboardTitle">
         <button class="modal-close" id="commanderDashboardClose" aria-label="Close commander dashboard">&times;</button>
         <h3 id="commanderDashboardTitle">Commander Dashboard</h3>
-        <p class="dashboard-intro">Manage all companies and assign the EXCO roles of PRO, Secretary Band Master 1, Secretary Band Master 2, and Treasurer.</p>
+        <p class="dashboard-intro">Review account requests and manage the company member lists for the division.</p>
         <form id="commanderDashboardForm">
           <div class="dashboard-grid commander-dashboard-grid"></div>
           <div class="dashboard-actions">
+            <button type="button" class="btn btn-secondary" id="openExcoDashboardBtn">Open EXCO Dashboard</button>
             <button type="submit" class="btn btn-gold">Save Commander Updates</button>
           </div>
         </form>
       </div>
     </div>
 
-    <div class="modal" id="provostModal" aria-hidden="true">
+    <div class="modal" id="excoDashboardModal" aria-hidden="true">
       <div class="modal-backdrop" data-close="true"></div>
-      <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="provostTitle">
-        <button class="modal-close" id="provostClose" aria-label="Close provost access">&times;</button>
-        <h3 id="provostTitle">Provost Department Access</h3>
-        <p class="dashboard-intro">Submit a Provost account creation request here. Only the Divisional Commander can approve and activate Provost accounts.</p>
-        <div class="auth-toggle" role="tablist">
-          <button type="button" class="auth-tab provost-auth-tab active" data-mode="login">Login</button>
-          <button type="button" class="auth-tab provost-auth-tab" data-mode="register">Register</button>
-        </div>
-        <form id="provostForm" data-mode="login">
-          <label>
-            <span>Gmail Address</span>
-            <input type="email" id="provostEmail" required />
-          </label>
-          <label>
-            <span>Password</span>
-            <input type="password" id="provostPassword" required />
-          </label>
-          <label class="captain-confirm">
-            <input type="checkbox" id="provostVerify" />
-            <span>I confirm I am a member of the Provost Department.</span>
-          </label>
-          <p id="provostNotice" class="captain-notice"></p>
+      <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="excoDashboardTitle">
+        <button class="modal-close" id="excoDashboardClose" aria-label="Close exco dashboard">&times;</button>
+        <h3 id="excoDashboardTitle">EXCO Dashboard</h3>
+        <p class="dashboard-intro">Create or update profiles for the General Secretary, PRO, Assistant Secretary, Band Master, Assistant Band Master, and Treasurer.</p>
+        <form id="excoDashboardForm">
+          <div class="dashboard-grid exco-dashboard-grid"></div>
           <div class="dashboard-actions">
-            <button type="submit" class="btn btn-gold">Continue</button>
+            <button type="submit" class="btn btn-gold">Save EXCO Profiles</button>
           </div>
         </form>
       </div>
     </div>
 
-    <div class="modal" id="provostDashboardModal" aria-hidden="true">
-      <div class="modal-backdrop" data-close="true"></div>
-      <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="provostDashboardTitle">
-        <button class="modal-close" id="provostDashboardClose" aria-label="Close provost dashboard">&times;</button>
-        <h3 id="provostDashboardTitle">Provost Dashboard</h3>
-        <p class="dashboard-intro">Update your Provost department Gmail and password securely on this device.</p>
-        <form id="provostDashboardForm">
-          <div class="dashboard-grid provost-dashboard-grid"></div>
-          <div class="dashboard-actions">
-            <button type="submit" class="btn btn-gold">Save Provost Account</button>
-          </div>
-        </form>
-      </div>
-    </div>
 
     <div class="modal" id="dashboardModal" aria-hidden="true">
       <div class="modal-backdrop" data-close="true"></div>

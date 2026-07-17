@@ -15,37 +15,29 @@ const captainForm = document.getElementById('captainForm');
 const captainEmail = document.getElementById('captainEmail');
 const captainPassword = document.getElementById('captainPassword');
 const captainCompany = document.getElementById('captainCompany');
-const captainVerify = document.getElementById('captainVerify');
 const captainNotice = document.getElementById('captainNotice');
 const authTabs = document.querySelectorAll('.auth-tab');
 const dashboardModal = document.getElementById('dashboardModal');
 const dashboardClose = document.getElementById('dashboardClose');
 const dashboardGrid = document.querySelector('.dashboard-grid');
 const commanderDashboardGrid = document.querySelector('.commander-dashboard-grid');
-const provostDashboardGrid = document.querySelector('.provost-dashboard-grid');
 const dashboardForm = document.getElementById('dashboardForm');
 const commanderDashboardForm = document.getElementById('commanderDashboardForm');
-const provostDashboardForm = document.getElementById('provostDashboardForm');
 const commanderModal = document.getElementById('commanderModal');
 const commanderClose = document.getElementById('commanderClose');
 const commanderDashboardModal = document.getElementById('commanderDashboardModal');
-const provostModal = document.getElementById('provostModal');
-const provostClose = document.getElementById('provostClose');
-const provostDashboardModal = document.getElementById('provostDashboardModal');
 const commanderForm = document.getElementById('commanderForm');
 const commanderEmail = document.getElementById('commanderEmail');
 const commanderPassword = document.getElementById('commanderPassword');
-const commanderVerify = document.getElementById('commanderVerify');
 const commanderNotice = document.getElementById('commanderNotice');
-const provostForm = document.getElementById('provostForm');
-const provostEmail = document.getElementById('provostEmail');
-const provostPassword = document.getElementById('provostPassword');
-const provostVerify = document.getElementById('provostVerify');
-const provostNotice = document.getElementById('provostNotice');
 const commanderDashboardClose = document.getElementById('commanderDashboardClose');
-const provostDashboardClose = document.getElementById('provostDashboardClose');
+const excoDashboardModal = document.getElementById('excoDashboardModal');
+const excoDashboardClose = document.getElementById('excoDashboardClose');
+const excoDashboardGrid = document.querySelector('.exco-dashboard-grid');
+const excoDashboardForm = document.getElementById('excoDashboardForm');
+const openExcoDashboardBtn = document.getElementById('openExcoDashboardBtn');
 const commanderTrigger = document.querySelectorAll('.commander-trigger');
-const provostTrigger = document.querySelectorAll('.provost-trigger');
+const excoTrigger = document.querySelectorAll('.exco-trigger');
 const companyCards = document.querySelectorAll('.company-card');
 const companyLists = document.querySelectorAll('.company-list');
 const form = document.getElementById('enlistmentForm');
@@ -61,21 +53,19 @@ const galleryPreviewTitle = document.getElementById('galleryPreviewTitle');
 const galleryPreviewDescription = document.getElementById('galleryPreviewDescription');
 const galleryPreviewCategory = document.getElementById('galleryPreviewCategory');
 const commanderAccounts = JSON.parse(localStorage.getItem('royalShepherdCommanderAccounts') || 'null') || {};
-const provostAccounts = JSON.parse(localStorage.getItem('royalShepherdProvostAccounts') || 'null') || {};
+const commanderVerificationCodes = JSON.parse(localStorage.getItem('royalShepherdCommanderVerificationCodes') || 'null') || {};
+const commanderPendingResets = JSON.parse(localStorage.getItem('royalShepherdCommanderPendingResets') || 'null') || {};
 const captainRequests = JSON.parse(localStorage.getItem('royalShepherdCaptainRequests') || 'null') || {};
-const provostRequests = JSON.parse(localStorage.getItem('royalShepherdProvostRequests') || 'null') || {};
-const commanderSettings = JSON.parse(localStorage.getItem('royalShepherdCommanderSettings') || 'null') || {
-  exco: {
-    pro: '',
-    secBandMaster1: '',
-    secBandMaster2: '',
-    treasurer: ''
-  }
-};
-const provostSettings = JSON.parse(localStorage.getItem('royalShepherdProvostSettings') || 'null') || {
-  email: '',
-  password: ''
-};
+const commanderSettings = JSON.parse(localStorage.getItem('royalShepherdCommanderSettings') || 'null') || {};
+const excoProfiles = JSON.parse(localStorage.getItem('royalShepherdExcoProfiles') || 'null') || {};
+const excoRoleDefinitions = [
+  { key: 'general-secretary', label: 'General Secretary' },
+  { key: 'pro', label: 'PRO' },
+  { key: 'assistant-secretary', label: 'Assistant Secretary' },
+  { key: 'band-master', label: 'Band Master' },
+  { key: 'assistant-band-master', label: 'Assistant Band Master' },
+  { key: 'treasurer', label: 'Treasurer' }
+];
 let galleryItems = []; 
 
 const defaultCompanyData = {
@@ -165,6 +155,10 @@ function openDashboard(companyId = activeCaptainCompany) {
   card.innerHTML = `
     <h4>${company.name}</h4>
     <label>
+      <span>Company Name</span>
+      <input type="text" name="company-name-${companyId}" value="${company.name || ''}" />
+    </label>
+    <label>
       <span>Active Members</span>
       <textarea name="active-${companyId}">${(company.active || []).join('\n')}</textarea>
     </label>
@@ -206,64 +200,59 @@ function closeCommanderDashboard() {
   commanderDashboardModal.setAttribute('aria-hidden', 'true');
 }
 
-function openProvostModal() {
-  provostModal.classList.add('active');
-  provostModal.setAttribute('aria-hidden', 'false');
+
+function openExcoDashboard() {
+  excoDashboardModal.classList.add('active');
+  excoDashboardModal.setAttribute('aria-hidden', 'false');
+  buildExcoDashboard();
 }
 
-function closeProvostModal() {
-  provostModal.classList.remove('active');
-  provostModal.setAttribute('aria-hidden', 'true');
+function closeExcoDashboard() {
+  excoDashboardModal.classList.remove('active');
+  excoDashboardModal.setAttribute('aria-hidden', 'true');
 }
 
-function openProvostDashboard() {
-  provostDashboardModal.classList.add('active');
-  provostDashboardModal.setAttribute('aria-hidden', 'false');
-  buildProvostDashboard();
-}
+function buildExcoDashboard() {
+  if (!excoDashboardGrid) return;
+  excoDashboardGrid.innerHTML = '';
 
-function closeProvostDashboard() {
-  provostDashboardModal.classList.remove('active');
-  provostDashboardModal.setAttribute('aria-hidden', 'true');
+  excoRoleDefinitions.forEach((role) => {
+    const profile = excoProfiles[role.key] || {};
+    const card = document.createElement('div');
+    card.className = 'dashboard-card';
+    card.innerHTML = `
+      <h4>${role.label}</h4>
+      <p class="dashboard-intro">Create or update the profile for ${role.label}.</p>
+      <label>
+        <span>Full Name</span>
+        <input type="text" name="${role.key}-name" value="${(profile.name || '').replace(/"/g, '&quot;')}" />
+      </label>
+      <label>
+        <span>Email Address</span>
+        <input type="email" name="${role.key}-email" value="${(profile.email || '').replace(/"/g, '&quot;')}" />
+      </label>
+      <label>
+        <span>Phone Number</span>
+        <input type="tel" name="${role.key}-phone" value="${(profile.phone || '').replace(/"/g, '&quot;')}" />
+      </label>
+      <label>
+        <span>Short Bio</span>
+        <textarea name="${role.key}-bio">${(profile.bio || '').replace(/"/g, '&quot;')}</textarea>
+      </label>
+    `;
+    excoDashboardGrid.appendChild(card);
+  });
 }
 
 function buildCommanderDashboard() {
   if (!commanderDashboardGrid) return;
   commanderDashboardGrid.innerHTML = '';
 
-  const excoCard = document.createElement('div');
-  excoCard.className = 'dashboard-card';
-  excoCard.innerHTML = `
-    <h4>EXCO Assignments</h4>
-    <p class="dashboard-intro">Only the Divisional Commander can assign or update the EXCO team.</p>
-    <label>
-      <span>Public Relations Officer (PRO)</span>
-      <input type="text" name="exco-pro" value="${commanderSettings.exco.pro || ''}" />
-    </label>
-    <label>
-      <span>PRO</span>
-      <input type="text" name="exco-pro" value="${commanderSettings.exco.pro || ''}" />
-    </label>
-    <label>
-      <span>Secretary Band Master 1</span>
-      <input type="text" name="exco-secBandMaster1" value="${commanderSettings.exco.secBandMaster1 || ''}" />
-    </label>
-    <label>
-      <span>Secretary Band Master 2</span>
-      <input type="text" name="exco-secBandMaster2" value="${commanderSettings.exco.secBandMaster2 || ''}" />
-    </label>
-    <label>
-      <span>Treasurer</span>
-      <input type="text" name="exco-treasurer" value="${commanderSettings.exco.treasurer || ''}" />
-    </label>
-  `;
-  commanderDashboardGrid.appendChild(excoCard);
-
   const requestCard = document.createElement('div');
   requestCard.className = 'dashboard-card';
   requestCard.innerHTML = `
     <h4>Pending Account Creation Requests</h4>
-    <p class="dashboard-intro">Approve or deny captain and provost creation requests submitted by members. Only the Divisional Commander can complete this step.</p>
+    <p class="dashboard-intro">Approve or deny captain creation requests submitted by members. Only the Divisional Commander can complete this step.</p>
     <div class="request-list"></div>
   `;
   commanderDashboardGrid.appendChild(requestCard);
@@ -277,17 +266,6 @@ function buildCommanderDashboard() {
       title: `Captain Request: ${email}`,
       body: `Company ${request.companyId}`,
       type: 'captain',
-      email,
-      details: request
-    });
-  });
-
-  Object.entries(provostRequests).forEach(([email, request]) => {
-    pendingRequests.push({
-      key: `provost-${email}`,
-      title: `Provost Request: ${email}`,
-      body: 'Provost account creation request',
-      type: 'provost',
       email,
       details: request
     });
@@ -318,6 +296,10 @@ function buildCommanderDashboard() {
     card.innerHTML = `
       <h4>${company.name}</h4>
       <label>
+        <span>Company Name</span>
+        <input type="text" name="company-name-${companyId}" value="${company.name || ''}" />
+      </label>
+      <label>
         <span>Active Members</span>
         <textarea name="active-${companyId}">${(company.active || []).join('\n')}</textarea>
       </label>
@@ -334,29 +316,6 @@ function buildCommanderDashboard() {
   });
 }
 
-function buildProvostDashboard() {
-  if (!provostDashboardGrid) return;
-  provostDashboardGrid.innerHTML = '';
-
-  const card = document.createElement('div');
-  card.className = 'dashboard-card';
-  card.innerHTML = `
-    <h4>Provost Department Account</h4>
-    <label>
-      <span>Gmail Address</span>
-      <input type="email" name="provost-dashboard-email" value="${provostSettings.email || ''}" required />
-    </label>
-    <label>
-      <span>Password</span>
-      <input type="password" name="provost-dashboard-password" value="${provostSettings.password || ''}" required />
-    </label>
-    <label>
-      <span>Notes</span>
-      <textarea name="provost-dashboard-notes">${provostSettings.notes || ''}</textarea>
-    </label>
-  `;
-  provostDashboardGrid.appendChild(card);
-}
 
 function closeAllModals() {
   closeModal();
@@ -364,8 +323,8 @@ function closeAllModals() {
   closeDashboard();
   closeCommanderModal();
   closeCommanderDashboard();
-  closeProvostModal();
-  closeProvostDashboard();
+
+  closeExcoDashboard();
 }
 
 function renderCompanyLists() {
@@ -478,9 +437,12 @@ function saveDashboard(event) {
     .split('\n')
     .map((item) => item.trim())
     .filter(Boolean);
+  const name = (formData.get(`company-name-${companyId}`) || '')
+    .toString()
+    .trim() || companyData[companyId]?.name || `Company ${companyId}`;
 
   companyData[companyId] = {
-    name: companyData[companyId]?.name || `Company ${companyId}`,
+    name,
     active,
     inactive,
     officers
@@ -527,9 +489,10 @@ commanderTrigger.forEach((trigger) => {
   trigger.addEventListener('click', openCommanderModal);
 });
 
-provostTrigger.forEach((trigger) => {
-  trigger.addEventListener('click', openProvostModal);
+excoTrigger.forEach((trigger) => {
+  trigger.addEventListener('click', openExcoDashboard);
 });
+
 
 galleryGrid?.addEventListener('click', (event) => {
   const card = event.target.closest('.gallery-item');
@@ -563,10 +526,9 @@ captainForm?.addEventListener('submit', (event) => {
   const email = captainEmail.value.trim();
   const password = captainPassword.value.trim();
   const companyId = captainCompany.value;
-  const verified = captainVerify.checked;
 
-  if (!email || !password || !companyId || !verified) {
-    captainNotice.textContent = 'Please complete all fields and confirm your captain status.';
+  if (!email || !password || !companyId) {
+    captainNotice.textContent = 'Please complete all fields.';
     captainNotice.style.color = 'hsl(0, 70%, 60%)';
     return;
   }
@@ -613,10 +575,9 @@ commanderForm?.addEventListener('submit', (event) => {
   const mode = commanderForm.dataset.mode;
   const email = commanderEmail.value.trim();
   const password = commanderPassword.value.trim();
-  const verified = commanderVerify.checked;
 
-  if (!email || !password || !verified) {
-    commanderNotice.textContent = 'Please complete all fields and confirm your commander status.';
+  if (!email || !password) {
+    commanderNotice.textContent = 'Please enter your commander email and password.';
     commanderNotice.style.color = 'hsl(0, 70%, 60%)';
     return;
   }
@@ -627,16 +588,39 @@ commanderForm?.addEventListener('submit', (event) => {
       commanderNotice.style.color = 'hsl(0, 70%, 60%)';
       return;
     }
-    commanderAccounts[email] = { password };
-    localStorage.setItem('royalShepherdCommanderAccounts', JSON.stringify(commanderAccounts));
-    commanderNotice.textContent = 'Commander account created. Please login to continue.';
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    commanderVerificationCodes[email.toLowerCase()] = { code: verificationCode, password, verified: false };
+    localStorage.setItem('royalShepherdCommanderVerificationCodes', JSON.stringify(commanderVerificationCodes));
+
+    commanderNotice.textContent = `Verification code ${verificationCode} prepared for ${email}. Use it to complete setup.`;
     commanderNotice.style.color = 'var(--gold-400)';
     return;
   }
 
-  const account = commanderAccounts[email];
+  const normalizedEmail = email.toLowerCase();
+  const account = commanderAccounts[normalizedEmail];
+  const pendingVerification = commanderVerificationCodes[normalizedEmail];
+
   if (!account || account.password !== password) {
+    if (pendingVerification && password === pendingVerification.password) {
+      commanderAccounts[normalizedEmail] = { password: pendingVerification.password, verified: true };
+      delete commanderVerificationCodes[normalizedEmail];
+      localStorage.setItem('royalShepherdCommanderAccounts', JSON.stringify(commanderAccounts));
+      localStorage.setItem('royalShepherdCommanderVerificationCodes', JSON.stringify(commanderVerificationCodes));
+      commanderNotice.textContent = 'Commander account verified. Opening commander dashboard.';
+      commanderNotice.style.color = 'var(--gold-400)';
+      closeCommanderModal();
+      openCommanderDashboard();
+      return;
+    }
     commanderNotice.textContent = 'Invalid commander email or password.';
+    commanderNotice.style.color = 'hsl(0, 70%, 60%)';
+    return;
+  }
+
+  if (!account.verified) {
+    commanderNotice.textContent = 'Please verify your commander account before signing in.';
     commanderNotice.style.color = 'hsl(0, 70%, 60%)';
     return;
   }
@@ -647,58 +631,10 @@ commanderForm?.addEventListener('submit', (event) => {
   openCommanderDashboard();
 });
 
-provostForm?.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const mode = provostForm.dataset.mode;
-  const email = provostEmail.value.trim();
-  const password = provostPassword.value.trim();
-  const verified = provostVerify.checked;
-
-  if (!email || !password || !verified) {
-    provostNotice.textContent = 'Please complete all fields and confirm your provost status.';
-    provostNotice.style.color = 'hsl(0, 70%, 60%)';
-    return;
-  }
-
-  if (mode === 'register') {
-    if (provostAccounts[email]) {
-      provostNotice.textContent = 'This Gmail already has provost access.';
-      provostNotice.style.color = 'hsl(0, 70%, 60%)';
-      return;
-    }
-    if (provostRequests[email]) {
-      provostNotice.textContent = 'A creation request for this Gmail is already pending approval.';
-      provostNotice.style.color = 'hsl(0, 70%, 60%)';
-      return;
-    }
-    provostRequests[email] = { password, submittedAt: new Date().toISOString(), status: 'pending' };
-    localStorage.setItem('royalShepherdProvostRequests', JSON.stringify(provostRequests));
-    provostNotice.textContent = 'Provost creation request submitted. Divisional Commander approval is required.';
-    provostNotice.style.color = 'var(--gold-400)';
-    return;
-  }
-
-  const account = provostAccounts[email];
-  if (!account || account.password !== password) {
-    provostNotice.textContent = 'Invalid provost email or password.';
-    provostNotice.style.color = 'hsl(0, 70%, 60%)';
-    return;
-  }
-
-  provostNotice.textContent = 'Provost access granted. Opening provost dashboard.';
-  provostNotice.style.color = 'var(--gold-400)';
-  closeProvostModal();
-  openProvostDashboard();
-});
 
 commanderDashboardForm?.addEventListener('submit', (event) => {
   event.preventDefault();
   const formData = new FormData(commanderDashboardForm);
-
-  commanderSettings.exco.pro = formData.get('exco-pro')?.toString().trim() || '';
-  commanderSettings.exco.secBandMaster1 = formData.get('exco-secBandMaster1')?.toString().trim() || '';
-  commanderSettings.exco.secBandMaster2 = formData.get('exco-secBandMaster2')?.toString().trim() || '';
-  commanderSettings.exco.treasurer = formData.get('exco-treasurer')?.toString().trim() || '';
 
   Object.keys(companyData).forEach((companyId) => {
     companyData[companyId].active = (formData.get(`active-${companyId}`) || '')
@@ -716,6 +652,16 @@ commanderDashboardForm?.addEventListener('submit', (event) => {
       .split('\n')
       .map((item) => item.trim())
       .filter(Boolean);
+    const name = (formData.get(`company-name-${companyId}`) || '')
+      .toString()
+      .trim() || companyData[companyId]?.name || `Company ${companyId}`;
+
+    companyData[companyId] = {
+      name,
+      active: companyData[companyId].active,
+      inactive: companyData[companyId].inactive,
+      officers: companyData[companyId].officers
+    };
   });
 
   localStorage.setItem('royalShepherdCommanderSettings', JSON.stringify(commanderSettings));
@@ -723,6 +669,30 @@ commanderDashboardForm?.addEventListener('submit', (event) => {
   renderCompanyLists();
   closeCommanderDashboard();
 });
+
+excoDashboardForm?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const formData = new FormData(excoDashboardForm);
+
+  excoRoleDefinitions.forEach((role) => {
+    const name = (formData.get(`${role.key}-name`) || '').toString().trim();
+    const email = (formData.get(`${role.key}-email`) || '').toString().trim();
+    const phone = (formData.get(`${role.key}-phone`) || '').toString().trim();
+    const bio = (formData.get(`${role.key}-bio`) || '').toString().trim();
+
+    if (name || email || phone || bio) {
+      excoProfiles[role.key] = { role: role.label, name, email, phone, bio };
+    } else {
+      delete excoProfiles[role.key];
+    }
+  });
+
+  localStorage.setItem('royalShepherdExcoProfiles', JSON.stringify(excoProfiles));
+  closeExcoDashboard();
+});
+
+openExcoDashboardBtn?.addEventListener('click', openExcoDashboard);
+excoDashboardClose?.addEventListener('click', closeExcoDashboard);
 
 commanderDashboardGrid?.addEventListener('click', (event) => {
   const actionButton = event.target.closest('.request-action');
@@ -750,39 +720,12 @@ commanderDashboardGrid?.addEventListener('click', (event) => {
     }
   }
 
-  if (requestType === 'provost') {
-    if (requestAction === 'approve') {
-      const request = provostRequests[email];
-      if (request) {
-        provostAccounts[email] = { password: request.password };
-        delete provostRequests[email];
-        localStorage.setItem('royalShepherdProvostAccounts', JSON.stringify(provostAccounts));
-        localStorage.setItem('royalShepherdProvostRequests', JSON.stringify(provostRequests));
-      }
-    }
-    if (requestAction === 'deny') {
-      delete provostRequests[email];
-      localStorage.setItem('royalShepherdProvostRequests', JSON.stringify(provostRequests));
-    }
-  }
-
   buildCommanderDashboard();
-});
-provostDashboardForm?.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const formData = new FormData(provostDashboardForm);
-  provostSettings.email = formData.get('provost-dashboard-email')?.toString().trim() || '';
-  provostSettings.password = formData.get('provost-dashboard-password')?.toString().trim() || '';
-  provostSettings.notes = formData.get('provost-dashboard-notes')?.toString().trim() || '';
-  localStorage.setItem('royalShepherdProvostSettings', JSON.stringify(provostSettings));
-  closeProvostDashboard();
 });
 
 captainClose?.addEventListener('click', closeCaptainModal);
 commanderClose?.addEventListener('click', closeCommanderModal);
 commanderDashboardClose?.addEventListener('click', closeCommanderDashboard);
-provostClose?.addEventListener('click', closeProvostModal);
-provostDashboardClose?.addEventListener('click', closeProvostDashboard);
 
 galleryClose?.addEventListener('click', closeGalleryPreview);
 galleryBackdrop?.addEventListener('click', closeGalleryPreview);
@@ -798,14 +741,12 @@ document.addEventListener('keydown', (event) => {
       closeDashboard();
     } else if (commanderDashboardModal?.classList.contains('active')) {
       closeCommanderDashboard();
-    } else if (provostDashboardModal?.classList.contains('active')) {
-      closeProvostDashboard();
+    } else if (excoDashboardModal?.classList.contains('active')) {
+      closeExcoDashboard();
     } else if (captainModal.classList.contains('active')) {
       closeCaptainModal();
     } else if (commanderModal.classList.contains('active')) {
       closeCommanderModal();
-    } else if (provostModal.classList.contains('active')) {
-      closeProvostModal();
     } else if (galleryModal?.classList.contains('active')) {
       closeGalleryPreview();
     } else if (modal.classList.contains('active')) {
