@@ -88,11 +88,16 @@ window.addEventListener('scroll', () => {
   header.classList.toggle('scrolled', window.scrollY > 50);
 });
 
-menuToggle?.addEventListener('click', () => {
-  const isOpen = navMenu.classList.toggle('open');
-  menuToggle.classList.toggle('open', isOpen);
-  menuToggle.setAttribute('aria-expanded', String(isOpen));
-});
+// Menu toggle with direct binding
+if (menuToggle && navMenu) {
+  menuToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isOpen = navMenu.classList.toggle('open');
+    menuToggle.classList.toggle('open', isOpen);
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+}
 
 navLinks.forEach((link) => {
   link.addEventListener('click', (event) => {
