@@ -349,6 +349,14 @@ function renderCompanyLists() {
   });
 }
 
+function resolveImagePath(src) {
+  if (!src) return '';
+  const normalized = String(src).trim().replace(/\\/g, '/');
+  if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('data:')) return normalized;
+  if (normalized.startsWith('image/')) return normalized;
+  return `image/${normalized}`;
+}
+
 function renderGalleryItems() {
   if (!galleryGrid || !Array.isArray(galleryData)) return;
   galleryGrid.innerHTML = '';
@@ -360,7 +368,7 @@ function renderGalleryItems() {
     article.dataset.index = index;
     article.innerHTML = `
       <button type="button" class="gallery-thumb" aria-label="${item.title}">
-        <img src="${item.src}" alt="${item.title}" />
+        <img src="${resolveImagePath(item.src)}" alt="${item.title}" />
         <div class="gallery-overlay">
           <h3>${item.title}</h3>
           <p>${item.description}</p>
@@ -376,7 +384,7 @@ function renderGalleryItems() {
 function openGalleryPreview(index) {
   const item = galleryData[index];
   if (!item || !galleryModal) return;
-  galleryPreviewImage.src = item.src;
+  galleryPreviewImage.src = resolveImagePath(item.src);
   galleryPreviewImage.alt = item.title;
   galleryPreviewTitle.textContent = item.title;
   galleryPreviewDescription.textContent = item.description;
