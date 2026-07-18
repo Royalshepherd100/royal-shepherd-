@@ -612,20 +612,21 @@
 
     <script src="gallery-data.js"></script>
     <script>
-      // Inline menu toggle to ensure it works immediately
-      document.addEventListener('DOMContentLoaded', function() {
+      // Inline menu toggle - attach directly
+      (function() {
         const menuToggle = document.getElementById('menuToggle');
         const navMenu = document.getElementById('navMenu');
         if (menuToggle && navMenu) {
-          menuToggle.addEventListener('click', function(e) {
+          menuToggle.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
             const isOpen = navMenu.classList.toggle('open');
             menuToggle.classList.toggle('open', isOpen);
             menuToggle.setAttribute('aria-expanded', String(isOpen));
-          });
+            return false;
+          };
         }
-      });
+      })();
     </script>
     <script src="app.js"></script>
   </body>
