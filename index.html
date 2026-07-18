@@ -344,15 +344,15 @@
               <span class="officer-name">Enter name here</span>
             </div>
             <div class="officer-row">
-              <span class="officer-rank">Company Commander</span>
+              <span class="officer-rank">Company Captain</span>
               <span class="officer-name">Enter name here</span>
             </div>
             <div class="officer-row">
-              <span class="officer-rank">Section Leader</span>
+              <span class="officer-rank">organising secetary</span>
               <span class="officer-name">Enter name here</span>
             </div>
             <div class="officer-row">
-              <span class="officer-rank">Assistant Section Leader</span>
+              <span class="officer-rank">assistant organising secetary</span>
               <span class="officer-name">Enter name here</span>
             </div>
             <div class="officer-row">
@@ -611,6 +611,22 @@
     </div>
 
     <script src="gallery-data.js"></script>
+    <script>
+      // Inline menu toggle to ensure it works immediately
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.getElementById('navMenu');
+        if (menuToggle && navMenu) {
+          menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const isOpen = navMenu.classList.toggle('open');
+            menuToggle.classList.toggle('open', isOpen);
+            menuToggle.setAttribute('aria-expanded', String(isOpen));
+          });
+        }
+      });
+    </script>
     <script src="app.js"></script>
   </body>
 </html>
