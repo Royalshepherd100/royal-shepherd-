@@ -903,9 +903,10 @@ textarea:focus {
   }
 
   .site-nav.open {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    right: 0 !important;
   }
 
   .site-nav a,
