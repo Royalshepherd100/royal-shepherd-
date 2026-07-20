@@ -3,6 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, List
 
+
+class CompanyPayload(BaseModel):
+    companyId: str
+    name: str
+    active: List[str] = []
+    inactive: List[str] = []
+    officers: List[str] = []
+
+
+class CompanyBulkPayload(BaseModel):
+    companies: List[CompanyPayload]
+
 app = FastAPI(title="Royal Shepherd Backend", version="1.0.0")
 
 app.add_middleware(
@@ -25,13 +37,6 @@ company_store: Dict[str, Dict[str, List[str]]] = {
     "9": {"name": "28th Akiling Company", "active": [], "inactive": [], "officers": []},
 }
 
-class CompanyPayload(BaseModel):
-    companyId: str
-    name: str
-    active: List[str] = []
-    inactive: List[str] = []
-    officers: List[str] = []
-
 @app.get("/")
 def health_check():
     return {"status": "ok", "message": "Royal Shepherd backend is running"}
@@ -49,3 +54,15 @@ def save_company(payload: CompanyPayload):
         "officers": payload.officers,
     }
     return company_store[payload.companyId]
+
+
+@app.post("/companies/bulk")
+def save_companies_bulk(payload: List[CompanyPayload]):
+    for company in payload:
+        company_store[company.companyId] = {
+            "name": company.name,
+            "active": company.active,
+            "inactive": company.inactive,
+            "officers": company.officers,
+        }
+    return company_store

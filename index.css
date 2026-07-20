@@ -431,6 +431,33 @@ h4 {
   margin: 0.5rem 0 0.4rem;
 }
 
+.division-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem 1.2rem;
+}
+
+.summary-stat {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.summary-label {
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--silver-200);
+}
+
+.summary-stat strong {
+  font-size: 1.3rem;
+  color: var(--gold-400);
+}
+
 .company-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

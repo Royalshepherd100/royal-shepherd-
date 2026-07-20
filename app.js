@@ -22,6 +22,8 @@
   const dashboardClose = document.getElementById('dashboardClose');
   const dashboardGrid = document.querySelector('#dashboardModal .dashboard-grid');
   const commanderDashboardGrid = document.querySelector('#commanderDashboardModal .dashboard-grid');
+  const divisionTotalMembers = document.getElementById('divisionTotalMembers');
+  const divisionTotalOfficers = document.getElementById('divisionTotalOfficers');
   const dashboardForm = document.getElementById('dashboardForm');
   const commanderDashboardForm = document.getElementById('commanderDashboardForm');
   const commanderModal = document.getElementById('commanderModal');
@@ -69,15 +71,13 @@
     4: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
     5: { name: 'Command Akiling Company', active: [], inactive: [], officers: [] },
     6: { name: 'Ipaja Akiling Company', active: [], inactive: [], officers: [] },
-    7: { name: 'Ijaba Akiling Company', active: [], inactive: [], officers: [] },
+    7: { name: '44th Ijaba Akiling Company', active: [], inactive: [], officers: [] },
     8: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
     9: { name: '28th Akiling Company', active: [], inactive: [], officers: [] }
   };
 
-  const resetCompanyData = JSON.parse(JSON.stringify(defaultCompanyData));
-
   const state = {
-    companyData: resetCompanyData,
+    companyData: JSON.parse(JSON.stringify(defaultCompanyData)),
     captainAccounts: JSON.parse(localStorage.getItem('royalShepherdCaptains') || 'null') || {},
     commanderAccounts: JSON.parse(localStorage.getItem('royalShepherdCommanderAccounts') || 'null') || {},
     commanderVerificationCodes: JSON.parse(localStorage.getItem('royalShepherdCommanderVerificationCodes') || 'null') || {},
@@ -88,12 +88,70 @@
     galleryItems: []
   };
 
-  saveCompanies();
-
   const galleryData = window.galleryData || [];
 
-  function saveCompanies() {
+  function normalizeCompanyData(rawData) {
+    const parsed = {};
+    Object.entries(rawData || {}).forEach(([companyId, company]) => {
+      if (company && typeof company === 'object') {
+        parsed[companyId] = {
+          name: company.name || defaultCompanyData[companyId]?.name || `Company ${companyId}`,
+          active: Array.isArray(company.active) ? company.active : [],
+          inactive: Array.isArray(company.inactive) ? company.inactive : [],
+          officers: Array.isArray(company.officers) ? company.officers : []
+        };
+      }
+    });
+    return parsed;
+  }
+
+  async function loadCompaniesFromBackend() {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/companies');
+      if (!response.ok) return null;
+      const data = await response.json();
+      return normalizeCompanyData(data);
+    } catch (error) {
+      console.warn('Could not load backend company data.', error);
+      return null;
+    }
+  }
+
+  async function bootstrapCompanyData() {
+    const backendData = await loadCompaniesFromBackend();
+    if (backendData && Object.keys(backendData).length) {
+      state.companyData = backendData;
+    } else {
+      const localData = JSON.parse(localStorage.getItem('royalShepherdCompanies') || 'null');
+      if (localData && typeof localData === 'object') {
+        state.companyData = normalizeCompanyData(localData);
+      } else {
+        state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
+      }
+    }
+    await saveCompanies();
+  }
+
+  async function saveCompanies() {
     localStorage.setItem('royalShepherdCompanies', JSON.stringify(state.companyData));
+
+    try {
+      const payload = Object.entries(state.companyData).map(([companyId, company]) => ({
+        companyId,
+        name: company.name,
+        active: company.active || [],
+        inactive: company.inactive || [],
+        officers: company.officers || []
+      }));
+
+      await fetch('http://127.0.0.1:8000/companies/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (error) {
+      console.warn('Backend unavailable, using local storage only.', error);
+    }
   }
 
   function saveCaptains() {
@@ -324,6 +382,21 @@
     });
   }
 
+  function renderDivisionSummary() {
+    if (!divisionTotalMembers || !divisionTotalOfficers) return;
+
+    let totalMembers = 0;
+    let totalOfficers = 0;
+
+    Object.values(state.companyData).forEach((company) => {
+      totalMembers += (company.active || []).length + (company.inactive || []).length;
+      totalOfficers += (company.officers || []).length;
+    });
+
+    divisionTotalMembers.textContent = totalMembers;
+    divisionTotalOfficers.textContent = totalOfficers;
+  }
+
   function renderCompanyLists() {
     companyCards.forEach((card) => {
       const companyId = card.dataset.company;
@@ -344,6 +417,8 @@
         });
       });
     });
+
+    renderDivisionSummary();
   }
 
   function buildCaptainDashboard(companyId) {
@@ -360,15 +435,15 @@
       </label>
       <label>
         <span>Active Members</span>
-        <textarea name="active-${companyId}">${(company.active || []).join('\n')}</textarea>
+        <textarea name="active-${companyId}" placeholder="Add active members one per line">${(company.active || []).join('\n')}</textarea>
       </label>
       <label>
         <span>None Active Members</span>
-        <textarea name="inactive-${companyId}">${(company.inactive || []).join('\n')}</textarea>
+        <textarea name="inactive-${companyId}" placeholder="Add inactive members one per line">${(company.inactive || []).join('\n')}</textarea>
       </label>
       <label>
         <span>Ranked Officers</span>
-        <textarea name="officers-${companyId}">${(company.officers || []).join('\n')}</textarea>
+        <textarea name="officers-${companyId}" placeholder="Add officers one per line">${(company.officers || []).join('\n')}</textarea>
       </label>
     `;
     dashboardGrid.appendChild(card);
@@ -429,15 +504,15 @@
         </label>
         <label>
           <span>Active Members</span>
-          <textarea name="active-${companyId}">${(company.active || []).join('\n')}</textarea>
+          <textarea name="active-${companyId}" placeholder="Add active members one per line">${(company.active || []).join('\n')}</textarea>
         </label>
         <label>
           <span>None Active Members</span>
-          <textarea name="inactive-${companyId}">${(company.inactive || []).join('\n')}</textarea>
+          <textarea name="inactive-${companyId}" placeholder="Add inactive members one per line">${(company.inactive || []).join('\n')}</textarea>
         </label>
         <label>
           <span>Ranked Officers</span>
-          <textarea name="officers-${companyId}">${(company.officers || []).join('\n')}</textarea>
+          <textarea name="officers-${companyId}" placeholder="Add officers one per line">${(company.officers || []).join('\n')}</textarea>
         </label>
       `;
       commanderDashboardGrid.appendChild(card);
@@ -748,7 +823,9 @@
     bindSymbolCards();
     bindGallery();
     bindForms();
-    renderCompanyLists();
+    bootstrapCompanyData().then(() => {
+      renderCompanyLists();
+    });
     renderGallery();
   }
 
