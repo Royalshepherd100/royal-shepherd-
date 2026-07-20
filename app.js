@@ -63,19 +63,21 @@
   ];
 
   const defaultCompanyData = {
-    1: { name: 'Company 1', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    2: { name: 'Company 2', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    3: { name: 'Company 3', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    4: { name: 'Company 4', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    5: { name: 'Company 5', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    6: { name: 'Company 6', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    7: { name: 'Company 7', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    8: { name: 'Company 8', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] },
-    9: { name: 'Company 9', active: ['Enter names here'], inactive: ['Enter names here'], officers: ['Rank & Section'] }
+    1: { name: '12th Akiling Company', active: [], inactive: [], officers: [] },
+    2: { name: 'Ikorodu Akiling Company', active: [], inactive: [], officers: [] },
+    3: { name: '17th Akiling Company', active: [], inactive: [], officers: [] },
+    4: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
+    5: { name: 'Command Akiling Company', active: [], inactive: [], officers: [] },
+    6: { name: 'Ipaja Akiling Company', active: [], inactive: [], officers: [] },
+    7: { name: 'Ijaba Akiling Company', active: [], inactive: [], officers: [] },
+    8: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
+    9: { name: '28th Akiling Company', active: [], inactive: [], officers: [] }
   };
 
+  const resetCompanyData = JSON.parse(JSON.stringify(defaultCompanyData));
+
   const state = {
-    companyData: JSON.parse(localStorage.getItem('royalShepherdCompanies') || 'null') || defaultCompanyData,
+    companyData: resetCompanyData,
     captainAccounts: JSON.parse(localStorage.getItem('royalShepherdCaptains') || 'null') || {},
     commanderAccounts: JSON.parse(localStorage.getItem('royalShepherdCommanderAccounts') || 'null') || {},
     commanderVerificationCodes: JSON.parse(localStorage.getItem('royalShepherdCommanderVerificationCodes') || 'null') || {},
@@ -85,6 +87,8 @@
     activeCaptainCompany: null,
     galleryItems: []
   };
+
+  saveCompanies();
 
   const galleryData = window.galleryData || [];
 
@@ -536,7 +540,7 @@
     commanderForm?.addEventListener('submit', (event) => {
       event.preventDefault();
       const mode = commanderForm.dataset.mode || 'login';
-      const email = commanderEmail.value.trim();
+      const email = commanderEmail.value.trim().toLowerCase();
       const password = commanderPassword.value.trim();
 
       if (!email || !password) {
@@ -545,45 +549,32 @@
         return;
       }
 
+      const account = state.commanderAccounts[email];
+
       if (mode === 'register') {
-        if (state.commanderAccounts[email.toLowerCase()]) {
+        if (account) {
           commanderNotice.textContent = 'This email already has commander access.';
           commanderNotice.style.color = 'hsl(0, 70%, 60%)';
           return;
         }
 
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-        state.commanderVerificationCodes[email.toLowerCase()] = { code: verificationCode, password, verified: false };
-        saveCommanderVerificationCodes();
-        commanderNotice.textContent = `Verification code ${verificationCode} prepared for ${email}. Use it to complete setup.`;
+        state.commanderAccounts[email] = { password, verified: true };
+        saveCommanderAccounts();
+        commanderNotice.textContent = `Commander account created for ${email}. Opening the commander dashboard.`;
         commanderNotice.style.color = 'var(--gold-400)';
+        closeModal('commanderModal');
+        openCommanderDashboard();
         return;
       }
 
-      const normalizedEmail = email.toLowerCase();
-      const account = state.commanderAccounts[normalizedEmail];
-      const pendingVerification = state.commanderVerificationCodes[normalizedEmail];
-
       if (!account || account.password !== password) {
-        if (pendingVerification && password === pendingVerification.password) {
-          state.commanderAccounts[normalizedEmail] = { password, verified: true };
-          delete state.commanderVerificationCodes[normalizedEmail];
-          saveCommanderAccounts();
-          saveCommanderVerificationCodes();
-          commanderNotice.textContent = 'Commander account verified. Opening the commander dashboard.';
-          commanderNotice.style.color = 'var(--gold-400)';
-          closeModal('commanderModal');
-          openCommanderDashboard();
-          return;
-        }
-
         commanderNotice.textContent = 'Invalid commander email or password.';
         commanderNotice.style.color = 'hsl(0, 70%, 60%)';
         return;
       }
 
       if (!account.verified) {
-        commanderNotice.textContent = 'Please verify your commander account before signing in.';
+        commanderNotice.textContent = 'Your commander account is not verified yet.';
         commanderNotice.style.color = 'hsl(0, 70%, 60%)';
         return;
       }
