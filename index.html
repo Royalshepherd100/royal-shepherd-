@@ -50,9 +50,9 @@
           <a href="#wings" class="nav-link">Our Wings</a>
           <a href="#gallery" class="nav-link">Gallery</a>
           <a href="#enlistment" class="nav-link cta-link">Join Division</a>
-          <button type="button" class="nav-link cta-link dashboard-trigger" id="dashboardTrigger">Captain Dashboard</button>
-          <button type="button" class="nav-link cta-link commander-trigger">Commander Dashboard</button>
-          <button type="button" class="nav-link cta-link exco-trigger">EXCO Dashboard</button>
+          <button type="button" class="nav-link cta-link dashboard-trigger" id="dashboardTrigger" data-open-modal="captainModal">Captain Dashboard</button>
+          <button type="button" class="nav-link cta-link commander-trigger" data-open-modal="commanderModal">Commander Dashboard</button>
+          <button type="button" class="nav-link cta-link exco-trigger" data-open-modal="excoDashboardModal">EXCO Dashboard</button>
         </nav>
       </div>
     </header>
@@ -67,7 +67,7 @@
               The Royal Shepherd Nigeria Agbala Itura Division, Lagos is the disciplined, service-minded youth arm of CAC Agbala Itura, raising godly leaders through order, courage, and practical church impact.
             </p>
             <div class="hero-actions">
-              <button type="button" class="btn btn-gold captain-trigger">Register Now</button>
+              <button type="button" class="btn btn-gold captain-trigger" data-open-modal="captainModal">Register Now</button>
               <a href="#about" class="btn btn-outline">Learn More</a>
             </div>
           </div>
@@ -166,7 +166,7 @@
             <h2 class="text-gradient">The Royal Nigeria Agbala Itura Division, Lagos</h2>
             <p>Each company is a distinct unit within the Royal Nigeria Agbala Itura Division family. Use the captain dashboard to update members, officers, and sections.</p>
             <div class="section-actions">
-              <button type="button" class="btn btn-outline dashboard-trigger">Captain Dashboard</button>
+              <button type="button" class="btn btn-outline dashboard-trigger" data-open-modal="captainModal">Captain Dashboard</button>
             </div>
           </div>
 
@@ -610,7 +610,7 @@
       </div>
     </div>
 
-    <script src="gallery-data.js?v=3"></script>
-    <script src="app.js?v=3"></script>
+    <script defer src="gallery-data.js?v=3"></script>
+    <script defer src="app.js?v=3"></script>
   </body>
 </html>

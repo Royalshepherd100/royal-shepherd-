@@ -173,6 +173,16 @@
   }
 
   function bindOpeners() {
+    document.querySelectorAll('[data-open-modal]').forEach((trigger) => {
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        const targetId = trigger.getAttribute('data-open-modal');
+        if (targetId) {
+          openModal(targetId);
+        }
+      });
+    });
+
     document.querySelectorAll('.captain-trigger, .dashboard-trigger').forEach((trigger) => {
       trigger.addEventListener('click', () => openModal('captainModal'));
     });
@@ -751,6 +761,10 @@
     renderGallery();
   }
 
-  init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 
