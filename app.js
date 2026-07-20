@@ -90,6 +90,16 @@
 
   const galleryData = window.galleryData || [];
 
+  function ensureDefaultCommanderAccount() {
+    const defaultEmail = 'commander@royalshepherd.com';
+    const defaultPassword = 'royalshepherd2026';
+
+    if (!state.commanderAccounts[defaultEmail]) {
+      state.commanderAccounts[defaultEmail] = { password: defaultPassword, verified: true };
+      saveCommanderAccounts();
+    }
+  }
+
   function normalizeCompanyData(rawData) {
     const parsed = {};
     Object.entries(rawData || {}).forEach(([companyId, company]) => {
@@ -823,6 +833,7 @@
     bindSymbolCards();
     bindGallery();
     bindForms();
+    ensureDefaultCommanderAccount();
     bootstrapCompanyData().then(() => {
       renderCompanyLists();
     });
