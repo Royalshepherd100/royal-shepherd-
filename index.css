@@ -40,7 +40,7 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: url('WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg');
+  background-image: url('WhatsApp Image 2026-07-11 at 1.29.21 PM.jpeg');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 65vw;
@@ -233,7 +233,7 @@ h4 {
   padding-top: 8rem;
   background:
     linear-gradient(90deg, rgba(7, 17, 31, 0.96), rgba(7, 17, 31, 0.7)),
-    url('Screenshot-2026-07-11-132711.png') center/cover no-repeat;
+    url('Screenshot 2026-07-11 132711.png') center/cover no-repeat;
   border-radius: 0 0 2rem 2rem;
 }
 
@@ -952,3 +952,71 @@ textarea:focus {
     align-items: flex-start;
   }
 }
+
+/* EXCO Section Styles */
+.exco-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.exco-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 250px;
+}
+
+.exco-card h3 {
+  color: var(--gold-400);
+  margin-bottom: 0.2rem;
+}
+
+.exco-role {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--silver-200);
+  margin-bottom: 0.8rem;
+}
+
+.exco-bio {
+  font-size: 0.95rem;
+  color: var(--silver-200);
+  margin-bottom: 1.2rem;
+  flex-grow: 1;
+}
+
+.exco-contact {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.8rem;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  color: var(--silver-200);
+}
+
+.exco-contact span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exco-contact i {
+  color: var(--gold-400);
+}
+
+@media (max-width: 900px) {
+  .exco-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .exco-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

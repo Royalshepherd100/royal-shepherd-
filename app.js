@@ -84,6 +84,45 @@ let companyData = JSON.parse(localStorage.getItem('royalShepherdCompanies') || '
 const captainAccounts = JSON.parse(localStorage.getItem('royalShepherdCaptains') || 'null') || {};
 let activeCaptainCompany = null;
 
+// Dynamic command structure, training data, and enlistment state
+const defaultCommandStructure = {
+  'divisional-commander': 'Enter name here',
+  'company-captain': 'Enter name here',
+  'organising-secretary': 'Enter name here',
+  'assistant-organising-secretary': 'Enter name here',
+  'lowest-rank': 'Enter name here'
+};
+
+const defaultTrainingData = {
+  focus: [
+    'Drill and parade preparedness',
+    'Leadership and character development',
+    'Spiritual growth and devotion',
+    'Health, discipline, and service excellence'
+  ],
+  officers: [
+    'Enter training officer names here',
+    'Enter section or unit assignment',
+    'Enter schedule or next session'
+  ],
+  schedule: [
+    'Weekly meeting: Enter day/time',
+    'Special drill: Enter details',
+    'Annual review: Enter date'
+  ]
+};
+
+let commandStructure = JSON.parse(localStorage.getItem('royalShepherdCommandStructure') || 'null') || defaultCommandStructure;
+let trainingData = JSON.parse(localStorage.getItem('royalShepherdTraining') || 'null') || defaultTrainingData;
+let enlistments = JSON.parse(localStorage.getItem('royalShepherdEnlistments') || 'null') || [];
+
+let pendingCommanderEmail = ''; // track email being registered/verified
+const excoShowcaseGrid = document.getElementById('excoShowcaseGrid');
+const trainingFocusList = document.getElementById('trainingFocusList');
+const trainingOfficersList = document.getElementById('trainingOfficersList');
+const trainingScheduleList = document.getElementById('trainingScheduleList');
+
+
 window.addEventListener('scroll', () => {
   header.classList.toggle('scrolled', window.scrollY > 50);
 });
@@ -121,6 +160,73 @@ navLinks.forEach((link) => {
     }
   });
 });
+
+function renderCommandStructure() {
+  Object.entries(commandStructure).forEach(([rankKey, name]) => {
+    const el = document.getElementById(`name-${rankKey}`);
+    if (el) {
+      el.textContent = name || 'Enter name here';
+    }
+  });
+}
+
+function renderTrainingData() {
+  if (trainingFocusList) {
+    trainingFocusList.innerHTML = '';
+    (trainingData.focus || []).forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      trainingFocusList.appendChild(li);
+    });
+  }
+  if (trainingOfficersList) {
+    trainingOfficersList.innerHTML = '';
+    (trainingData.officers || []).forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      trainingOfficersList.appendChild(li);
+    });
+  }
+  if (trainingScheduleList) {
+    trainingScheduleList.innerHTML = '';
+    (trainingData.schedule || []).forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      trainingScheduleList.appendChild(li);
+    });
+  }
+}
+
+function renderExcoProfiles() {
+  if (!excoShowcaseGrid) return;
+  excoShowcaseGrid.innerHTML = '';
+  
+  let hasProfiles = false;
+  excoRoleDefinitions.forEach((role) => {
+    const profile = excoProfiles[role.key];
+    if (profile && (profile.name || profile.bio)) {
+      hasProfiles = true;
+      const card = document.createElement('article');
+      card.className = 'glass-card exco-card';
+      card.innerHTML = `
+        <div>
+          <h3>${profile.name || 'Pending Assignment'}</h3>
+          <div class="exco-role">${profile.role || role.label}</div>
+          <p class="exco-bio">${profile.bio || 'Biography pending update.'}</p>
+        </div>
+        <div class="exco-contact">
+          ${profile.email ? `<span><i class="fa-solid fa-envelope"></i> ${profile.email}</span>` : ''}
+          ${profile.phone ? `<span><i class="fa-solid fa-phone"></i> ${profile.phone}</span>` : ''}
+        </div>
+      `;
+      excoShowcaseGrid.appendChild(card);
+    }
+  });
+
+  if (!hasProfiles) {
+    excoShowcaseGrid.innerHTML = '<p class="dashboard-intro" style="grid-column: 1 / -1; text-align: center;">Executive Committee profiles are pending assignment by the Commander.</p>';
+  }
+}
 
 function openModal(title, items) {
   modalTitle.textContent = title;
@@ -250,75 +356,165 @@ function buildExcoDashboard() {
 }
 
 function buildCommanderDashboard() {
-  if (!commanderDashboardGrid) return;
-  commanderDashboardGrid.innerHTML = '';
+  const requestsGrid = document.querySelector('.requests-dashboard-grid');
+  const companiesGrid = document.querySelector('.companies-dashboard-grid');
+  const settingsGrid = document.querySelector('.settings-dashboard-grid');
 
-  const requestCard = document.createElement('div');
-  requestCard.className = 'dashboard-card';
-  requestCard.innerHTML = `
-    <h4>Pending Account Creation Requests</h4>
-    <p class="dashboard-intro">Approve or deny captain creation requests submitted by members. Only the Divisional Commander can complete this step.</p>
-    <div class="request-list"></div>
-  `;
-  commanderDashboardGrid.appendChild(requestCard);
+  // 1. POPULATE REQUESTS & ENLISTMENTS TAB
+  if (requestsGrid) {
+    requestsGrid.innerHTML = '';
 
-  const requestList = requestCard.querySelector('.request-list');
-  const pendingRequests = [];
+    // Captain Requests
+    const captainRequestsCard = document.createElement('div');
+    captainRequestsCard.className = 'dashboard-card';
+    captainRequestsCard.innerHTML = `
+      <h4>Pending Captain Accounts</h4>
+      <p class="dashboard-intro">Approve or deny captain account creation requests submitted by members.</p>
+      <div class="captain-request-list"></div>
+    `;
+    requestsGrid.appendChild(captainRequestsCard);
 
-  Object.entries(captainRequests).forEach(([email, request]) => {
-    pendingRequests.push({
-      key: `captain-${email}`,
-      title: `Captain Request: ${email}`,
-      body: `Company ${request.companyId}`,
-      type: 'captain',
-      email,
-      details: request
-    });
-  });
+    const captainListContainer = captainRequestsCard.querySelector('.captain-request-list');
+    const pendingCaptains = Object.entries(captainRequests);
+    if (pendingCaptains.length === 0) {
+      captainListContainer.innerHTML = '<p class="dashboard-intro">No pending captain accounts.</p>';
+    } else {
+      pendingCaptains.forEach(([email, request]) => {
+        const item = document.createElement('div');
+        item.style.padding = '0.75rem';
+        item.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
+        item.innerHTML = `
+          <h5>${email}</h5>
+          <p class="dashboard-intro">Company ${request.companyId} (Submitted: ${new Date(request.submittedAt).toLocaleDateString()})</p>
+          <div class="request-actions" style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+            <button type="button" class="btn btn-gold btn-sm request-action" data-request="approve" data-request-type="captain" data-email="${email}">Approve</button>
+            <button type="button" class="btn btn-secondary btn-sm request-action" data-request="deny" data-request-type="captain" data-email="${email}">Deny</button>
+          </div>
+        `;
+        captainListContainer.appendChild(item);
+      });
+    }
 
-  if (pendingRequests.length === 0) {
-    requestList.innerHTML = '<p>No pending account creation requests.</p>';
-  } else {
-    pendingRequests.forEach((request) => {
-      const requestItem = document.createElement('div');
-      requestItem.className = 'dashboard-card';
-      requestItem.innerHTML = `
-        <h5>${request.title}</h5>
-        <p>${request.body}</p>
-        <p>Submitted: ${new Date(request.details.submittedAt).toLocaleString()}</p>
-        <div class="request-actions">
-          <button type="button" class="btn btn-gold request-action" data-request="approve" data-request-type="${request.type}" data-email="${request.email}">Approve</button>
-          <button type="button" class="btn btn-secondary request-action" data-request="deny" data-request-type="${request.type}" data-email="${request.email}">Deny</button>
-        </div>
+    // Enlistment Applications
+    const enlistmentsCard = document.createElement('div');
+    enlistmentsCard.className = 'dashboard-card';
+    enlistmentsCard.innerHTML = `
+      <h4>Pending Enlistment Applications</h4>
+      <p class="dashboard-intro">Review and approve applications to join the division.</p>
+      <div class="enlistment-list"></div>
+    `;
+    requestsGrid.appendChild(enlistmentsCard);
+
+    const enlistmentListContainer = enlistmentsCard.querySelector('.enlistment-list');
+    if (enlistments.length === 0) {
+      enlistmentListContainer.innerHTML = '<p class="dashboard-intro">No pending enlistment applications.</p>';
+    } else {
+      enlistments.forEach((app, index) => {
+        const item = document.createElement('div');
+        item.style.padding = '0.75rem';
+        item.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
+        item.innerHTML = `
+          <h5>${app.fullName} (${app.gender}, DOB: ${app.dob})</h5>
+          <p class="dashboard-intro"><strong>Email:</strong> ${app.email} | <strong>Phone:</strong> ${app.phone}</p>
+          <p class="dashboard-intro"><strong>Preferred Wing:</strong> ${app.wing}</p>
+          <p class="dashboard-intro"><strong>Reason:</strong> ${app.reason}</p>
+          <div class="request-actions" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <select class="enlist-assign-company" data-index="${index}" style="width: auto; padding: 0.35rem 0.5rem; font-size: 0.9rem;">
+              <option value="">Assign to Company</option>
+              ${Object.entries(companyData).map(([id, c]) => `<option value="${id}">${c.name}</option>`).join('')}
+            </select>
+            <button type="button" class="btn btn-gold btn-sm enlistment-action" data-action="approve" data-index="${index}">Approve</button>
+            <button type="button" class="btn btn-secondary btn-sm enlistment-action" data-action="reject" data-index="${index}">Reject</button>
+          </div>
+        `;
+        enlistmentListContainer.appendChild(item);
+      });
+    }
+  }
+
+  // 2. POPULATE COMPANIES TAB
+  if (companiesGrid) {
+    companiesGrid.innerHTML = '';
+    Object.entries(companyData).forEach(([companyId, company]) => {
+      const card = document.createElement('div');
+      card.className = 'dashboard-card';
+      card.innerHTML = `
+        <h4>${company.name}</h4>
+        <label>
+          <span>Company Name</span>
+          <input type="text" name="company-name-${companyId}" value="${company.name || ''}" />
+        </label>
+        <label>
+          <span>Active Members</span>
+          <textarea name="active-${companyId}">${(company.active || []).join('\n')}</textarea>
+        </label>
+        <label>
+          <span>None Active Members</span>
+          <textarea name="inactive-${companyId}">${(company.inactive || []).join('\n')}</textarea>
+        </label>
+        <label>
+          <span>Ranked Officers</span>
+          <textarea name="officers-${companyId}">${(company.officers || []).join('\n')}</textarea>
+        </label>
       `;
-      requestList.appendChild(requestItem);
+      companiesGrid.appendChild(card);
     });
   }
 
-  Object.entries(companyData).forEach(([companyId, company]) => {
-    const card = document.createElement('div');
-    card.className = 'dashboard-card';
-    card.innerHTML = `
-      <h4>${company.name}</h4>
+  // 3. POPULATE SETTINGS (OFFICERS & TRAINING) TAB
+  if (settingsGrid) {
+    settingsGrid.innerHTML = '';
+
+    // Command Structure card
+    const officersCard = document.createElement('div');
+    officersCard.className = 'dashboard-card';
+    officersCard.innerHTML = `
+      <h4>Command Structure Names</h4>
+      <p class="dashboard-intro">Update the public names shown in the Officers command structure section.</p>
       <label>
-        <span>Company Name</span>
-        <input type="text" name="company-name-${companyId}" value="${company.name || ''}" />
+        <span>Divisional Commander</span>
+        <input type="text" name="officer-divisional-commander" value="${commandStructure['divisional-commander'] || ''}" />
       </label>
       <label>
-        <span>Active Members</span>
-        <textarea name="active-${companyId}">${(company.active || []).join('\n')}</textarea>
+        <span>Company Captain</span>
+        <input type="text" name="officer-company-captain" value="${commandStructure['company-captain'] || ''}" />
       </label>
       <label>
-        <span>None Active Members</span>
-        <textarea name="inactive-${companyId}">${(company.inactive || []).join('\n')}</textarea>
+        <span>Organising Secretary</span>
+        <input type="text" name="officer-organising-secretary" value="${commandStructure['organising-secretary'] || ''}" />
       </label>
       <label>
-        <span>Ranked Officers</span>
-        <textarea name="officers-${companyId}">${(company.officers || []).join('\n')}</textarea>
+        <span>Assistant Organising Secretary</span>
+        <input type="text" name="officer-assistant-organising-secretary" value="${commandStructure['assistant-organising-secretary'] || ''}" />
+      </label>
+      <label>
+        <span>Lowest Rank</span>
+        <input type="text" name="officer-lowest-rank" value="${commandStructure['lowest-rank'] || ''}" />
       </label>
     `;
-    commanderDashboardGrid.appendChild(card);
-  });
+    settingsGrid.appendChild(officersCard);
+
+    // Training details card
+    const trainingCard = document.createElement('div');
+    trainingCard.className = 'dashboard-card';
+    trainingCard.innerHTML = `
+      <h4>Training Department Configuration</h4>
+      <p class="dashboard-intro">Update Training focus areas, officers list, and weekly schedules (one item per line).</p>
+      <label>
+        <span>Training Focus</span>
+        <textarea name="training-focus">${(trainingData.focus || []).join('\n')}</textarea>
+      </label>
+      <label>
+        <span>Training Officers</span>
+        <textarea name="training-officers">${(trainingData.officers || []).join('\n')}</textarea>
+      </label>
+      <label>
+        <span>Training Schedule</span>
+        <textarea name="training-schedule">${(trainingData.schedule || []).join('\n')}</textarea>
+      </label>
+    `;
+    settingsGrid.appendChild(trainingCard);
+  }
 }
 
 
@@ -475,9 +671,7 @@ symbolCards.forEach((card) => {
 });
 
 captainTrigger.forEach((trigger) => {
-  trigger.addEventListener('click', () => {
-    openCaptainModal();
-  });
+  trigger.addEventListener('click', openCaptainModal);
 });
 
 authTabs.forEach((tab) => {
@@ -491,11 +685,18 @@ authTabs.forEach((tab) => {
     form.dataset.mode = tab.dataset.mode;
     const notice = form.querySelector('.captain-notice');
     if (notice) notice.textContent = '';
-  });
-});
 
-captainTrigger.forEach((trigger) => {
-  trigger.addEventListener('click', openCaptainModal);
+    // Reset Commander verification state if Commander Modal tab toggles
+    const authFields = form.querySelector('.commander-auth-fields');
+    const verifyFields = form.querySelector('.commander-verify-fields');
+    const submitBtn = form.querySelector('#commanderSubmitBtn');
+    if (authFields && verifyFields) {
+      authFields.style.display = 'block';
+      verifyFields.style.display = 'none';
+      if (submitBtn) submitBtn.textContent = 'Continue';
+      pendingCommanderEmail = '';
+    }
+  });
 });
 
 commanderTrigger.forEach((trigger) => {
@@ -506,7 +707,6 @@ excoTrigger.forEach((trigger) => {
   trigger.addEventListener('click', openExcoDashboard);
 });
 
-
 galleryGrid?.addEventListener('click', (event) => {
   const card = event.target.closest('.gallery-item');
   if (!card) return;
@@ -515,9 +715,6 @@ galleryGrid?.addEventListener('click', (event) => {
     openGalleryPreview(index);
   }
 });
-
-galleryClose?.addEventListener('click', closeGalleryPreview);
-galleryBackdrop?.addEventListener('click', closeGalleryPreview);
 
 galleryFilters.forEach((button) => {
   button.addEventListener('click', () => {
@@ -589,6 +786,45 @@ commanderForm?.addEventListener('submit', (event) => {
   const email = commanderEmail.value.trim();
   const password = commanderPassword.value.trim();
 
+  if (mode === 'register-verify') {
+    const enteredCode = document.getElementById('commanderVerificationCodeInput').value.trim();
+    const pendingVerification = commanderVerificationCodes[pendingCommanderEmail];
+
+    if (!enteredCode) {
+      commanderNotice.textContent = 'Please enter the verification code.';
+      commanderNotice.style.color = 'hsl(0, 70%, 60%)';
+      return;
+    }
+
+    if (pendingVerification && enteredCode === pendingVerification.code) {
+      commanderAccounts[pendingCommanderEmail] = { password: pendingVerification.password, verified: true };
+      delete commanderVerificationCodes[pendingCommanderEmail];
+      localStorage.setItem('royalShepherdCommanderAccounts', JSON.stringify(commanderAccounts));
+      localStorage.setItem('royalShepherdCommanderVerificationCodes', JSON.stringify(commanderVerificationCodes));
+      
+      commanderNotice.textContent = 'Commander account verified successfully! Opening dashboard.';
+      commanderNotice.style.color = 'var(--gold-400)';
+
+      // Reset form UI
+      const authFields = commanderForm.querySelector('.commander-auth-fields');
+      const verifyFields = commanderForm.querySelector('.commander-verify-fields');
+      const submitBtn = commanderForm.querySelector('#commanderSubmitBtn');
+      if (authFields && verifyFields) {
+        authFields.style.display = 'block';
+        verifyFields.style.display = 'none';
+        if (submitBtn) submitBtn.textContent = 'Continue';
+      }
+      commanderForm.dataset.mode = 'login';
+      
+      closeCommanderModal();
+      openCommanderDashboard();
+    } else {
+      commanderNotice.textContent = 'Incorrect verification code. Please try again.';
+      commanderNotice.style.color = 'hsl(0, 70%, 60%)';
+    }
+    return;
+  }
+
   if (!email || !password) {
     commanderNotice.textContent = 'Please enter your commander email and password.';
     commanderNotice.style.color = 'hsl(0, 70%, 60%)';
@@ -606,25 +842,45 @@ commanderForm?.addEventListener('submit', (event) => {
     commanderVerificationCodes[email.toLowerCase()] = { code: verificationCode, password, verified: false };
     localStorage.setItem('royalShepherdCommanderVerificationCodes', JSON.stringify(commanderVerificationCodes));
 
-    commanderNotice.textContent = `Verification code ${verificationCode} prepared for ${email}. Use it to complete setup.`;
+    pendingCommanderEmail = email.toLowerCase();
+    commanderNotice.textContent = `Verification code ${verificationCode} prepared for ${email}. Enter it below to complete setup.`;
     commanderNotice.style.color = 'var(--gold-400)';
+
+    // Switch to verify mode UI
+    const authFields = commanderForm.querySelector('.commander-auth-fields');
+    const verifyFields = commanderForm.querySelector('.commander-verify-fields');
+    const submitBtn = commanderForm.querySelector('#commanderSubmitBtn');
+    if (authFields && verifyFields) {
+      authFields.style.display = 'none';
+      verifyFields.style.display = 'block';
+      if (submitBtn) submitBtn.textContent = 'Verify Account';
+    }
+    commanderForm.dataset.mode = 'register-verify';
     return;
   }
 
+  // Login mode
   const normalizedEmail = email.toLowerCase();
   const account = commanderAccounts[normalizedEmail];
   const pendingVerification = commanderVerificationCodes[normalizedEmail];
 
   if (!account || account.password !== password) {
+    // If they have a pending verification, let them verify now
     if (pendingVerification && password === pendingVerification.password) {
-      commanderAccounts[normalizedEmail] = { password: pendingVerification.password, verified: true };
-      delete commanderVerificationCodes[normalizedEmail];
-      localStorage.setItem('royalShepherdCommanderAccounts', JSON.stringify(commanderAccounts));
-      localStorage.setItem('royalShepherdCommanderVerificationCodes', JSON.stringify(commanderVerificationCodes));
-      commanderNotice.textContent = 'Commander account verified. Opening commander dashboard.';
+      pendingCommanderEmail = normalizedEmail;
+      commanderNotice.textContent = `Pending verification code: ${pendingVerification.code}. Enter it below.`;
       commanderNotice.style.color = 'var(--gold-400)';
-      closeCommanderModal();
-      openCommanderDashboard();
+
+      // Switch to verify mode UI
+      const authFields = commanderForm.querySelector('.commander-auth-fields');
+      const verifyFields = commanderForm.querySelector('.commander-verify-fields');
+      const submitBtn = commanderForm.querySelector('#commanderSubmitBtn');
+      if (authFields && verifyFields) {
+        authFields.style.display = 'none';
+        verifyFields.style.display = 'block';
+        if (submitBtn) submitBtn.textContent = 'Verify Account';
+      }
+      commanderForm.dataset.mode = 'register-verify';
       return;
     }
     commanderNotice.textContent = 'Invalid commander email or password.';
@@ -644,11 +900,11 @@ commanderForm?.addEventListener('submit', (event) => {
   openCommanderDashboard();
 });
 
-
 commanderDashboardForm?.addEventListener('submit', (event) => {
   event.preventDefault();
   const formData = new FormData(commanderDashboardForm);
 
+  // 1. Save Companies details
   Object.keys(companyData).forEach((companyId) => {
     companyData[companyId].active = (formData.get(`active-${companyId}`) || '')
       .toString()
@@ -676,10 +932,38 @@ commanderDashboardForm?.addEventListener('submit', (event) => {
       officers: companyData[companyId].officers
     };
   });
-
-  localStorage.setItem('royalShepherdCommanderSettings', JSON.stringify(commanderSettings));
   localStorage.setItem('royalShepherdCompanies', JSON.stringify(companyData));
+
+  // 2. Save Command Structure officers
+  commandStructure['divisional-commander'] = (formData.get('officer-divisional-commander') || '').toString().trim();
+  commandStructure['company-captain'] = (formData.get('officer-company-captain') || '').toString().trim();
+  commandStructure['organising-secretary'] = (formData.get('officer-organising-secretary') || '').toString().trim();
+  commandStructure['assistant-organising-secretary'] = (formData.get('officer-assistant-organising-secretary') || '').toString().trim();
+  commandStructure['lowest-rank'] = (formData.get('officer-lowest-rank') || '').toString().trim();
+  localStorage.setItem('royalShepherdCommandStructure', JSON.stringify(commandStructure));
+
+  // 3. Save Training data
+  trainingData.focus = (formData.get('training-focus') || '')
+    .toString()
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  trainingData.officers = (formData.get('training-officers') || '')
+    .toString()
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  trainingData.schedule = (formData.get('training-schedule') || '')
+    .toString()
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  localStorage.setItem('royalShepherdTraining', JSON.stringify(trainingData));
+
+  // Rerender lists and static page sections
   renderCompanyLists();
+  renderCommandStructure();
+  renderTrainingData();
   closeCommanderDashboard();
 });
 
@@ -701,39 +985,100 @@ excoDashboardForm?.addEventListener('submit', (event) => {
   });
 
   localStorage.setItem('royalShepherdExcoProfiles', JSON.stringify(excoProfiles));
+  renderExcoProfiles(); // instantly update landing page!
   closeExcoDashboard();
 });
 
 openExcoDashboardBtn?.addEventListener('click', openExcoDashboard);
 excoDashboardClose?.addEventListener('click', closeExcoDashboard);
 
-commanderDashboardGrid?.addEventListener('click', (event) => {
+// Click listener for Commander Dashboard actions (approving captains and managing enlistments)
+commanderDashboardModal?.addEventListener('click', (event) => {
   const actionButton = event.target.closest('.request-action');
-  if (!actionButton) return;
+  if (actionButton) {
+    const requestType = actionButton.dataset.requestType;
+    const email = actionButton.dataset.email;
+    const requestAction = actionButton.dataset.request;
 
-  const requestType = actionButton.dataset.requestType;
-  const email = actionButton.dataset.email;
-  const requestAction = actionButton.dataset.request;
+    if (!requestType || !email || !requestAction) return;
 
-  if (!requestType || !email || !requestAction) return;
-
-  if (requestType === 'captain') {
-    if (requestAction === 'approve') {
-      const request = captainRequests[email];
-      if (request) {
-        captainAccounts[email] = { password: request.password, companyId: request.companyId };
+    if (requestType === 'captain') {
+      if (requestAction === 'approve') {
+        const request = captainRequests[email];
+        if (request) {
+          captainAccounts[email] = { password: request.password, companyId: request.companyId };
+          delete captainRequests[email];
+          localStorage.setItem('royalShepherdCaptains', JSON.stringify(captainAccounts));
+          localStorage.setItem('royalShepherdCaptainRequests', JSON.stringify(captainRequests));
+        }
+      }
+      if (requestAction === 'deny') {
         delete captainRequests[email];
-        localStorage.setItem('royalShepherdCaptains', JSON.stringify(captainAccounts));
         localStorage.setItem('royalShepherdCaptainRequests', JSON.stringify(captainRequests));
       }
-    }
-    if (requestAction === 'deny') {
-      delete captainRequests[email];
-      localStorage.setItem('royalShepherdCaptainRequests', JSON.stringify(captainRequests));
+      buildCommanderDashboard();
     }
   }
 
-  buildCommanderDashboard();
+  // Handle Enlistment Actions
+  const enlistmentButton = event.target.closest('.enlistment-action');
+  if (enlistmentButton) {
+    const index = parseInt(enlistmentButton.dataset.index, 10);
+    const action = enlistmentButton.dataset.action;
+    const app = enlistments[index];
+
+    if (!app) return;
+
+    if (action === 'approve') {
+      const selectElement = commanderDashboardModal.querySelector(`.enlist-assign-company[data-index="${index}"]`);
+      const companyId = selectElement ? selectElement.value : '';
+
+      if (!companyId) {
+        alert('Please assign the applicant to a company first.');
+        return;
+      }
+
+      // Add applicant to active members list of selected company
+      if (companyData[companyId]) {
+        companyData[companyId].active = companyData[companyId].active || [];
+        companyData[companyId].active.push(app.fullName);
+        localStorage.setItem('royalShepherdCompanies', JSON.stringify(companyData));
+        renderCompanyLists();
+      }
+
+      // Remove enlistment request
+      enlistments.splice(index, 1);
+      localStorage.setItem('royalShepherdEnlistments', JSON.stringify(enlistments));
+    } else if (action === 'reject') {
+      enlistments.splice(index, 1);
+      localStorage.setItem('royalShepherdEnlistments', JSON.stringify(enlistments));
+    }
+
+    buildCommanderDashboard();
+  }
+});
+
+// Tab switching logic for Commander Dashboard
+document.addEventListener('click', (e) => {
+  const tabButton = e.target.closest('.commander-dash-tab');
+  if (!tabButton) return;
+
+  const tabName = tabButton.dataset.tab;
+  const modal = tabButton.closest('#commanderDashboardModal');
+  if (!modal) return;
+
+  // Toggle tab buttons active state
+  modal.querySelectorAll('.commander-dash-tab').forEach(btn => btn.classList.remove('active'));
+  tabButton.classList.add('active');
+
+  // Toggle tab content visibility
+  modal.querySelectorAll('.commander-dashboard-tab-content').forEach(content => {
+    if (content.dataset.content === tabName) {
+      content.style.display = 'block';
+    } else {
+      content.style.display = 'none';
+    }
+  });
 });
 
 captainClose?.addEventListener('click', closeCaptainModal);
@@ -794,6 +1139,22 @@ form?.addEventListener('submit', (event) => {
     return;
   }
 
+  // Save enlistment application data
+  const formData = new FormData(form);
+  const newEnlistment = {
+    fullName: formData.get('fullName'),
+    dob: formData.get('dob'),
+    phone: formData.get('phone'),
+    email: formData.get('email'),
+    gender: formData.get('gender'),
+    wing: formData.get('wing'),
+    reason: formData.get('reason'),
+    submittedAt: new Date().toISOString()
+  };
+
+  enlistments.push(newEnlistment);
+  localStorage.setItem('royalShepherdEnlistments', JSON.stringify(enlistments));
+
   form.style.display = 'none';
   formSuccess.classList.add('active');
   formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -810,3 +1171,6 @@ dashboardForm?.addEventListener('submit', saveDashboard);
 
 renderGalleryItems();
 renderCompanyLists();
+renderCommandStructure();
+renderTrainingData();
+renderExcoProfiles();
