@@ -71,7 +71,7 @@
     4: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
     5: { name: 'Command Akiling Company', active: [], inactive: [], officers: [] },
     6: { name: 'Ipaja Akiling Company', active: [], inactive: [], officers: [] },
-    7: { name: '44th Ijaba Akiling Company', active: [], inactive: [], officers: [] },
+    7: { name: 'Ijaba Akiling Company', active: [], inactive: [], officers: [] },
     8: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
     9: { name: '28th Akiling Company', active: [], inactive: [], officers: [] }
   };
