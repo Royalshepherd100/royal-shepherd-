@@ -1,4 +1,4 @@
-﻿const galleryData = [
+﻿window.galleryData = [
   { src: 'parade.png', category: 'parades', title: 'parade', description: 'Moments from parade' },
   { src: 'Screenshot 2026-07-11 132711.png', category: 'parades', title: 'Screenshot 2026-07-11 132711', description: 'Moments from Screenshot 2026-07-11 132711' },
   { src: 'WhatsApp Image 2026-07-11 at 1.29.21 PM.jpeg', category: 'parades', title: '2026-07-11 at 1.29.21 PM', description: 'Moments from 2026-07-11 at 1.29.21 PM' },
@@ -206,6 +206,6 @@
   { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM (1).jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM (1)', description: 'Moments from 2026-07-12 at 7.58.21 AM (1)' },
   { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM (2).jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM (2)', description: 'Moments from 2026-07-12 at 7.58.21 AM (2)' },
   { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM (3).jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM (3)', description: 'Moments from 2026-07-12 at 7.58.21 AM (3)' },
-  { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM.jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM', description: 'Moments from 2026-07-12 at 7.58.21 AM' },
-]
+  { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM.jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM', description: 'Moments from 2026-07-12 at 7.58.21 AM' }
+];
 

@@ -179,8 +179,18 @@ h4 {
   .site-nav a,
   .site-nav button {
     width: auto;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
   }
 
+
+.nav-link {
+  position: relative;
+}
 
 .nav-link::after {
   content: '';
