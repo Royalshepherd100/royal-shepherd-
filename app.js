@@ -532,6 +532,15 @@
       .filter(Boolean);
   }
 
+  const examGradeSections = [
+    { key: 'intermediate1', label: 'Intermediate 1' },
+    { key: 'intermediate2', label: 'Intermediate 2' },
+    { key: 'senior1', label: 'Senior 1' },
+    { key: 'senior2', label: 'Senior 2' },
+    { key: 'seniorAdvance', label: 'Senior Advance' },
+    { key: 'advancedJunior', label: 'Advanced Junior' }
+  ];
+
   function parseScoreEntries(value) {
     return parseTextareaLines(value).map((line) => {
       const [namePart, scorePart] = line.split('|');
@@ -560,7 +569,11 @@
 
   function getExamDataForCompany(companyId, year) {
     const data = state.examScores?.[year || getLatestExamYear()] || {};
-    return data[String(companyId)] || { boys: [], girls: [] };
+    const companyData = data[String(companyId)] || {};
+    return examGradeSections.reduce((accumulator, section) => {
+      accumulator[section.key] = Array.isArray(companyData[section.key]) ? companyData[section.key] : [];
+      return accumulator;
+    }, {});
   }
 
   function renderDivisionSummary() {
@@ -626,19 +639,19 @@
       <h4>${company.name}</h4>
       <label>
         <span>Company Name</span>
-        <input type="text" name="company-name-${companyId}" value="${(company.name || '').replace(/"/g, '&quot;')}" />
+        <input type="text" name="company-name-${companyId}" value="${(company.name || '').replace(/"/g, '&quot;')}" readonly />
       </label>
       <label>
         <span>Active Members</span>
-        <textarea name="active-${companyId}" placeholder="Add active members one per line">${(company.active || []).join('\n')}</textarea>
+        <textarea name="active-${companyId}" placeholder="Add active members one per line" readonly>${(company.active || []).join('\n')}</textarea>
       </label>
       <label>
         <span>None Active Members</span>
-        <textarea name="inactive-${companyId}" placeholder="Add inactive members one per line">${(company.inactive || []).join('\n')}</textarea>
+        <textarea name="inactive-${companyId}" placeholder="Add inactive members one per line" readonly>${(company.inactive || []).join('\n')}</textarea>
       </label>
       <label>
         <span>Ranked Officers</span>
-        <textarea name="officers-${companyId}" placeholder="Add officers one per line">${(company.officers || []).join('\n')}</textarea>
+        <textarea name="officers-${companyId}" placeholder="Add officers one per line" readonly>${(company.officers || []).join('\n')}</textarea>
       </label>
     `;
     dashboardGrid.appendChild(companyCard);
@@ -649,18 +662,14 @@
       <h4>ESTC Exam Results</h4>
       <p class="dashboard-intro">Scores posted by the admin for ${examYear} for your company only.</p>
       <div class="score-columns">
-        <div class="score-panel">
-          <h5>Boys Scores</h5>
-          <ul class="score-list">
-            ${(examData.boys || []).length ? (examData.boys || []).map((item) => `<li><strong>${(item.name || '').replace(/"/g, '&quot;')}</strong> — ${item.score}</li>`).join('') : '<li>No scores posted yet.</li>'}
-          </ul>
-        </div>
-        <div class="score-panel">
-          <h5>Girls Scores</h5>
-          <ul class="score-list">
-            ${(examData.girls || []).length ? (examData.girls || []).map((item) => `<li><strong>${(item.name || '').replace(/"/g, '&quot;')}</strong> — ${item.score}</li>`).join('') : '<li>No scores posted yet.</li>'}
-          </ul>
-        </div>
+        ${examGradeSections.map((section) => `
+          <div class="score-panel">
+            <h5>${section.label}</h5>
+            <ul class="score-list">
+              ${(examData[section.key] || []).length ? (examData[section.key] || []).map((item) => `<li><strong>${(item.name || '').replace(/"/g, '&quot;')}</strong> — ${item.score}</li>`).join('') : '<li>No scores posted yet.</li>'}
+            </ul>
+          </div>
+        `).join('')}
       </div>
     `;
     dashboardGrid.appendChild(scoreCard);
@@ -757,14 +766,12 @@
           <span>Ranked Officers</span>
           <textarea name="officers-${companyId}" placeholder="Add officers one per line">${(company.officers || []).join('\n')}</textarea>
         </label>
-        <label>
-          <span>Boys Scores</span>
-          <textarea name="boys-scores-${companyId}" placeholder="Name | Score per line">${formatScoreEntries(examData.boys || []).join('\n')}</textarea>
-        </label>
-        <label>
-          <span>Girls Scores</span>
-          <textarea name="girls-scores-${companyId}" placeholder="Name | Score per line">${formatScoreEntries(examData.girls || []).join('\n')}</textarea>
-        </label>
+        ${examGradeSections.map((section) => `
+          <label>
+            <span>${section.label} Scores</span>
+            <textarea name="${section.key}-scores-${companyId}" placeholder="Name | Score per line">${formatScoreEntries(examData[section.key] || []).join('\n')}</textarea>
+          </label>
+        `).join('')}
       `;
       commanderDashboardGrid.appendChild(card);
     });
@@ -970,14 +977,17 @@
         const active = parseTextareaLines(formData.get(`active-${companyId}`));
         const inactive = parseTextareaLines(formData.get(`inactive-${companyId}`));
         const officers = parseTextareaLines(formData.get(`officers-${companyId}`));
-        const boys = parseScoreEntries(formData.get(`boys-scores-${companyId}`));
-        const girls = parseScoreEntries(formData.get(`girls-scores-${companyId}`));
         const name = (formData.get(`company-name-${companyId}`) || '')
           .toString()
           .trim() || state.companyData[companyId]?.name || `Company ${companyId}`;
 
+        const scoreSections = examGradeSections.reduce((accumulator, section) => {
+          accumulator[section.key] = parseScoreEntries(formData.get(`${section.key}-scores-${companyId}`));
+          return accumulator;
+        }, {});
+
         state.companyData[companyId] = { name, active, inactive, officers };
-        state.examScores[examYear][companyId] = { boys, girls };
+        state.examScores[examYear][companyId] = scoreSections;
       });
 
       saveCompanies();
