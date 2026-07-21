@@ -64,6 +64,20 @@
     { key: 'treasurer', label: 'Treasurer' }
   ];
 
+  const defaultOfficerRanks = [
+    'Divisional Commander',
+    'Company Captain',
+    'Organising Secretary',
+    'Assistant Organising Secretary',
+    'PRO'
+  ];
+
+  const defaultFounderStory = `Prophet Samuel Kayode Abiara, fondly called Pa SK Abiara, is the revered founder of CAC Agbala Itura Worldwide and the former General Evangelist of CAC Worldwide. He is one of the spiritual pillars of Royal Shepherd and a great servant of God whose ministry has touched many lives through evangelism, discipline, and unwavering faith.
+
+CAC Agbala Itura stands as a spiritual home of comfort, holiness, and divine instruction, and it remains a landmark place of worship and impact in the life of the church and the nation.
+
+Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Obokun Local Government Area, Osun State. He was raised with humility and diligence, and his journey into ministry began through divine calling and faithful service. His life continues to inspire Royal Shepherd members to live in holiness, obedience, and service to God and humanity.`;
+
   const defaultCompanyData = {
     1: { name: 'Ikorodu Akiling Company', active: [], inactive: [], officers: [] },
     2: { name: '17th Akiling Company', active: [], inactive: [], officers: [] },
@@ -100,6 +114,16 @@
     return null;
   }
 
+  function readStoredValue(key, fallback) {
+    const value = localStorage.getItem(key);
+    if (value === null) return fallback;
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }
+
   function normalizeAccountMap(rawData) {
     const parsed = {};
     if (!rawData || typeof rawData !== 'object') return parsed;
@@ -134,6 +158,19 @@
     return parsed;
   }
 
+  function normalizeCommandStructure(rawData) {
+    const entries = Array.isArray(rawData?.officers) ? rawData.officers : [];
+    const normalized = defaultOfficerRanks.map((rank) => {
+      const existing = entries.find((entry) => entry && entry.rank === rank);
+      return {
+        rank,
+        name: existing?.name || ''
+      };
+    });
+
+    return { officers: normalized };
+  }
+
   const state = {
     companyData: JSON.parse(JSON.stringify(defaultCompanyData)),
     captainAccounts: normalizeAccountMap(readStoredJson('royalShepherdCaptains', 'royalShepherdCaptainAccounts')),
@@ -143,6 +180,8 @@
     commanderSettings: readStoredJson('royalShepherdCommanderSettings', null) || {},
     excoProfiles: readStoredJson('royalShepherdExcoProfiles', null) || {},
     divisionMembers: readStoredJson('royalShepherdDivisionMembers', null) || { active: [] },
+    commandStructure: normalizeCommandStructure(readStoredJson('royalShepherdCommandStructure', null)),
+    founderStory: readStoredValue('royalShepherdFounderStory', defaultFounderStory),
     examScores: readStoredJson('royalShepherdExamScores', null) || {},
     activeExamYear: localStorage.getItem('royalShepherdActiveExamYear') || String(new Date().getFullYear()),
     activeCaptainCompany: null,
@@ -257,6 +296,22 @@
 
   function saveDivisionMembers() {
     localStorage.setItem('royalShepherdDivisionMembers', JSON.stringify(state.divisionMembers));
+  }
+
+  function saveCommandStructure() {
+    localStorage.setItem('royalShepherdCommandStructure', JSON.stringify(state.commandStructure));
+  }
+
+  function saveFounderStory() {
+    localStorage.setItem('royalShepherdFounderStory', state.founderStory);
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function saveExamScores() {
@@ -602,6 +657,36 @@
     }
   }
 
+  function renderFounderStory() {
+    const founderCard = document.querySelector('#founders .founder-card');
+    if (!founderCard) return;
+
+    const paragraphs = (state.founderStory || defaultFounderStory)
+      .split(/\n\s*\n/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean);
+
+    founderCard.innerHTML = paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('');
+  }
+
+  function renderOfficerLeadership() {
+    const officersList = document.querySelector('.officers-list');
+    if (!officersList) return;
+
+    officersList.innerHTML = '';
+    const officerEntries = (state.commandStructure?.officers || defaultOfficerRanks.map((rank) => ({ rank, name: '' }))).filter(Boolean);
+
+    officerEntries.forEach((entry) => {
+      const row = document.createElement('div');
+      row.className = 'officer-row';
+      row.innerHTML = `
+        <span class="officer-rank">${escapeHtml(entry.rank || '')}</span>
+        <span class="officer-name">${escapeHtml(entry.name || 'Enter name here')}</span>
+      `;
+      officersList.appendChild(row);
+    });
+  }
+
   function renderCompanyLists() {
     companyCards.forEach((card) => {
       const companyId = card.dataset.company;
@@ -692,6 +777,7 @@
   }
 
   function buildCommanderDashboard() {
+    window.__royalShepherdBuildCommanderDashboard = true;
     if (!commanderDashboardGrid) return;
     commanderDashboardGrid.innerHTML = '';
 
@@ -709,6 +795,35 @@
       </label>
     `;
     commanderDashboardGrid.appendChild(summaryCard);
+
+    const leadershipCard = document.createElement('div');
+    leadershipCard.className = 'dashboard-card';
+    leadershipCard.innerHTML = `
+      <h4>Officer and Commander Names</h4>
+      <p class="dashboard-intro">Edit the names shown on the public Officers and Commanders section.</p>
+      ${defaultOfficerRanks.map((rank) => {
+        const entry = (state.commandStructure?.officers || []).find((item) => item.rank === rank);
+        return `
+          <label>
+            <span>${rank}</span>
+            <input type="text" name="officer-${rank.toLowerCase().replace(/[^a-z0-9]+/g, '-')}" value="${escapeHtml(entry?.name || '')}" />
+          </label>
+        `;
+      }).join('')}
+    `;
+    commanderDashboardGrid.appendChild(leadershipCard);
+
+    const founderStoryCard = document.createElement('div');
+    founderStoryCard.className = 'dashboard-card';
+    founderStoryCard.innerHTML = `
+      <h4>Founder Biography</h4>
+      <p class="dashboard-intro">Update the Pa SK Abiara story shown on the homepage.</p>
+      <label>
+        <span>Biography</span>
+        <textarea name="founder-story" rows="8">${escapeHtml(state.founderStory || defaultFounderStory)}</textarea>
+      </label>
+    `;
+    commanderDashboardGrid.appendChild(founderStoryCard);
 
     const requestCard = document.createElement('div');
     requestCard.className = 'dashboard-card';
@@ -855,11 +970,16 @@
           return;
         }
 
-        state.captainAccounts[email] = { password, companyId, email, verified: true };
-        saveCaptains();
+        state.captainRequests[email] = {
+          email,
+          password,
+          companyId,
+          submittedAt: new Date().toISOString()
+        };
+        saveCaptainRequests();
         captainForm.reset();
         captainForm.dataset.mode = 'login';
-        captainNotice.textContent = 'Captain account created successfully. You can now log in.';
+        captainNotice.textContent = 'Captain registration submitted. Await admin approval before logging in.';
         captainNotice.style.color = 'var(--gold-400)';
         return;
       }
@@ -969,9 +1089,23 @@
       state.divisionMembers = { active: divisionMembers };
       saveDivisionMembers();
 
+      const officerEntries = defaultOfficerRanks.map((rank) => ({
+        rank,
+        name: (formData.get(`officer-${rank.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`) || '').toString().trim()
+      }));
+      state.commandStructure = { officers: officerEntries };
+      saveCommandStructure();
+
+      const founderStory = (formData.get('founder-story') || '').toString().trim() || defaultFounderStory;
+      state.founderStory = founderStory;
+      saveFounderStory();
+
       const examYear = (formData.get('exam-year') || '').toString().trim() || state.activeExamYear || String(new Date().getFullYear());
       state.activeExamYear = examYear;
       state.examScores[examYear] = state.examScores[examYear] || {};
+
+      renderFounderStory();
+      renderOfficerLeadership();
 
       Object.keys(state.companyData).forEach((companyId) => {
         const active = parseTextareaLines(formData.get(`active-${companyId}`));
@@ -1073,6 +1207,17 @@
 
       if (!valid) return;
 
+      const fullName = (form.querySelector('input[name="fullName"]')?.value || '').toString().trim();
+      if (fullName) {
+        const nextMembers = Array.isArray(state.divisionMembers?.active) ? [...state.divisionMembers.active] : [];
+        if (!nextMembers.includes(fullName)) {
+          nextMembers.push(fullName);
+          state.divisionMembers = { ...state.divisionMembers, active: nextMembers };
+          saveDivisionMembers();
+          renderDivisionSummary();
+        }
+      }
+
       form.style.display = 'none';
       formSuccess?.classList.add('active');
       formSuccess?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1086,6 +1231,7 @@
   }
 
   function init() {
+    window.__royalShepherdInit = true;
     window.addEventListener('scroll', () => {
       header?.classList.toggle('scrolled', window.scrollY > 50);
     });
@@ -1101,9 +1247,33 @@
     bindForms();
     ensureDefaultCommanderAccount();
     ensureLegacyCaptainAccounts();
+    window.__royalShepherdBootstrapStarted = true;
     bootstrapCompanyData().then(() => {
+      window.__royalShepherdBootstrapResolved = true;
       renderCompanyLists();
+      if (window.location.pathname.includes('commander-dashboard.html')) {
+        window.__royalShepherdCommanderPath = true;
+        buildCommanderDashboard();
+      }
+      if (window.location.pathname.includes('captain-dashboard.html')) {
+        window.__royalShepherdCaptainPath = true;
+        const queryParams = new URLSearchParams(window.location.search);
+        const companyId = queryParams.get('company');
+        if (companyId && state.companyData[companyId]) {
+          state.activeCaptainCompany = companyId;
+          buildCaptainDashboard(companyId);
+        }
+      }
+      if (window.location.pathname.includes('exco-dashboard.html')) {
+        window.__royalShepherdExcoPath = true;
+        buildExcoDashboard();
+      }
+    }).catch((error) => {
+      window.__royalShepherdBootstrapFailed = true;
+      window.__royalShepherdBootstrapError = error?.message || String(error);
     });
+    renderFounderStory();
+    renderOfficerLeadership();
     renderGallery();
   }
 
