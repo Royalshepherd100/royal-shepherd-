@@ -76,16 +76,74 @@
     9: { name: 'Lekki Akiling Company', active: [], inactive: [], officers: [] }
   };
 
+  function readStoredJson(primaryKey, fallbackKey) {
+    const primaryValue = localStorage.getItem(primaryKey);
+    if (primaryValue) {
+      try {
+        return JSON.parse(primaryValue);
+      } catch (error) {
+        console.warn(`Could not parse ${primaryKey}.`, error);
+      }
+    }
+
+    if (fallbackKey) {
+      const fallbackValue = localStorage.getItem(fallbackKey);
+      if (fallbackValue) {
+        try {
+          return JSON.parse(fallbackValue);
+        } catch (error) {
+          console.warn(`Could not parse ${fallbackKey}.`, error);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function normalizeAccountMap(rawData) {
+    const parsed = {};
+    if (!rawData || typeof rawData !== 'object') return parsed;
+
+    if (Array.isArray(rawData)) {
+      rawData.forEach((entry) => {
+        if (!entry || typeof entry !== 'object') return;
+        const emailKey = String(entry.email || entry.username || '').trim().toLowerCase();
+        if (!emailKey) return;
+        parsed[emailKey] = {
+          ...entry,
+          email: emailKey,
+          password: entry.password || entry.pass || '',
+          companyId: entry.companyId || entry.company || entry.company_id || ''
+        };
+      });
+      return parsed;
+    }
+
+    Object.entries(rawData).forEach(([key, value]) => {
+      if (!value || typeof value !== 'object') return;
+      const emailKey = String(value.email || key || '').trim().toLowerCase();
+      if (!emailKey) return;
+      parsed[emailKey] = {
+        ...value,
+        email: emailKey,
+        password: value.password || value.pass || '',
+        companyId: value.companyId || value.company || value.company_id || ''
+      };
+    });
+
+    return parsed;
+  }
+
   const state = {
     companyData: JSON.parse(JSON.stringify(defaultCompanyData)),
-    captainAccounts: JSON.parse(localStorage.getItem('royalShepherdCaptains') || 'null') || {},
-    commanderAccounts: JSON.parse(localStorage.getItem('royalShepherdCommanderAccounts') || 'null') || {},
-    commanderVerificationCodes: JSON.parse(localStorage.getItem('royalShepherdCommanderVerificationCodes') || 'null') || {},
-    captainRequests: JSON.parse(localStorage.getItem('royalShepherdCaptainRequests') || 'null') || {},
-    commanderSettings: JSON.parse(localStorage.getItem('royalShepherdCommanderSettings') || 'null') || {},
-    excoProfiles: JSON.parse(localStorage.getItem('royalShepherdExcoProfiles') || 'null') || {},
-    divisionMembers: JSON.parse(localStorage.getItem('royalShepherdDivisionMembers') || 'null') || { active: [] },
-    examScores: JSON.parse(localStorage.getItem('royalShepherdExamScores') || 'null') || {},
+    captainAccounts: normalizeAccountMap(readStoredJson('royalShepherdCaptains', 'royalShepherdCaptainAccounts')),
+    commanderAccounts: normalizeAccountMap(readStoredJson('royalShepherdCommanderAccounts', 'royalShepherdCommanderAccount')),
+    commanderVerificationCodes: readStoredJson('royalShepherdCommanderVerificationCodes', null) || {},
+    captainRequests: readStoredJson('royalShepherdCaptainRequests', null) || {},
+    commanderSettings: readStoredJson('royalShepherdCommanderSettings', null) || {},
+    excoProfiles: readStoredJson('royalShepherdExcoProfiles', null) || {},
+    divisionMembers: readStoredJson('royalShepherdDivisionMembers', null) || { active: [] },
+    examScores: readStoredJson('royalShepherdExamScores', null) || {},
     activeExamYear: localStorage.getItem('royalShepherdActiveExamYear') || String(new Date().getFullYear()),
     activeCaptainCompany: null,
     galleryItems: []
@@ -98,9 +156,19 @@
     const defaultPassword = 'royalshepherd2026';
 
     if (!state.commanderAccounts[defaultEmail]) {
-      state.commanderAccounts[defaultEmail] = { password: defaultPassword, verified: true };
+      state.commanderAccounts[defaultEmail] = { password: defaultPassword, verified: true, email: defaultEmail };
       saveCommanderAccounts();
     }
+  }
+
+  function ensureLegacyCaptainAccounts() {
+    const legacyEmails = ['captain@royalshepherd.com', 'admin@royalshepherd.com'];
+    legacyEmails.forEach((email) => {
+      if (!state.captainAccounts[email]) {
+        state.captainAccounts[email] = { password: 'royalshepherd2026', companyId: '1', email, verified: true };
+      }
+    });
+    saveCaptains();
   }
 
   function normalizeCompanyData(rawData) {
@@ -302,12 +370,15 @@
     authTabs.forEach((tab) => {
       tab.addEventListener('click', () => {
         const authGroup = tab.closest('.auth-toggle');
-        const form = tab.closest('.modal')?.querySelector('form');
+        const form = tab.closest('.modal')?.querySelector('form')
+          || tab.closest('.dashboard-page-card')?.querySelector('form')
+          || tab.closest('section')?.querySelector('form')
+          || tab.closest('form');
         if (!authGroup || !form) return;
 
         authGroup.querySelectorAll('.auth-tab').forEach((item) => item.classList.remove('active'));
         tab.classList.add('active');
-        form.dataset.mode = tab.dataset.mode;
+        form.dataset.mode = tab.dataset.mode || 'login';
         const notice = form.querySelector('.captain-notice');
         if (notice) notice.textContent = '';
       });
@@ -777,11 +848,11 @@
           return;
         }
 
-        state.captainRequests[email] = { password, companyId, submittedAt: new Date().toISOString(), status: 'pending' };
-        saveCaptainRequests();
+        state.captainAccounts[email] = { password, companyId, email, verified: true };
+        saveCaptains();
         captainForm.reset();
         captainForm.dataset.mode = 'login';
-        captainNotice.textContent = 'Captain creation request submitted. The Divisional Commander can approve it from the command dashboard.';
+        captainNotice.textContent = 'Captain account created successfully. You can now log in.';
         captainNotice.style.color = 'var(--gold-400)';
         return;
       }
@@ -825,9 +896,9 @@
           return;
         }
 
-        state.commanderAccounts[email] = { password, verified: true };
+        state.commanderAccounts[email] = { password, verified: true, email };
         saveCommanderAccounts();
-        commanderNotice.textContent = `Commander account created for ${email}. Opening the commander dashboard.`;
+        commanderNotice.textContent = `Admin account created for ${email}. Opening the admin dashboard.`;
         commanderNotice.style.color = 'var(--gold-400)';
         closeModal('commanderModal');
         openCommanderDashboard();
@@ -1019,6 +1090,7 @@
     bindGallery();
     bindForms();
     ensureDefaultCommanderAccount();
+    ensureLegacyCaptainAccounts();
     bootstrapCompanyData().then(() => {
       renderCompanyLists();
     });
