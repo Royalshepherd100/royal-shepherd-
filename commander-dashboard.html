@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Royal Shepherd</title>
+    <meta name="description" content="Open the Divisional Commander dashboard as a full page to manage division data and requests." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="index.css?v=3" />
+  </head>
+  <body>
+    <header class="site-header" id="top">
+      <div class="container nav-wrap">
+        <a class="brand" href="index.html">
+          <img class="brand-logo" src="WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg" alt="Royal Nigeria Agbala Itura Division logo" />
+          <span>
+            <strong>Admin Dashboard</strong>
+            <small>Royal Shepherd</small>
+          </span>
+        </a>
+        <a href="index.html" class="btn btn-outline">Back to Home</a>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container" style="display:grid; gap:1.25rem;">
+        <section class="glass-card dashboard-page-card">
+          <p class="eyebrow">Dedicated Dashboard</p>
+          <h1>Admin Access</h1>
+          <p class="hero-subtitle">Use this full page to review account requests and manage the division’s company records.</p>
+
+          <div class="auth-toggle" role="tablist">
+            <button type="button" class="auth-tab commander-auth-tab active" data-mode="login">Login</button>
+            <button type="button" class="auth-tab commander-auth-tab" data-mode="register">Register</button>
+          </div>
+
+          <form id="commanderForm" data-mode="login">
+            <label>
+              <span>Email Address</span>
+              <input type="email" id="commanderEmail" required />
+            </label>
+            <label>
+              <span>Password</span>
+              <input type="password" id="commanderPassword" required />
+            </label>
+            <p id="commanderNotice" class="captain-notice"></p>
+            <div class="dashboard-actions">
+              <button type="submit" class="btn btn-gold">Continue</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="glass-card dashboard-page-card">
+          <h2>Admin Workspace</h2>
+          <form id="commanderDashboardForm">
+            <div class="dashboard-grid" id="commanderDashboardGrid"></div>
+            <div class="dashboard-actions">
+              <a href="exco-dashboard.html" target="_blank" rel="noopener" class="btn btn-secondary">Open EXCO Dashboard</a>
+              <button type="submit" class="btn btn-gold">Save Commander Updates</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script defer src="app.js?v=3"></script>
+  </body>
+</html>

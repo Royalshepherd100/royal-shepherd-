@@ -50,9 +50,9 @@
           <a href="#wings" class="nav-link">Our Wings</a>
           <a href="#gallery" class="nav-link">Gallery</a>
           <a href="#enlistment" class="nav-link cta-link">Join Division</a>
-          <button type="button" class="nav-link cta-link dashboard-trigger" id="dashboardTrigger" data-open-modal="captainModal">Captain Dashboard</button>
-          <button type="button" class="nav-link cta-link commander-trigger" data-open-modal="commanderModal">Commander Dashboard</button>
-          <button type="button" class="nav-link cta-link exco-trigger" data-open-modal="excoDashboardModal">EXCO Dashboard</button>
+          <a href="captain-dashboard.html" target="_blank" rel="noopener" class="nav-link cta-link captain-trigger" data-dashboard-page="captain-dashboard.html">Captain Dashboard</a>
+          <a href="commander-dashboard.html" target="_blank" rel="noopener" class="nav-link cta-link commander-trigger" data-dashboard-page="commander-dashboard.html">Admin Dashboard</a>
+          <a href="exco-dashboard.html" target="_blank" rel="noopener" class="nav-link cta-link exco-trigger" data-dashboard-page="exco-dashboard.html">EXCO Dashboard</a>
         </nav>
       </div>
     </header>
@@ -67,7 +67,7 @@
               The Royal Shepherd Nigeria Agbala Itura Division, Lagos is the disciplined, service-minded youth arm of CAC Agbala Itura, raising godly leaders through order, courage, and practical church impact.
             </p>
             <div class="hero-actions">
-              <button type="button" class="btn btn-gold captain-trigger" data-open-modal="captainModal">Register Now</button>
+              <a href="captain-dashboard.html" target="_blank" rel="noopener" class="btn btn-gold captain-trigger" data-dashboard-page="captain-dashboard.html">Register Now</a>
               <a href="#about" class="btn btn-outline">Learn More</a>
             </div>
           </div>
@@ -87,11 +87,11 @@
             <span>Years of Service</span>
           </article>
           <article>
-            <strong>150+</strong>
+            <strong id="homeTotalMembers">150+</strong>
             <span>Active Members</span>
           </article>
           <article>
-            <strong>15+</strong>
+            <strong id="homeTotalOfficers">15+</strong>
             <span>Commissioned Officers</span>
           </article>
           <article>
@@ -122,6 +122,51 @@
               <li>Community impact with compassion and order.</li>
             </ul>
           </div>
+        </div>
+      </section>
+
+      <section class="section" id="laws">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Memorize and Practice</p>
+            <h2 class="text-gradient">The Ten Laws of Royal Shepherd</h2>
+          </div>
+          <div class="laws-grid">
+            <ol class="laws-list">
+              <li>Love God with all your heart and above all else.</li>
+              <li>Love your fellow human beings as yourself and be always kind and helpful.</li>
+              <li>Accept Jesus Christ as your Lord and Saviour, confess Him and remain firmly loyal to Him for ever.</li>
+              <li>Study the Holy Bible daily and be always guided by the word of God.</li>
+              <li>Be prayerful at all times and pray for others always.</li>
+              <li>Always lead a holy life; be clean in thought, word and deed.</li>
+              <li>Attend church services regularly; participate actively and be useful.</li>
+              <li>Be loyal and obedient to the Royal Shepherds officers and its policies and regulations.</li>
+              <li>Receive, possess and maintain the Holy Spirit of God and always be controlled by Him.</li>
+              <li>Preach Christ’s Gospel everyday and be ever thirsty for opportunities to save souls.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="founders">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Co-Founders</p>
+            <h2 class="text-gradient">Pa SK Abiara and CAC Agbala Itura</h2>
+          </div>
+          <div class="founder-card glass-card">
+            <p>
+              Prophet Samuel Kayode Abiara, fondly called Pa SK Abiara, is one of the esteemed co-founders and spiritual pillars of Royal Shepherd. He is the revered founder of CAC Agbala Itura and a great servant of God whose ministry has touched many lives through evangelism, discipline and unwavering faith.
+            </p>
+            <p>
+              CAC Agbala Itura stands as a spiritual home of comfort, holiness and divine instruction, and it remains a landmark place of worship and impact in the life of the church and the nation.
+            </p>
+            <p>
+              Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Obokun Local Government Area, Osun State. He was raised with humility and diligence, and his journey into ministry began through divine calling and faithful service. His life continues to inspire Royal Shepherd members to live in holiness, obedience and service to God and humanity.
+            </p>
+          </div>
+        </div>
+      </section>
         </div>
       </section>
 
@@ -166,7 +211,7 @@
             <h2 class="text-gradient">The Royal Nigeria Agbala Itura Division, Lagos</h2>
             <p>Each company is a distinct unit within the Royal Nigeria Agbala Itura Division family. Use the captain dashboard to update members, officers, and sections.</p>
             <div class="section-actions">
-              <button type="button" class="btn btn-outline dashboard-trigger" data-open-modal="captainModal">Captain Dashboard</button>
+              <a href="captain-dashboard.html" target="_blank" rel="noopener" class="btn btn-outline dashboard-trigger" data-dashboard-page="captain-dashboard.html">Captain Dashboard</a>
             </div>
           </div>
 
@@ -184,7 +229,7 @@
           <div class="company-grid">
             <article class="company-card glass-card" data-company="1">
               <span class="company-number">01</span>
-              <h3>12th Akiling Company</h3>
+              <h3>Ikorodu Akiling Company</h3>
               <p class="company-caption">Company 1</p>
               <div class="company-details">
                 <h4>Active Members</h4>
@@ -197,7 +242,7 @@
             </article>
             <article class="company-card glass-card" data-company="2">
               <span class="company-number">02</span>
-              <h3>Ikorodu Akiling Company</h3>
+              <h3>17th Akiling Company</h3>
               <p class="company-caption">Company 2</p>
               <div class="company-details">
                 <h4>Active Members</h4>
@@ -210,7 +255,7 @@
             </article>
             <article class="company-card glass-card" data-company="3">
               <span class="company-number">03</span>
-              <h3>17th Akiling Company</h3>
+              <h3>28th Akiling Company</h3>
               <p class="company-caption">Company 3</p>
               <div class="company-details">
                 <h4>Active Members</h4>
@@ -223,7 +268,7 @@
             </article>
             <article class="company-card glass-card" data-company="4">
               <span class="company-number">04</span>
-              <h3>28th Akiling Company</h3>
+              <h3>Command Akiling Company</h3>
               <p class="company-caption">Company 4</p>
               <div class="company-details">
                 <h4>Active Members</h4>
@@ -236,8 +281,8 @@
             </article>
             <article class="company-card glass-card" data-company="5">
               <span class="company-number">05</span>
-              <h3>Command Akiling Company</h3>
-              <p class="company-caption">301st Lagos → Company 5</p>
+              <h3>Ipaja Akiling Company</h3>
+              <p class="company-caption">Company 5</p>
               <div class="company-details">
                 <h4>Active Members</h4>
                 <ul class="company-list" data-list="active"></ul>
@@ -249,8 +294,8 @@
             </article>
             <article class="company-card glass-card" data-company="6">
               <span class="company-number">06</span>
-              <h3>Ipaja Akiling Company</h3>
-              <p class="company-caption">311th Lagos → Company 6</p>
+              <h3>Ijaba Akiling Company</h3>
+              <p class="company-caption">Company 6</p>
               <div class="company-details">
                 <h4>Active Members</h4>
                 <ul class="company-list" data-list="active"></ul>
@@ -262,8 +307,8 @@
             </article>
             <article class="company-card glass-card" data-company="7">
               <span class="company-number">07</span>
-              <h3>Ijaba Akiling Company</h3>
-              <p class="company-caption">218th Lagos → Company 7</p>
+              <h3>8th Akiling Company</h3>
+              <p class="company-caption">Company 7</p>
               <div class="company-details">
                 <h4>Active Members</h4>
                 <ul class="company-list" data-list="active"></ul>
@@ -275,7 +320,7 @@
             </article>
             <article class="company-card glass-card" data-company="8">
               <span class="company-number">08</span>
-              <h3>28th Akiling Company</h3>
+              <h3>Mainland Akiling Company</h3>
               <p class="company-caption">Company 8</p>
               <div class="company-details">
                 <h4>Active Members</h4>
@@ -288,7 +333,7 @@
             </article>
             <article class="company-card glass-card" data-company="9">
               <span class="company-number">09</span>
-              <h3>28th Akiling Company</h3>
+              <h3>Lekki Akiling Company</h3>
               <p class="company-caption">Company 9</p>
               <div class="company-details">
                 <h4>Active Members</h4>
@@ -504,15 +549,15 @@
             <span>Company</span>
             <select id="captainCompany" required>
               <option value="">Select Company</option>
-              <option value="1">12th Akiling Company</option>
-              <option value="2">Ikorodu Akiling Company</option>
-              <option value="3">17th Akiling Company</option>
-              <option value="4">28th Akiling Company</option>
-              <option value="5">Command Akiling Company</option>
-              <option value="6">Ipaja Akiling Company</option>
-              <option value="7">Ijaba Akiling Company</option>
-              <option value="8">28th Akiling Company</option>
-              <option value="9">28th Akiling Company</option>
+              <option value="1">Ikorodu Akiling Company</option>
+              <option value="2">17th Akiling Company</option>
+              <option value="3">28th Akiling Company</option>
+              <option value="4">Command Akiling Company</option>
+              <option value="5">Ipaja Akiling Company</option>
+              <option value="6">Ijaba Akiling Company</option>
+              <option value="7">8th Akiling Company</option>
+              <option value="8">Mainland Akiling Company</option>
+              <option value="9">Lekki Akiling Company</option>
             </select>
           </label>
 

@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, List
@@ -26,15 +26,15 @@ app.add_middleware(
 )
 
 company_store: Dict[str, Dict[str, List[str]]] = {
-    "1": {"name": "12th Akiling Company", "active": [], "inactive": [], "officers": []},
-    "2": {"name": "Ikorodu Akiling Company", "active": [], "inactive": [], "officers": []},
-    "3": {"name": "17th Akiling Company", "active": [], "inactive": [], "officers": []},
-    "4": {"name": "28th Akiling Company", "active": [], "inactive": [], "officers": []},
-    "5": {"name": "Command Akiling Company", "active": [], "inactive": [], "officers": []},
-    "6": {"name": "Ipaja Akiling Company", "active": [], "inactive": [], "officers": []},
-    "7": {"name": "Ijaba Akiling Company", "active": [], "inactive": [], "officers": []},
-    "8": {"name": "28th Akiling Company", "active": [], "inactive": [], "officers": []},
-    "9": {"name": "28th Akiling Company", "active": [], "inactive": [], "officers": []},
+    "1": {"name": "Ikorodu Akiling Company", "active": [], "inactive": [], "officers": []},
+    "2": {"name": "17th Akiling Company", "active": [], "inactive": [], "officers": []},
+    "3": {"name": "28th Akiling Company", "active": [], "inactive": [], "officers": []},
+    "4": {"name": "Command Akiling Company", "active": [], "inactive": [], "officers": []},
+    "5": {"name": "Ipaja Akiling Company", "active": [], "inactive": [], "officers": []},
+    "6": {"name": "Ijaba Akiling Company", "active": [], "inactive": [], "officers": []},
+    "7": {"name": "8th Akiling Company", "active": [], "inactive": [], "officers": []},
+    "8": {"name": "Mainland Akiling Company", "active": [], "inactive": [], "officers": []},
+    "9": {"name": "Lekki Akiling Company", "active": [], "inactive": [], "officers": []},
 }
 
 @app.get("/")
@@ -44,6 +44,13 @@ def health_check():
 @app.get("/companies")
 def get_companies():
     return company_store
+
+@app.get("/companies/{company_id}")
+def get_company(company_id: str):
+    company = company_store.get(company_id)
+    if company is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+    return company
 
 @app.post("/companies")
 def save_company(payload: CompanyPayload):

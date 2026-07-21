@@ -20,10 +20,12 @@
   const authTabs = document.querySelectorAll('.auth-tab');
   const dashboardModal = document.getElementById('dashboardModal');
   const dashboardClose = document.getElementById('dashboardClose');
-  const dashboardGrid = document.querySelector('#dashboardModal .dashboard-grid');
-  const commanderDashboardGrid = document.querySelector('#commanderDashboardModal .dashboard-grid');
+  const dashboardGrid = document.querySelector('#dashboardModal .dashboard-grid, #captainDashboardGrid');
+  const commanderDashboardGrid = document.querySelector('#commanderDashboardModal .dashboard-grid, #commanderDashboardGrid');
   const divisionTotalMembers = document.getElementById('divisionTotalMembers');
   const divisionTotalOfficers = document.getElementById('divisionTotalOfficers');
+  const homeTotalMembers = document.getElementById('homeTotalMembers');
+  const homeTotalOfficers = document.getElementById('homeTotalOfficers');
   const dashboardForm = document.getElementById('dashboardForm');
   const commanderDashboardForm = document.getElementById('commanderDashboardForm');
   const commanderModal = document.getElementById('commanderModal');
@@ -36,7 +38,7 @@
   const commanderDashboardClose = document.getElementById('commanderDashboardClose');
   const excoDashboardModal = document.getElementById('excoDashboardModal');
   const excoDashboardClose = document.getElementById('excoDashboardClose');
-  const excoDashboardGrid = document.querySelector('#excoDashboardModal .dashboard-grid');
+  const excoDashboardGrid = document.querySelector('#excoDashboardModal .dashboard-grid, #excoDashboardGrid');
   const excoDashboardForm = document.getElementById('excoDashboardForm');
   const openExcoDashboardBtn = document.getElementById('openExcoDashboardBtn');
   const commanderTrigger = document.querySelectorAll('.commander-trigger');
@@ -57,23 +59,21 @@
 
   const excoRoleDefinitions = [
     { key: 'general-secretary', label: 'General Secretary' },
-    { key: 'pro', label: 'PRO' },
     { key: 'assistant-secretary', label: 'Assistant Secretary' },
-    { key: 'band-master', label: 'Band Master' },
-    { key: 'assistant-band-master', label: 'Assistant Band Master' },
+    { key: 'financial-secretary', label: 'Financial Secretary' },
     { key: 'treasurer', label: 'Treasurer' }
   ];
 
   const defaultCompanyData = {
-    1: { name: '12th Akiling Company', active: [], inactive: [], officers: [] },
-    2: { name: 'Ikorodu Akiling Company', active: [], inactive: [], officers: [] },
-    3: { name: '17th Akiling Company', active: [], inactive: [], officers: [] },
-    4: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
-    5: { name: 'Command Akiling Company', active: [], inactive: [], officers: [] },
-    6: { name: 'Ipaja Akiling Company', active: [], inactive: [], officers: [] },
-    7: { name: 'Ijaba Akiling Company', active: [], inactive: [], officers: [] },
-    8: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
-    9: { name: '28th Akiling Company', active: [], inactive: [], officers: [] }
+    1: { name: 'Ikorodu Akiling Company', active: [], inactive: [], officers: [] },
+    2: { name: '17th Akiling Company', active: [], inactive: [], officers: [] },
+    3: { name: '28th Akiling Company', active: [], inactive: [], officers: [] },
+    4: { name: 'Command Akiling Company', active: [], inactive: [], officers: [] },
+    5: { name: 'Ipaja Akiling Company', active: [], inactive: [], officers: [] },
+    6: { name: 'Ijaba Akiling Company', active: [], inactive: [], officers: [] },
+    7: { name: '8th Akiling Company', active: [], inactive: [], officers: [] },
+    8: { name: 'Mainland Akiling Company', active: [], inactive: [], officers: [] },
+    9: { name: 'Lekki Akiling Company', active: [], inactive: [], officers: [] }
   };
 
   const state = {
@@ -84,6 +84,9 @@
     captainRequests: JSON.parse(localStorage.getItem('royalShepherdCaptainRequests') || 'null') || {},
     commanderSettings: JSON.parse(localStorage.getItem('royalShepherdCommanderSettings') || 'null') || {},
     excoProfiles: JSON.parse(localStorage.getItem('royalShepherdExcoProfiles') || 'null') || {},
+    divisionMembers: JSON.parse(localStorage.getItem('royalShepherdDivisionMembers') || 'null') || { active: [] },
+    examScores: JSON.parse(localStorage.getItem('royalShepherdExamScores') || 'null') || {},
+    activeExamYear: localStorage.getItem('royalShepherdActiveExamYear') || String(new Date().getFullYear()),
     activeCaptainCompany: null,
     galleryItems: []
   };
@@ -184,6 +187,15 @@
     localStorage.setItem('royalShepherdExcoProfiles', JSON.stringify(state.excoProfiles));
   }
 
+  function saveDivisionMembers() {
+    localStorage.setItem('royalShepherdDivisionMembers', JSON.stringify(state.divisionMembers));
+  }
+
+  function saveExamScores() {
+    localStorage.setItem('royalShepherdExamScores', JSON.stringify(state.examScores));
+    localStorage.setItem('royalShepherdActiveExamYear', state.activeExamYear || String(new Date().getFullYear()));
+  }
+
   function openModal(id) {
     const modalElement = document.getElementById(id);
     if (!modalElement) return;
@@ -256,15 +268,33 @@
     });
 
     document.querySelectorAll('.captain-trigger, .dashboard-trigger').forEach((trigger) => {
-      trigger.addEventListener('click', () => openModal('captainModal'));
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        const page = trigger.dataset.dashboardPage || 'captain-dashboard.html';
+        if (window.location.pathname.includes('captain-dashboard.html')) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('company', trigger.dataset.companyId || '');
+          window.history.replaceState({}, '', url);
+          return;
+        }
+        window.open(page, '_blank', 'noopener,noreferrer');
+      });
     });
 
     document.querySelectorAll('.commander-trigger').forEach((trigger) => {
-      trigger.addEventListener('click', () => openModal('commanderModal'));
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        const page = trigger.dataset.dashboardPage || 'commander-dashboard.html';
+        window.open(page, '_blank', 'noopener,noreferrer');
+      });
     });
 
     document.querySelectorAll('.exco-trigger').forEach((trigger) => {
-      trigger.addEventListener('click', () => openExcoDashboard());
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        const page = trigger.dataset.dashboardPage || 'exco-dashboard.html';
+        window.open(page, '_blank', 'noopener,noreferrer');
+      });
     });
   }
 
@@ -358,6 +388,24 @@
     applyGalleryFilter('all');
   }
 
+  function openGalleryPreview(item) {
+    if (!item) return;
+    if (galleryPreviewImage) {
+      galleryPreviewImage.src = resolveImagePath(item.src);
+      galleryPreviewImage.alt = item.title;
+    }
+    if (galleryPreviewTitle) {
+      galleryPreviewTitle.textContent = item.title;
+    }
+    if (galleryPreviewDescription) {
+      galleryPreviewDescription.textContent = item.description;
+    }
+    if (galleryPreviewCategory) {
+      galleryPreviewCategory.textContent = (item.category || 'parades').charAt(0).toUpperCase() + (item.category || 'parades').slice(1);
+    }
+    openModal('galleryModal');
+  }
+
   function applyGalleryFilter(filter) {
     galleryFilters.forEach((button) => {
       button.classList.toggle('active', button.dataset.filter === filter);
@@ -371,18 +419,31 @@
 
   function bindGallery() {
     galleryGrid?.addEventListener('click', (event) => {
-      const card = event.target.closest('.gallery-item');
+      const button = event.target.closest('.gallery-thumb');
+      if (!button) return;
+      const card = button.closest('.gallery-item');
       if (!card) return;
       const index = Number(card.dataset.index);
       if (!Number.isNaN(index)) {
         const item = galleryData[index];
         if (item) {
-          galleryPreviewImage.src = resolveImagePath(item.src);
-          galleryPreviewImage.alt = item.title;
-          galleryPreviewTitle.textContent = item.title;
-          galleryPreviewDescription.textContent = item.description;
-          galleryPreviewCategory.textContent = item.category.charAt(0).toUpperCase() + item.category.slice(1);
-          openModal('galleryModal');
+          openGalleryPreview(item);
+        }
+      }
+    });
+
+    galleryGrid?.addEventListener('keydown', (event) => {
+      if (!['Enter', ' '].includes(event.key)) return;
+      const button = event.target.closest('.gallery-thumb');
+      if (!button) return;
+      event.preventDefault();
+      const card = button.closest('.gallery-item');
+      if (!card) return;
+      const index = Number(card.dataset.index);
+      if (!Number.isNaN(index)) {
+        const item = galleryData[index];
+        if (item) {
+          openGalleryPreview(item);
         }
       }
     });
@@ -392,19 +453,69 @@
     });
   }
 
-  function renderDivisionSummary() {
-    if (!divisionTotalMembers || !divisionTotalOfficers) return;
+  function parseTextareaLines(value) {
+    return (value || '')
+      .toString()
+      .split(/\r?\n/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
 
+  function parseScoreEntries(value) {
+    return parseTextareaLines(value).map((line) => {
+      const [namePart, scorePart] = line.split('|');
+      const name = (namePart || '').trim();
+      const score = (scorePart || '').trim();
+      if (name && score) {
+        return { name, score };
+      }
+      return { name: line, score: 'Pending' };
+    });
+  }
+
+  function formatScoreEntries(items) {
+    return (items || []).map((item) => `${item.name} | ${item.score}`);
+  }
+
+  function getExamYears() {
+    return Object.keys(state.examScores || {})
+      .filter((year) => /^\d+$/.test(year))
+      .sort((a, b) => Number(b) - Number(a));
+  }
+
+  function getLatestExamYear() {
+    return getExamYears()[0] || state.activeExamYear || String(new Date().getFullYear());
+  }
+
+  function getExamDataForCompany(companyId, year) {
+    const data = state.examScores?.[year || getLatestExamYear()] || {};
+    return data[String(companyId)] || { boys: [], girls: [] };
+  }
+
+  function renderDivisionSummary() {
     let totalMembers = 0;
     let totalOfficers = 0;
+    const divisionActiveMembers = Array.isArray(state.divisionMembers?.active) ? state.divisionMembers.active : [];
 
     Object.values(state.companyData).forEach((company) => {
       totalMembers += (company.active || []).length + (company.inactive || []).length;
       totalOfficers += (company.officers || []).length;
     });
 
-    divisionTotalMembers.textContent = totalMembers;
-    divisionTotalOfficers.textContent = totalOfficers;
+    totalMembers += divisionActiveMembers.length;
+
+    if (divisionTotalMembers) {
+      divisionTotalMembers.textContent = totalMembers;
+    }
+    if (divisionTotalOfficers) {
+      divisionTotalOfficers.textContent = totalOfficers;
+    }
+    if (homeTotalMembers) {
+      homeTotalMembers.textContent = totalMembers || '150+';
+    }
+    if (homeTotalOfficers) {
+      homeTotalOfficers.textContent = totalOfficers || '15+';
+    }
   }
 
   function renderCompanyLists() {
@@ -434,10 +545,13 @@
   function buildCaptainDashboard(companyId) {
     if (!dashboardGrid) return;
     const company = state.companyData[companyId] || defaultCompanyData[companyId];
+    const examYear = getLatestExamYear();
+    const examData = getExamDataForCompany(companyId, examYear);
     dashboardGrid.innerHTML = '';
-    const card = document.createElement('div');
-    card.className = 'dashboard-card';
-    card.innerHTML = `
+
+    const companyCard = document.createElement('div');
+    companyCard.className = 'dashboard-card';
+    companyCard.innerHTML = `
       <h4>${company.name}</h4>
       <label>
         <span>Company Name</span>
@@ -456,18 +570,65 @@
         <textarea name="officers-${companyId}" placeholder="Add officers one per line">${(company.officers || []).join('\n')}</textarea>
       </label>
     `;
-    dashboardGrid.appendChild(card);
+    dashboardGrid.appendChild(companyCard);
+
+    const scoreCard = document.createElement('div');
+    scoreCard.className = 'dashboard-card';
+    scoreCard.innerHTML = `
+      <h4>ESTC Exam Results</h4>
+      <p class="dashboard-intro">Scores posted by the admin for ${examYear} for your company only.</p>
+      <div class="score-columns">
+        <div class="score-panel">
+          <h5>Boys Scores</h5>
+          <ul class="score-list">
+            ${(examData.boys || []).length ? (examData.boys || []).map((item) => `<li><strong>${(item.name || '').replace(/"/g, '&quot;')}</strong> — ${item.score}</li>`).join('') : '<li>No scores posted yet.</li>'}
+          </ul>
+        </div>
+        <div class="score-panel">
+          <h5>Girls Scores</h5>
+          <ul class="score-list">
+            ${(examData.girls || []).length ? (examData.girls || []).map((item) => `<li><strong>${(item.name || '').replace(/"/g, '&quot;')}</strong> — ${item.score}</li>`).join('') : '<li>No scores posted yet.</li>'}
+          </ul>
+        </div>
+      </div>
+    `;
+    dashboardGrid.appendChild(scoreCard);
   }
 
   function openCaptainDashboard(companyId) {
     state.activeCaptainCompany = companyId;
-    openModal('dashboardModal');
     buildCaptainDashboard(companyId);
+
+    if (window.location.pathname.includes('captain-dashboard.html')) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('company', companyId);
+      window.history.replaceState({}, '', url);
+      return;
+    }
+
+    const pageUrl = new URL('captain-dashboard.html', window.location.href);
+    pageUrl.searchParams.set('company', companyId);
+    window.open(pageUrl.toString(), '_blank', 'noopener,noreferrer');
   }
 
   function buildCommanderDashboard() {
     if (!commanderDashboardGrid) return;
     commanderDashboardGrid.innerHTML = '';
+
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'dashboard-card';
+    summaryCard.innerHTML = `
+      <h4>Division Setup</h4>
+      <label>
+        <span>ESTC Exam Year</span>
+        <input type="number" name="exam-year" value="${(state.activeExamYear || getLatestExamYear()).replace(/"/g, '&quot;')}" />
+      </label>
+      <label>
+        <span>Division Active Members</span>
+        <textarea name="division-active-members" placeholder="Add division active members one per line">${(state.divisionMembers?.active || []).join('\n')}</textarea>
+      </label>
+    `;
+    commanderDashboardGrid.appendChild(summaryCard);
 
     const requestCard = document.createElement('div');
     requestCard.className = 'dashboard-card';
@@ -504,6 +665,7 @@
     }
 
     Object.entries(state.companyData).forEach(([companyId, company]) => {
+      const examData = getExamDataForCompany(companyId, state.activeExamYear || getLatestExamYear());
       const card = document.createElement('div');
       card.className = 'dashboard-card';
       card.innerHTML = `
@@ -524,14 +686,27 @@
           <span>Ranked Officers</span>
           <textarea name="officers-${companyId}" placeholder="Add officers one per line">${(company.officers || []).join('\n')}</textarea>
         </label>
+        <label>
+          <span>Boys Scores</span>
+          <textarea name="boys-scores-${companyId}" placeholder="Name | Score per line">${formatScoreEntries(examData.boys || []).join('\n')}</textarea>
+        </label>
+        <label>
+          <span>Girls Scores</span>
+          <textarea name="girls-scores-${companyId}" placeholder="Name | Score per line">${formatScoreEntries(examData.girls || []).join('\n')}</textarea>
+        </label>
       `;
       commanderDashboardGrid.appendChild(card);
     });
   }
 
   function openCommanderDashboard() {
-    openModal('commanderDashboardModal');
     buildCommanderDashboard();
+
+    if (window.location.pathname.includes('commander-dashboard.html')) {
+      return;
+    }
+
+    window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
   }
 
   function buildExcoDashboard() {
@@ -567,15 +742,20 @@
   }
 
   function openExcoDashboard() {
-    openModal('excoDashboardModal');
     buildExcoDashboard();
+
+    if (window.location.pathname.includes('exco-dashboard.html')) {
+      return;
+    }
+
+    window.open('exco-dashboard.html', '_blank', 'noopener,noreferrer');
   }
 
   function bindForms() {
     captainForm?.addEventListener('submit', (event) => {
       event.preventDefault();
       const mode = captainForm.dataset.mode || 'login';
-      const email = captainEmail.value.trim();
+      const email = captainEmail.value.trim().toLowerCase();
       const password = captainPassword.value.trim();
       const companyId = captainCompany.value;
 
@@ -599,6 +779,8 @@
 
         state.captainRequests[email] = { password, companyId, submittedAt: new Date().toISOString(), status: 'pending' };
         saveCaptainRequests();
+        captainForm.reset();
+        captainForm.dataset.mode = 'login';
         captainNotice.textContent = 'Captain creation request submitted. The Divisional Commander can approve it from the command dashboard.';
         captainNotice.style.color = 'var(--gold-400)';
         return;
@@ -705,30 +887,30 @@
       event.preventDefault();
       const formData = new FormData(commanderDashboardForm);
 
+      const divisionMembers = parseTextareaLines(formData.get('division-active-members'));
+      state.divisionMembers = { active: divisionMembers };
+      saveDivisionMembers();
+
+      const examYear = (formData.get('exam-year') || '').toString().trim() || state.activeExamYear || String(new Date().getFullYear());
+      state.activeExamYear = examYear;
+      state.examScores[examYear] = state.examScores[examYear] || {};
+
       Object.keys(state.companyData).forEach((companyId) => {
-        const active = (formData.get(`active-${companyId}`) || '')
-          .toString()
-          .split('\n')
-          .map((item) => item.trim())
-          .filter(Boolean);
-        const inactive = (formData.get(`inactive-${companyId}`) || '')
-          .toString()
-          .split('\n')
-          .map((item) => item.trim())
-          .filter(Boolean);
-        const officers = (formData.get(`officers-${companyId}`) || '')
-          .toString()
-          .split('\n')
-          .map((item) => item.trim())
-          .filter(Boolean);
+        const active = parseTextareaLines(formData.get(`active-${companyId}`));
+        const inactive = parseTextareaLines(formData.get(`inactive-${companyId}`));
+        const officers = parseTextareaLines(formData.get(`officers-${companyId}`));
+        const boys = parseScoreEntries(formData.get(`boys-scores-${companyId}`));
+        const girls = parseScoreEntries(formData.get(`girls-scores-${companyId}`));
         const name = (formData.get(`company-name-${companyId}`) || '')
           .toString()
           .trim() || state.companyData[companyId]?.name || `Company ${companyId}`;
 
         state.companyData[companyId] = { name, active, inactive, officers };
+        state.examScores[examYear][companyId] = { boys, girls };
       });
 
       saveCompanies();
+      saveExamScores();
       renderCompanyLists();
       closeModal('commanderDashboardModal');
     });
@@ -754,7 +936,10 @@
       closeModal('excoDashboardModal');
     });
 
-    openExcoDashboardBtn?.addEventListener('click', openExcoDashboard);
+    openExcoDashboardBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      openExcoDashboard();
+    });
 
     commanderDashboardGrid?.addEventListener('click', (event) => {
       const actionButton = event.target.closest('.request-action');

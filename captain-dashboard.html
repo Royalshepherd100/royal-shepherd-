@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Captain Dashboard | Royal Shepherd</title>
+    <meta name="description" content="Open the captain dashboard as a full page to manage company members and officers." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="index.css?v=3" />
+  </head>
+  <body>
+    <header class="site-header" id="top">
+      <div class="container nav-wrap">
+        <a class="brand" href="index.html">
+          <img class="brand-logo" src="WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg" alt="Royal Nigeria Agbala Itura Division logo" />
+          <span>
+            <strong>Captain Dashboard</strong>
+            <small>Royal Shepherd</small>
+          </span>
+        </a>
+        <a href="index.html" class="btn btn-outline">Back to Home</a>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container" style="display:grid; gap:1.25rem;">
+        <section class="glass-card dashboard-page-card">
+          <p class="eyebrow">Dedicated Dashboard</p>
+          <h1>Captain Access</h1>
+          <p class="hero-subtitle">Sign in to your company account and manage your company information on a full page, just like a home page dashboard.</p>
+
+          <div class="auth-toggle" role="tablist">
+            <button type="button" class="auth-tab captain-auth-tab active" data-mode="login">Login</button>
+            <button type="button" class="auth-tab captain-auth-tab" data-mode="register">Register</button>
+          </div>
+
+          <form id="captainForm" data-mode="login">
+            <label>
+              <span>Email Address</span>
+              <input type="email" id="captainEmail" required />
+            </label>
+            <label>
+              <span>Password</span>
+              <input type="password" id="captainPassword" required />
+            </label>
+            <label>
+              <span>Company</span>
+              <select id="captainCompany" required>
+                <option value="">Select Company</option>
+                <option value="1">Ikorodu Akiling Company</option>
+                <option value="2">17th Akiling Company</option>
+                <option value="3">28th Akiling Company</option>
+                <option value="4">Command Akiling Company</option>
+                <option value="5">Ipaja Akiling Company</option>
+                <option value="6">Ijaba Akiling Company</option>
+                <option value="7">8th Akiling Company</option>
+                <option value="8">Mainland Akiling Company</option>
+                <option value="9">Lekki Akiling Company</option>
+              </select>
+            </label>
+            <p id="captainNotice" class="captain-notice"></p>
+            <div class="dashboard-actions">
+              <button type="submit" class="btn btn-gold">Continue</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="glass-card dashboard-page-card">
+          <h2>Company Dashboard</h2>
+          <p class="dashboard-intro">Use the full page workspace to update active members, inactive members, and ranked officers for your company.</p>
+          <form id="dashboardForm">
+            <div class="dashboard-grid" id="captainDashboardGrid"></div>
+            <div class="dashboard-actions">
+              <button type="submit" class="btn btn-gold">Save Changes</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script defer src="app.js?v=3"></script>
+  </body>
+</html>
