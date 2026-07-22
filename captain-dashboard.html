@@ -15,7 +15,7 @@
     <header class="site-header" id="top">
       <div class="container nav-wrap">
         <a class="brand" href="index.html">
-          <img class="brand-logo" src="WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg" alt="Royal Nigeria Agbala Itura Division logo" />
+          <img class="brand-logo" src="image/rs logo.jpeg?v=2" alt="Royal Shepherd logo" />
           <span>
             <strong>Captain Dashboard</strong>
             <small>Royal Shepherd</small>
@@ -46,19 +46,14 @@
               <span>Password</span>
               <input type="password" id="captainPassword" required />
             </label>
-            <label>
+            <label id="captainCompanyField">
+              <span>Company</span>
+              <input type="text" id="captainCompanyDisplay" readonly placeholder="Assigned company will appear here" />
+            </label>
+            <label id="captainCompanySelectField" style="display: none;">
               <span>Company</span>
               <select id="captainCompany" required>
                 <option value="">Select Company</option>
-                <option value="1">Ikorodu Akiling Company</option>
-                <option value="2">17th Akiling Company</option>
-                <option value="3">28th Akiling Company</option>
-                <option value="4">Command Akiling Company</option>
-                <option value="5">Ipaja Akiling Company</option>
-                <option value="6">Ijaba Akiling Company</option>
-                <option value="7">8th Akiling Company</option>
-                <option value="8">Mainland Akiling Company</option>
-                <option value="9">Lekki Akiling Company</option>
               </select>
             </label>
             <p id="captainNotice" class="captain-notice"></p>

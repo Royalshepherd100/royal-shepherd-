@@ -41,7 +41,7 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: url('WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg');
+  background-image: url('image/new division image.jpeg?v=2');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 65vw;
@@ -280,7 +280,7 @@ h4 {
   padding-top: 8rem;
   background:
     linear-gradient(90deg, rgba(7, 17, 31, 0.96), rgba(7, 17, 31, 0.7)),
-    url('Screenshot-2026-07-11-132711.png') center/cover no-repeat;
+    url('image/new division image.jpeg?v=2') center/cover no-repeat;
   border-radius: 0 0 2rem 2rem;
 }
 

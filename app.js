@@ -139,13 +139,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'prophet-dr-s-k-abiara': 'pa sk abiara.jpeg',
     'pastor-s-o-oladele': 'pastor s.o oladele cac president.jpeg',
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
-    'bishop-kehinde-abiara': 'WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg',
+    'bishop-kehinde-abiara': '',
     'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
-    'rs-brigadier-general-s-oludahunsi': 'Pastor S.O. Olukoso.jpeg',
-    'rs-major-general-j-p-akinyemi': 'WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg',
+    'rs-brigadier-general-s-oludahunsi': '',
+    'rs-major-general-j-p-akinyemi': '',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
-    'rs-lt-colonel-o-olasupo': 'WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg',
-    'rs-captain-s-a-ilori': 'WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg'
+    'rs-lt-colonel-o-olasupo': '',
+    'rs-captain-s-a-ilori': ''
   };
 
   const featuredLeadershipGroups = [
@@ -645,9 +645,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   function resolveImagePath(src) {
     if (!src) return '';
     const normalized = String(src).trim().replace(/\\/g, '/');
-    if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('data:')) return normalized;
-    if (normalized.startsWith('image/')) return normalized;
-    return `image/${normalized}`;
+    const dirname = normalized.startsWith('image/') ? 'image/' : '';
+    const fileName = normalized.replace(/^image\//i, '').replace(/\s+/g, '-');
+    if (/^(https?:)?\/\//i.test(fileName) || fileName.startsWith('data:')) return fileName;
+    return `${dirname}${fileName}`;
   }
 
   function renderGallery() {
