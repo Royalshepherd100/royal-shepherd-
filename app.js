@@ -134,6 +134,30 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'rs-colonel-o-olowe': 'image/RS Colonel O. Olowe.jpeg'
   };
 
+  const featuredLeadershipProfiles = [
+    { name: 'Prophet Dr. S. K. Abiara', role: 'Founder CAC Agbala-Itura WW', key: 'founder-cac-agbala-itura-worldwide' },
+    { name: 'Pastor E. Olusoko', role: 'National / Regional EXCO', key: 'pastor-e-olusoko' },
+    { name: 'Bishop Kehinde Abiara', role: 'National / Regional EXCO', key: 'bishop-kehinde-abiara' },
+    { name: 'RS Major General E. B. Adegbite', role: 'National / Regional EXCO', key: 'rs-major-general-e-b-adegbite' },
+    { name: 'RS Brigadier General S. Oludahunsi', role: 'National / Regional EXCO', key: 'rs-brigadier-general-s-oludahunsi' },
+    { name: 'RS Major General J. P. Akinyemi', role: 'National / Regional EXCO', key: 'rs-major-general-j-p-akinyemi' },
+    { name: 'RS Colonel O. Olowe', role: 'National / Regional EXCO', key: 'rs-colonel-o-olowe' },
+    { name: 'RS Lt. Colonel O. Olasupo', role: 'National / Regional EXCO', key: 'rs-lt-colonel-o-olasupo' },
+    { name: 'RS Captain S. A. Ilori', role: 'National / Regional EXCO', key: 'rs-captain-s-a-ilori' },
+    { name: 'Akiling Region Superintendent', role: 'Akiling Region Superintendent', key: 'akiling-region-superintendent' },
+    { name: 'Agbala-Itura DCC Superintendent Lagos', role: 'Agbala-Itura DCC Superintendent Lagos', key: 'agbala-itura-dcc-superintendent-lagos' },
+    { name: 'National Organizing Secretary', role: 'National Organizing Secretary', key: 'national-organizing-secretary' },
+    { name: 'Assistant National Organizing Secretary', role: 'Assistant National Organizing Secretary', key: 'assistant-national-organizing-secretary' },
+    { name: 'Akiling Region Commander', role: 'Akiling Region Commander', key: 'akiling-region-commander' },
+    { name: 'Akiling Region Deputy Commander', role: 'Akiling Region Deputy Commander', key: 'akiling-region-deputy-commander' },
+    { name: 'Akiling Region Organizing Secretary', role: 'Akiling Region Organizing Secretary', key: 'akiling-region-organizing-secretary' },
+    { name: 'Akiling Region Training Officer 1 / Acting Divisional Commander', role: 'Akiling Region Training Officer 1 / Acting Divisional Commander', key: 'akiling-region-training-officer-acting-divisional-commander' },
+    { name: 'Captain Olaitan Awoniyi', role: 'PRO', key: 'pro-captain-olaitan-awoniyi' },
+    { name: 'Provost Anjola Olayiwola', role: 'Financial Secretary', key: 'financial-secretary-provost-anjola-olayiwola' },
+    { name: 'Lieu. Solomon O. Adeniji', role: 'Band Master', key: 'band-master-lieu-solomon-o-adeniji' },
+    { name: 'Capt. Segun', role: 'Training Officer', key: 'training-officer-capt-segun' }
+  ];
+
   const defaultCompanyData = {
     1: { name: 'Ikorodu Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     2: { name: '17th Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
@@ -779,60 +803,36 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     officersList.innerHTML = '';
 
-    const nationalRegionalEntries = excoRoleDefinitions.filter((role) => role.label.startsWith('Founder') || role.label.startsWith('Prophet') || role.label.startsWith('Pastor') || role.label.startsWith('Bishop') || role.label.startsWith('RS') || role.label.startsWith('Akiling') || role.label.startsWith('Agbala') || role.label.startsWith('National') || role.label.startsWith('Assistant National'))
-      .map((role) => ({
-        role: role.label,
-        name: (state.excoProfiles[role.key]?.name || '').trim() || role.label,
-        photo: leadershipPhotoMap[role.key] || ''
-      }));
+    const grid = document.createElement('div');
+    grid.className = 'leadership-grid';
 
-    const divisionalEntries = excoRoleDefinitions.filter((role) => role.label === 'PRO' || role.label === 'Financial Secretary' || role.label === 'Band Master' || role.label === 'Training Officer')
-      .map((role) => ({
-        role: role.label,
-        name: (state.excoProfiles[role.key]?.name || '').trim() || role.label,
-        photo: leadershipPhotoMap[role.key] || ''
-      }));
+    featuredLeadershipProfiles.forEach((entry) => {
+      const card = document.createElement('article');
+      card.className = 'leadership-card';
 
-    const groups = [
-      { title: 'National / Regional EXCO', entries: nationalRegionalEntries },
-      { title: 'Divisional EXCO', entries: divisionalEntries }
-    ];
+      const initials = entry.name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0] || '')
+        .join('')
+        .toUpperCase();
 
-    groups.forEach((group) => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'leadership-group';
-      wrapper.innerHTML = `<h3>${escapeHtml(group.title)}</h3>`;
+      const photo = leadershipPhotoMap[entry.key] || '';
 
-      const grid = document.createElement('div');
-      grid.className = 'leadership-grid';
-
-      group.entries.forEach((entry) => {
-        const card = document.createElement('article');
-        card.className = 'leadership-card';
-
-        const initials = entry.name
-          .split(' ')
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((part) => part[0] || '')
-          .join('')
-          .toUpperCase();
-
-        card.innerHTML = `
-          <div class="leadership-photo-wrap">
-            ${entry.photo ? `<img class="leadership-photo" src="${entry.photo}" alt="${escapeHtml(entry.name)}" />` : `<div class="leadership-photo avatar">${escapeHtml(initials || 'RS')}</div>`}
-          </div>
-          <div class="leadership-details">
-            <p class="leadership-role">${escapeHtml(entry.role || '')}</p>
-            <h4>${escapeHtml(entry.name || 'Enter name here')}</h4>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      wrapper.appendChild(grid);
-      officersList.appendChild(wrapper);
+      card.innerHTML = `
+        <div class="leadership-photo-wrap">
+          ${photo ? `<img class="leadership-photo" src="${photo}" alt="${escapeHtml(entry.name)}" />` : `<div class="leadership-photo avatar">${escapeHtml(initials || 'RS')}</div>`}
+        </div>
+        <div class="leadership-details">
+          <p class="leadership-role">${escapeHtml(entry.role || '')}</p>
+          <h4>${escapeHtml(entry.name || 'Enter name here')}</h4>
+        </div>
+      `;
+      grid.appendChild(card);
     });
+
+    officersList.appendChild(grid);
   }
 
   function renderCompanyLists() {
