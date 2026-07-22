@@ -58,10 +58,28 @@
   const galleryPreviewCategory = document.getElementById('galleryPreviewCategory');
 
   const excoRoleDefinitions = [
-    { key: 'general-secretary', label: 'General Secretary' },
-    { key: 'assistant-secretary', label: 'Assistant Secretary' },
-    { key: 'financial-secretary', label: 'Financial Secretary' },
-    { key: 'treasurer', label: 'Treasurer' }
+    { key: 'founder-cac-agbala-itura-worldwide', label: 'Founder CAC Agbala-Itura WW' },
+    { key: 'prophet-dr-s-k-abiara', label: 'Prophet Dr. S. K. Abiara' },
+    { key: 'pastor-e-olusoko', label: 'Pastor E. Olusoko' },
+    { key: 'bishop-kehinde-abiara', label: 'Bishop Kehinde Abiara' },
+    { key: 'rs-major-general-e-b-adegbite', label: 'RS Major General E. B. Adegbite' },
+    { key: 'rs-brigadier-general-s-oludahunsi', label: 'RS Brigadier General S. Oludahunsi' },
+    { key: 'rs-major-general-j-p-akinyemi', label: 'RS Major General J. P. Akinyemi' },
+    { key: 'rs-colonel-o-olowe', label: 'RS Colonel O. Olowe' },
+    { key: 'rs-lt-colonel-o-olasupo', label: 'RS Lt. Colonel O. Olasupo' },
+    { key: 'rs-captain-s-a-ilori', label: 'RS Captain S. A. Ilori' },
+    { key: 'akiling-region-superintendent', label: 'Akiling Region Superintendent' },
+    { key: 'agbala-itura-dcc-superintendent-lagos', label: 'Agbala-Itura DCC Superintendent Lagos' },
+    { key: 'national-organizing-secretary', label: 'National Organizing Secretary' },
+    { key: 'assistant-national-organizing-secretary', label: 'Assistant National Organizing Secretary' },
+    { key: 'akiling-region-commander', label: 'Akiling Region Commander' },
+    { key: 'akiling-region-deputy-commander', label: 'Akiling Region Deputy Commander' },
+    { key: 'akiling-region-organizing-secretary', label: 'Akiling Region Organizing Secretary' },
+    { key: 'akiling-region-training-officer-acting-divisional-commander', label: 'Akiling Region Training Officer 1 / Acting Divisional Commander' },
+    { key: 'pro-captain-olaitan-awoniyi', label: 'PRO' },
+    { key: 'financial-secretary-provost-anjola-olayiwola', label: 'Financial Secretary' },
+    { key: 'band-master-lieu-solomon-o-adeniji', label: 'Band Master' },
+    { key: 'training-officer-capt-segun', label: 'Training Officer' }
   ];
 
   const defaultOfficerRanks = [
@@ -85,6 +103,31 @@
 CAC Agbala Itura stands as a spiritual home of comfort, holiness, and divine instruction, and it remains a landmark place of worship and impact in the life of the church and the nation.
 
 Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Obokun Local Government Area, Osun State. He was raised with humility and diligence, and his journey into ministry began through divine calling and faithful service. His life continues to inspire Royal Shepherd members to live in holiness, obedience, and service to God and humanity.`;
+
+  const defaultExcoProfiles = {
+    'founder-cac-agbala-itura-worldwide': { name: 'Prophet Dr. S. K. Abiara', email: '', phone: '', bio: 'Founder CAC Agbala-Itura Worldwide.' },
+    'prophet-dr-s-k-abiara': { name: 'Prophet Dr. S. K. Abiara', email: '', phone: '', bio: 'National / Regional EXCO figurehead.' },
+    'pastor-e-olusoko': { name: 'Pastor E. Olusoko', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'bishop-kehinde-abiara': { name: 'Bishop Kehinde Abiara', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'rs-major-general-e-b-adegbite': { name: 'RS Major General E. B. Adegbite', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'rs-brigadier-general-s-oludahunsi': { name: 'RS Brigadier General S. Oludahunsi', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'rs-major-general-j-p-akinyemi': { name: 'RS Major General J. P. Akinyemi', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'rs-colonel-o-olowe': { name: 'RS Colonel O. Olowe', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'rs-lt-colonel-o-olasupo': { name: 'RS Lt. Colonel O. Olasupo', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'rs-captain-s-a-ilori': { name: 'RS Captain S. A. Ilori', email: '', phone: '', bio: 'National / Regional EXCO member.' },
+    'akiling-region-superintendent': { name: 'Akiling Region Superintendent', email: '', phone: '', bio: 'Regional leadership office.' },
+    'agbala-itura-dcc-superintendent-lagos': { name: 'Agbala-Itura DCC Superintendent Lagos', email: '', phone: '', bio: 'Regional leadership office.' },
+    'national-organizing-secretary': { name: 'National Organizing Secretary', email: '', phone: '', bio: 'National organizing leadership office.' },
+    'assistant-national-organizing-secretary': { name: 'Assistant National Organizing Secretary', email: '', phone: '', bio: 'National organizing leadership office.' },
+    'akiling-region-commander': { name: 'Akiling Region Commander', email: '', phone: '', bio: 'Regional command office.' },
+    'akiling-region-deputy-commander': { name: 'Akiling Region Deputy Commander', email: '', phone: '', bio: 'Regional command office.' },
+    'akiling-region-organizing-secretary': { name: 'Akiling Region Organizing Secretary', email: '', phone: '', bio: 'Regional organizing office.' },
+    'akiling-region-training-officer-acting-divisional-commander': { name: 'Akiling Region Training Officer 1 / Acting Divisional Commander', email: '', phone: '', bio: 'Regional training and acting command office.' },
+    'pro-captain-olaitan-awoniyi': { name: 'Captain Olaitan Awoniyi', email: '', phone: '', bio: 'Divisional PRO.' },
+    'financial-secretary-provost-anjola-olayiwola': { name: 'Provost Anjola Olayiwola', email: '', phone: '', bio: 'Divisional Financial Secretary.' },
+    'band-master-lieu-solomon-o-adeniji': { name: 'Lieu. Solomon O. Adeniji', email: '', phone: '', bio: 'Divisional Band Master.' },
+    'training-officer-capt-segun': { name: 'Capt. Segun', email: '', phone: '', bio: 'Divisional Training Officer.' }
+  };
 
   const defaultCompanyData = {
     1: { name: 'Ikorodu Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
@@ -186,7 +229,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     commanderVerificationCodes: readStoredJson('royalShepherdCommanderVerificationCodes', null) || {},
     captainRequests: readStoredJson('royalShepherdCaptainRequests', null) || {},
     commanderSettings: readStoredJson('royalShepherdCommanderSettings', null) || {},
-    excoProfiles: readStoredJson('royalShepherdExcoProfiles', null) || {},
+    excoProfiles: {
+      ...defaultExcoProfiles,
+      ...(readStoredJson('royalShepherdExcoProfiles', null) || {})
+    },
     divisionMembers: readStoredJson('royalShepherdDivisionMembers', null) || { active: [] },
     commandStructure: normalizeCommandStructure(readStoredJson('royalShepherdCommandStructure', null)),
     founderStory: readStoredValue('royalShepherdFounderStory', defaultFounderStory),
@@ -727,16 +773,39 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (!officersList) return;
 
     officersList.innerHTML = '';
-    const officerEntries = (state.commandStructure?.officers || defaultOfficerRanks.map((rank) => ({ rank, name: '' }))).filter(Boolean);
+    const nationalRegionalEntries = excoRoleDefinitions.filter((role) => role.label.startsWith('Founder') || role.label.startsWith('Prophet') || role.label.startsWith('Pastor') || role.label.startsWith('Bishop') || role.label.startsWith('RS') || role.label.startsWith('Akiling') || role.label.startsWith('Agbala') || role.label.startsWith('National') || role.label.startsWith('Assistant National'))
+      .map((role) => ({
+        rank: role.label,
+        name: (state.excoProfiles[role.key]?.name || '').trim() || 'Enter name here'
+      }));
 
-    officerEntries.forEach((entry) => {
-      const row = document.createElement('div');
-      row.className = 'officer-row';
-      row.innerHTML = `
-        <span class="officer-rank">${escapeHtml(entry.rank || '')}</span>
-        <span class="officer-name">${escapeHtml(entry.name || 'Enter name here')}</span>
-      `;
-      officersList.appendChild(row);
+    const divisionalEntries = excoRoleDefinitions.filter((role) => role.label === 'PRO' || role.label === 'Financial Secretary' || role.label === 'Band Master' || role.label === 'Training Officer')
+      .map((role) => ({
+        rank: role.label,
+        name: (state.excoProfiles[role.key]?.name || '').trim() || 'Enter name here'
+      }));
+
+    const groups = [
+      { title: 'National / Regional EXCO', entries: nationalRegionalEntries },
+      { title: 'Divisional EXCO', entries: divisionalEntries }
+    ];
+
+    groups.forEach((group) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'leadership-group';
+      wrapper.innerHTML = `<h3>${escapeHtml(group.title)}</h3>`;
+
+      group.entries.forEach((entry) => {
+        const row = document.createElement('div');
+        row.className = 'officer-row';
+        row.innerHTML = `
+          <span class="officer-rank">${escapeHtml(entry.rank || '')}</span>
+          <span class="officer-name">${escapeHtml(entry.name || 'Enter name here')}</span>
+        `;
+        wrapper.appendChild(row);
+      });
+
+      officersList.appendChild(wrapper);
     });
   }
 
