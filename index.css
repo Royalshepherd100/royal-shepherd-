@@ -1117,7 +1117,8 @@ textarea:focus {
   .hero-grid,
   .about-grid,
   .enlistment-grid,
-  .symbolism-grid {
+  .symbolism-grid,
+  .founder-card {
     grid-template-columns: 1fr;
   }
 
@@ -1247,5 +1248,19 @@ textarea:focus {
 
   .dashboard-actions .btn {
     width: 100%;
+  }
+
+  .founder-card {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .founder-portrait {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .founder-portrait img {
+    min-height: 280px;
   }
 }
