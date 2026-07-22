@@ -837,6 +837,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
               padding-bottom: 16px;
               margin-bottom: 24px;
             }
+            .report-footer {
+              margin-top: 28px;
+              padding-top: 12px;
+              border-top: 1px solid #d0d0d0;
+              font-size: 12px;
+              color: #555;
+            }
             h1 {
               margin: 0 0 8px;
               font-size: 28px;
@@ -874,9 +881,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           <div class="report-header">
             <h1>${escapeHtml(company.name || '')}</h1>
             <p class="subheading">The Royal Shepherd Nigeria Agbala Itura Division, Lagos</p>
+            <p class="subheading">Company: ${escapeHtml(company.name || '')}</p>
             <p class="subheading">ESTC Exam Results for ${escapeHtml(year || '')}</p>
           </div>
           ${rows}
+          <div class="report-footer">
+            <p>Royal Shepherd Nigeria Agbala Itura Division, Lagos</p>
+            <p>Generated from the latest saved ESTC exam record.</p>
+          </div>
         </body>
       </html>
     `);
