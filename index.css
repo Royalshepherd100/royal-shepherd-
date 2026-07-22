@@ -599,26 +599,72 @@ h4 {
 
 .officers-list {
   display: grid;
-  gap: 0.8rem;
+  gap: 1.2rem;
 }
 
-.officer-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.9rem 1rem;
-  border-radius: 0.9rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+.leadership-group {
+  display: grid;
+  gap: 0.9rem;
 }
 
-.officer-rank {
-  font-weight: 600;
+.leadership-group h3 {
+  margin: 0;
   color: var(--gold-400);
 }
 
-.officer-name {
+.leadership-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.leadership-card {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0.9rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.leadership-photo-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.leadership-photo,
+.leadership-photo.avatar {
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.06);
+  color: var(--white-100);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.12rem;
+}
+
+.leadership-details {
+  display: grid;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.leadership-role {
+  margin: 0;
+  color: var(--gold-400);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+}
+
+.leadership-details h4 {
+  margin: 0;
   color: var(--white-100);
 }
 
