@@ -793,16 +793,24 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   function exportExamResultsPdf(companyId, year) {
     const company = state.companyData[companyId] || defaultCompanyData[companyId];
     const examData = getExamDataForCompany(companyId, year);
-    const reportSections = examGradeSections.map((section) => {
+    const rows = examGradeSections.map((section) => {
       const entries = examData[section.key] || [];
-      const listItems = entries.length
-        ? entries.map((item) => `<li>${escapeHtml(item.name || '')} — ${escapeHtml(item.score || '')}</li>`).join('')
-        : '<li>No scores posted yet.</li>';
+      const tableRows = entries.length
+        ? entries.map((item) => `<tr><td>${escapeHtml(item.name || '')}</td><td>${escapeHtml(item.score || '')}</td></tr>`).join('')
+        : `<tr><td colspan="2">No scores posted yet.</td></tr>`;
 
       return `
-        <section>
-          <h2>${section.label}</h2>
-          <ul>${listItems}</ul>
+        <section class="report-section">
+          <h2>${escapeHtml(section.label)}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Candidate Name</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
         </section>
       `;
     }).join('');
@@ -818,15 +826,57 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         <head>
           <title>ESTC Exam Results - ${escapeHtml(company.name || '')}</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 24px; color: #111; }
-            h1, h2 { margin-bottom: 0.5rem; }
-            ul { padding-left: 1.25rem; }
+            body {
+              font-family: Arial, sans-serif;
+              padding: 32px;
+              color: #111;
+              background: #fff;
+            }
+            .report-header {
+              border-bottom: 2px solid #d4af37;
+              padding-bottom: 16px;
+              margin-bottom: 24px;
+            }
+            h1 {
+              margin: 0 0 8px;
+              font-size: 28px;
+              color: #13203b;
+            }
+            .subheading {
+              margin: 0;
+              font-size: 14px;
+              color: #444;
+            }
+            .report-section {
+              margin-bottom: 24px;
+            }
+            h2 {
+              margin: 0 0 10px;
+              font-size: 18px;
+              color: #1d2a4f;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 14px;
+            }
+            th, td {
+              border: 1px solid #c8c8c8;
+              padding: 10px;
+              text-align: left;
+            }
+            th {
+              background: #f2f2f2;
+            }
           </style>
         </head>
         <body>
-          <h1>${escapeHtml(company.name || '')}</h1>
-          <p>ESTC Exam Results for ${escapeHtml(year || '')}</p>
-          ${reportSections}
+          <div class="report-header">
+            <h1>${escapeHtml(company.name || '')}</h1>
+            <p class="subheading">The Royal Shepherd Nigeria Agbala Itura Division, Lagos</p>
+            <p class="subheading">ESTC Exam Results for ${escapeHtml(year || '')}</p>
+          </div>
+          ${rows}
         </body>
       </html>
     `);
