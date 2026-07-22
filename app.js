@@ -16,9 +16,7 @@
   const captainEmail = document.getElementById('captainEmail');
   const captainPassword = document.getElementById('captainPassword');
   const captainCompany = document.getElementById('captainCompany');
-  const captainCompanyDisplay = document.getElementById('captainCompanyDisplay');
   const captainCompanyField = document.getElementById('captainCompanyField');
-  const captainCompanySelectField = document.getElementById('captainCompanySelectField');
   const captainNotice = document.getElementById('captainNotice');
   const authTabs = document.querySelectorAll('.auth-tab');
   const dashboardModal = document.getElementById('dashboardModal');
@@ -344,15 +342,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function updateCaptainCompanyMode(mode = 'login') {
-    const isRegisterMode = mode === 'register';
-    if (captainCompanyField) {
-      captainCompanyField.style.display = isRegisterMode ? 'none' : 'block';
-    }
-    if (captainCompanySelectField) {
-      captainCompanySelectField.style.display = isRegisterMode ? 'block' : 'none';
-    }
-    if (captainCompanyDisplay) {
-      captainCompanyDisplay.value = '';
+    if (captainCompany && mode === 'login') {
+      captainCompany.value = '';
     }
   }
 
@@ -1325,9 +1316,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         return;
       }
 
-      if (captainCompanyDisplay) {
-        captainCompanyDisplay.value = getCompanyDisplayName(accountCompanyId, state.companyData[accountCompanyId]);
-      }
       if (captainCompany) {
         captainCompany.value = accountCompanyId;
       }
