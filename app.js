@@ -159,6 +159,19 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   ];
 
+  const leadershipTitleOverrides = {
+    'founder-cac-agbala-itura-worldwide': 'Founder CAC Agbala-Itura W/W',
+    'pastor-s-o-oladele': 'CAC President W/W',
+    'pastor-e-olusoko': 'Akiling Region Superintendent',
+    'bishop-kehinde-abiara': 'Agbala-Itura DCC Superintendent Lagos',
+    'rs-major-general-e-b-adegbite': 'National Organizing Secretary',
+    'rs-brigadier-general-s-oludahunsi': 'Assistant National Organizing Secretary',
+    'rs-major-general-j-p-akinyemi': 'Akiling Region Commander',
+    'rs-colonel-o-olowe': 'Akiling Region Deputy Commander',
+    'rs-lt-colonel-o-olasupo': 'Akiling Region Organizing Secretary',
+    'rs-captain-s-a-ilori': 'Akiling Region Training Officer 1 / Acting Divisional Commander'
+  };
+
   const defaultCompanyData = {
     1: { name: 'Ikorodu Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     2: { name: '17th Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
@@ -832,7 +845,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
         const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
         const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
-        const role = (profile.role || roleDefinition?.label || 'Leadership Post').trim();
+        const role = leadershipTitleOverrides[key] || (profile.role || roleDefinition?.label || 'Leadership Post').trim();
 
         const card = document.createElement('article');
         card.className = 'leadership-card';
@@ -852,8 +865,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             ${photo ? `<img class="leadership-photo" src="${photo}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar">${escapeHtml(initials || 'RS')}</div>`}
           </div>
           <div class="leadership-details">
-            <p class="leadership-role">${escapeHtml(role)}</p>
-            <h4>${escapeHtml(name || 'Enter name here')}</h4>
+            <h4>${escapeHtml(role)}</h4>
+            <p class="leadership-role">${escapeHtml(name || 'Enter name here')}</p>
           </div>
         `;
         grid.appendChild(card);
