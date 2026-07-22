@@ -293,6 +293,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     saveCaptains();
   }
 
+  function getCompanyDisplayName(companyId, company = {}) {
+    const name = String(company?.name || '').trim();
+    return name || defaultCompanyData[companyId]?.name || `Company ${companyId}`;
+  }
+
   function normalizeCompanyData(rawData) {
     const parsed = {};
     Object.entries(rawData || {}).forEach(([companyId, company]) => {
@@ -307,7 +312,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         const officer = sectionMap.officer.length ? sectionMap.officer : (Array.isArray(company.officers) ? company.officers : []);
 
         parsed[companyId] = {
-          name: company.name || defaultCompanyData[companyId]?.name || `Company ${companyId}`,
+          name: getCompanyDisplayName(companyId, company),
           anchor,
           junior,
           intermediate: sectionMap.intermediate,
@@ -853,7 +858,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const company = state.companyData[companyId] || defaultCompanyData[companyId];
       const title = card.querySelector('h3');
       const caption = card.querySelector('.company-caption');
-      if (title) title.textContent = company.name;
+      const displayName = getCompanyDisplayName(companyId, company);
+      if (title) title.textContent = displayName;
       if (caption) caption.textContent = `Company ${companyId}`;
 
       card.querySelectorAll('.company-list').forEach((list) => {
