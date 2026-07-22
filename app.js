@@ -134,28 +134,28 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'rs-colonel-o-olowe': 'image/RS Colonel O. Olowe.jpeg'
   };
 
-  const featuredLeadershipProfiles = [
-    { name: 'Prophet Dr. S. K. Abiara', role: 'Founder CAC Agbala-Itura WW', key: 'founder-cac-agbala-itura-worldwide' },
-    { name: 'Pastor E. Olusoko', role: 'National / Regional EXCO', key: 'pastor-e-olusoko' },
-    { name: 'Bishop Kehinde Abiara', role: 'National / Regional EXCO', key: 'bishop-kehinde-abiara' },
-    { name: 'RS Major General E. B. Adegbite', role: 'National / Regional EXCO', key: 'rs-major-general-e-b-adegbite' },
-    { name: 'RS Brigadier General S. Oludahunsi', role: 'National / Regional EXCO', key: 'rs-brigadier-general-s-oludahunsi' },
-    { name: 'RS Major General J. P. Akinyemi', role: 'National / Regional EXCO', key: 'rs-major-general-j-p-akinyemi' },
-    { name: 'RS Colonel O. Olowe', role: 'National / Regional EXCO', key: 'rs-colonel-o-olowe' },
-    { name: 'RS Lt. Colonel O. Olasupo', role: 'National / Regional EXCO', key: 'rs-lt-colonel-o-olasupo' },
-    { name: 'RS Captain S. A. Ilori', role: 'National / Regional EXCO', key: 'rs-captain-s-a-ilori' },
-    { name: 'Akiling Region Superintendent', role: 'Akiling Region Superintendent', key: 'akiling-region-superintendent' },
-    { name: 'Agbala-Itura DCC Superintendent Lagos', role: 'Agbala-Itura DCC Superintendent Lagos', key: 'agbala-itura-dcc-superintendent-lagos' },
-    { name: 'National Organizing Secretary', role: 'National Organizing Secretary', key: 'national-organizing-secretary' },
-    { name: 'Assistant National Organizing Secretary', role: 'Assistant National Organizing Secretary', key: 'assistant-national-organizing-secretary' },
-    { name: 'Akiling Region Commander', role: 'Akiling Region Commander', key: 'akiling-region-commander' },
-    { name: 'Akiling Region Deputy Commander', role: 'Akiling Region Deputy Commander', key: 'akiling-region-deputy-commander' },
-    { name: 'Akiling Region Organizing Secretary', role: 'Akiling Region Organizing Secretary', key: 'akiling-region-organizing-secretary' },
-    { name: 'Akiling Region Training Officer 1 / Acting Divisional Commander', role: 'Akiling Region Training Officer 1 / Acting Divisional Commander', key: 'akiling-region-training-officer-acting-divisional-commander' },
-    { name: 'Captain Olaitan Awoniyi', role: 'PRO', key: 'pro-captain-olaitan-awoniyi' },
-    { name: 'Provost Anjola Olayiwola', role: 'Financial Secretary', key: 'financial-secretary-provost-anjola-olayiwola' },
-    { name: 'Lieu. Solomon O. Adeniji', role: 'Band Master', key: 'band-master-lieu-solomon-o-adeniji' },
-    { name: 'Capt. Segun', role: 'Training Officer', key: 'training-officer-capt-segun' }
+  const featuredLeadershipKeys = [
+    'founder-cac-agbala-itura-worldwide',
+    'pastor-e-olusoko',
+    'bishop-kehinde-abiara',
+    'rs-major-general-e-b-adegbite',
+    'rs-brigadier-general-s-oludahunsi',
+    'rs-major-general-j-p-akinyemi',
+    'rs-colonel-o-olowe',
+    'rs-lt-colonel-o-olasupo',
+    'rs-captain-s-a-ilori',
+    'akiling-region-superintendent',
+    'agbala-itura-dcc-superintendent-lagos',
+    'national-organizing-secretary',
+    'assistant-national-organizing-secretary',
+    'akiling-region-commander',
+    'akiling-region-deputy-commander',
+    'akiling-region-organizing-secretary',
+    'akiling-region-training-officer-acting-divisional-commander',
+    'pro-captain-olaitan-awoniyi',
+    'financial-secretary-provost-anjola-olayiwola',
+    'band-master-lieu-solomon-o-adeniji',
+    'training-officer-capt-segun'
   ];
 
   const defaultCompanyData = {
@@ -806,11 +806,16 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const grid = document.createElement('div');
     grid.className = 'leadership-grid';
 
-    featuredLeadershipProfiles.forEach((entry) => {
+    featuredLeadershipKeys.forEach((key) => {
+      const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
+      const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
+      const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
+      const role = (profile.role || roleDefinition?.label || 'Leadership Post').trim();
+
       const card = document.createElement('article');
       card.className = 'leadership-card';
 
-      const initials = entry.name
+      const initials = name
         .split(' ')
         .filter(Boolean)
         .slice(0, 2)
@@ -818,15 +823,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         .join('')
         .toUpperCase();
 
-      const photo = leadershipPhotoMap[entry.key] || '';
+      const photo = leadershipPhotoMap[key] || '';
 
       card.innerHTML = `
         <div class="leadership-photo-wrap">
-          ${photo ? `<img class="leadership-photo" src="${photo}" alt="${escapeHtml(entry.name)}" />` : `<div class="leadership-photo avatar">${escapeHtml(initials || 'RS')}</div>`}
+          ${photo ? `<img class="leadership-photo" src="${photo}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar">${escapeHtml(initials || 'RS')}</div>`}
         </div>
         <div class="leadership-details">
-          <p class="leadership-role">${escapeHtml(entry.role || '')}</p>
-          <h4>${escapeHtml(entry.name || 'Enter name here')}</h4>
+          <p class="leadership-role">${escapeHtml(role)}</p>
+          <h4>${escapeHtml(name || 'Enter name here')}</h4>
         </div>
       `;
       grid.appendChild(card);
