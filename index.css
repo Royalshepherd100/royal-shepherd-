@@ -695,6 +695,10 @@ h4 {
   resize: vertical;
 }
 
+.print-report {
+  display: none;
+}
+
 .dashboard-intro {
   color: var(--silver-200);
   margin-top: 0.5rem;
@@ -971,6 +975,10 @@ textarea:focus {
   display: none;
 }
 
+.print-report {
+  display: none;
+}
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -989,6 +997,33 @@ textarea:focus {
 @keyframes scaleUp {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@media print {
+  body > *:not(.print-report) {
+    display: none !important;
+  }
+
+  .print-report {
+    display: block;
+    background: #ffffff;
+    color: #111111;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+  }
+
+  .print-report h1,
+  .print-report h2,
+  .print-report p,
+  .print-report li {
+    color: #111111;
+  }
+
+  .print-report ul {
+    padding-left: 1.25rem;
+  }
 }
 
 @media (max-width: 900px) {
