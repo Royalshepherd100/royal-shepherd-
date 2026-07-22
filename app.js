@@ -136,17 +136,27 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'rs-colonel-o-olowe': 'image/RS Colonel O. Olowe.jpeg'
   };
 
-  const featuredLeadershipKeys = [
-    'founder-cac-agbala-itura-worldwide',
-    'pastor-s-o-oladele',
-    'pastor-e-olusoko',
-    'bishop-kehinde-abiara',
-    'rs-major-general-e-b-adegbite',
-    'rs-brigadier-general-s-oludahunsi',
-    'rs-major-general-j-p-akinyemi',
-    'rs-colonel-o-olowe',
-    'rs-lt-colonel-o-olasupo',
-    'rs-captain-s-a-ilori'
+  const featuredLeadershipGroups = [
+    {
+      title: 'Agbala-Itura EXCO',
+      keys: [
+        'founder-cac-agbala-itura-worldwide',
+        'pastor-s-o-oladele',
+        'bishop-kehinde-abiara',
+        'rs-major-general-e-b-adegbite',
+        'rs-brigadier-general-s-oludahunsi'
+      ]
+    },
+    {
+      title: 'Akiling Region EXCO',
+      keys: [
+        'pastor-e-olusoko',
+        'rs-major-general-j-p-akinyemi',
+        'rs-colonel-o-olowe',
+        'rs-lt-colonel-o-olasupo',
+        'rs-captain-s-a-ilori'
+      ]
+    }
   ];
 
   const defaultCompanyData = {
@@ -806,41 +816,52 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     officersList.innerHTML = '';
 
-    const grid = document.createElement('div');
-    grid.className = 'leadership-grid';
+    featuredLeadershipGroups.forEach((group) => {
+      const groupWrapper = document.createElement('section');
+      groupWrapper.className = 'leadership-group';
 
-    featuredLeadershipKeys.forEach((key) => {
-      const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
-      const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-      const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
-      const role = (profile.role || roleDefinition?.label || 'Leadership Post').trim();
+      const groupHeading = document.createElement('h3');
+      groupHeading.className = 'leadership-group-title';
+      groupHeading.textContent = group.title;
+      groupWrapper.appendChild(groupHeading);
 
-      const card = document.createElement('article');
-      card.className = 'leadership-card';
+      const grid = document.createElement('div');
+      grid.className = 'leadership-grid';
 
-      const initials = name
-        .split(' ')
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((part) => part[0] || '')
-        .join('')
-        .toUpperCase();
+      group.keys.forEach((key) => {
+        const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
+        const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
+        const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
+        const role = (profile.role || roleDefinition?.label || 'Leadership Post').trim();
 
-      const photo = leadershipPhotoMap[key] || '';
+        const card = document.createElement('article');
+        card.className = 'leadership-card';
 
-      card.innerHTML = `
-        <div class="leadership-photo-wrap">
-          ${photo ? `<img class="leadership-photo" src="${photo}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar">${escapeHtml(initials || 'RS')}</div>`}
-        </div>
-        <div class="leadership-details">
-          <p class="leadership-role">${escapeHtml(role)}</p>
-          <h4>${escapeHtml(name || 'Enter name here')}</h4>
-        </div>
-      `;
-      grid.appendChild(card);
+        const initials = name
+          .split(' ')
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((part) => part[0] || '')
+          .join('')
+          .toUpperCase();
+
+        const photo = leadershipPhotoMap[key] || '';
+
+        card.innerHTML = `
+          <div class="leadership-photo-wrap">
+            ${photo ? `<img class="leadership-photo" src="${photo}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar">${escapeHtml(initials || 'RS')}</div>`}
+          </div>
+          <div class="leadership-details">
+            <p class="leadership-role">${escapeHtml(role)}</p>
+            <h4>${escapeHtml(name || 'Enter name here')}</h4>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      groupWrapper.appendChild(grid);
+      officersList.appendChild(groupWrapper);
     });
-
-    officersList.appendChild(grid);
   }
 
   function renderCompanyLists() {

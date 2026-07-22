@@ -620,7 +620,21 @@ h4 {
 
 .officers-list {
   display: grid;
+  gap: 1.2rem;
+}
+
+.leadership-group {
+  display: grid;
   gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.leadership-group-title {
+  color: var(--gold-400);
+  font-size: 1.15rem;
 }
 
 .leadership-grid {
