@@ -152,19 +152,30 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       title: 'CAC Authorities',
       keys: [
         'pastor-s-o-oladele',
+        'pastor-e-olusoko',
         'bishop-kehinde-abiara',
         'rs-major-general-e-b-adegbite',
         'rs-brigadier-general-s-oludahunsi'
       ]
     },
     {
-      title: 'EXCO Members',
+      title: 'Regional EXCO',
       keys: [
-        'pastor-e-olusoko',
+        'national-organizing-secretary',
+        'assistant-national-organizing-secretary',
         'rs-major-general-j-p-akinyemi',
         'rs-colonel-o-olowe',
         'rs-lt-colonel-o-olasupo',
         'rs-captain-s-a-ilori'
+      ]
+    },
+    {
+      title: 'Division EXCO',
+      keys: [
+        'pro-captain-olaitan-awoniyi',
+        'financial-secretary-provost-anjola-olayiwola',
+        'band-master-lieu-solomon-o-adeniji',
+        'training-officer-capt-segun'
       ]
     }
   ];
@@ -1180,24 +1191,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function renderOfficerLeadership() {
-    // 1. Render CAC Authorities
     const officersList = document.querySelector('.officers-list');
     if (officersList) {
       officersList.innerHTML = '';
-      const authoritiesGroup = featuredLeadershipGroups.find(g => g.title === 'CAC Authorities');
+      const authoritiesGroup = featuredLeadershipGroups.find((group) => group.title === 'CAC Authorities');
       if (authoritiesGroup) {
         renderLeadershipGroup(officersList, authoritiesGroup);
       }
     }
 
-    // 2. Render EXCO Members
     const excoList = document.querySelector('.exco-list');
     if (excoList) {
       excoList.innerHTML = '';
-      const excoGroup = featuredLeadershipGroups.find(g => g.title === 'EXCO Members');
-      if (excoGroup) {
-        renderLeadershipGroup(excoList, excoGroup);
-      }
+      const excoGroups = featuredLeadershipGroups.filter((group) => group.title !== 'CAC Authorities');
+      excoGroups.forEach((group) => renderLeadershipGroup(excoList, group));
     }
   }
 
