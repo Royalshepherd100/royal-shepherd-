@@ -1517,9 +1517,44 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     });
   }
 
+  function exportExcoProfilesToJson() {
+    const dataToExport = {
+      timestamp: new Date().toISOString(),
+      excoProfiles: state.excoProfiles,
+      leadershipPhotoMap: leadershipPhotoMap
+    };
+    
+    const jsonString = JSON.stringify(dataToExport, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `exco-profiles-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+    
+    showToast('EXCO profiles exported to JSON file');
+  }
+
   function buildExcoDashboard() {
     if (!excoDashboardGrid) return;
     excoDashboardGrid.innerHTML = '';
+
+    // Add header with export button
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'dashboard-card glass-card';
+    headerDiv.style.gridColumn = '1 / -1';
+    headerDiv.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3>EXCO Leadership Profiles</h3>
+          <p>Edit names and upload photos. Changes save automatically. Export to backup or commit manually to GitHub.</p>
+        </div>
+        <button type="button" class="btn btn-gold" id="exportExcoProfiles">📥 Export JSON</button>
+      </div>
+    `;
+    excoDashboardGrid.appendChild(headerDiv);
 
     excoRoleDefinitions.forEach((role) => {
       const profile = state.excoProfiles[role.key] || {};
@@ -1869,6 +1904,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     openExcoDashboardFromAdminBtn?.addEventListener('click', (event) => {
       event.preventDefault();
       openExcoDashboard();
+    });
+
+    // Export EXCO profiles button
+    document.addEventListener('click', (event) => {
+      if (event.target.id === 'exportExcoProfiles') {
+        event.preventDefault();
+        saveExcoFormChanges(false);
+        exportExcoProfilesToJson();
+      }
     });
 
     excoDashboardForm?.addEventListener('input', scheduleExcoAutoSave);
