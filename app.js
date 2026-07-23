@@ -218,6 +218,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return null;
   }
 
+  const ACTIVE_COMMANDER_KEY = 'royalShepherdActiveCommander';
+
   function readStoredValue(key, fallback) {
     const value = localStorage.getItem(key);
     if (value === null) return fallback;
@@ -226,6 +228,24 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     } catch {
       return value;
     }
+  }
+
+  function getActiveCommanderEmail() {
+    return localStorage.getItem(ACTIVE_COMMANDER_KEY) || null;
+  }
+
+  function setActiveCommanderEmail(email) {
+    if (email) {
+      localStorage.setItem(ACTIVE_COMMANDER_KEY, email.toString().trim().toLowerCase());
+      state.activeCommanderEmail = email.toString().trim().toLowerCase();
+    } else {
+      localStorage.removeItem(ACTIVE_COMMANDER_KEY);
+      state.activeCommanderEmail = null;
+    }
+  }
+
+  function isCommanderLoggedIn() {
+    return Boolean(state.activeCommanderEmail && state.commanderAccounts[state.activeCommanderEmail]?.verified);
   }
 
   function normalizeAccountMap(rawData) {
@@ -293,6 +313,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     examScores: readStoredJson('royalShepherdExamScores', null) || {},
     activeExamYear: localStorage.getItem('royalShepherdActiveExamYear') || String(new Date().getFullYear()),
     activeCaptainCompany: null,
+    activeCommanderEmail: getActiveCommanderEmail(),
     galleryItems: []
   };
 
@@ -656,6 +677,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     document.querySelectorAll('.exco-trigger').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
         event.preventDefault();
+        if (!isCommanderLoggedIn()) {
+          window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
+          return;
+        }
         const page = trigger.dataset.dashboardPage || 'exco-dashboard.html';
         window.open(page, '_blank', 'noopener,noreferrer');
       });
@@ -924,8 +949,92 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function exportExamResultsPdf(companyId, year) {
-    const company = state.companyData[companyId] || defaultCompanyData[companyId];
+    const company = state.companyData[companyId] || defaultCompanyData[companyId] || {};
     const examData = getExamDataForCompany(companyId, year);
+    const examYear = year || getLatestExamYear();
+    const displayName = company.name || `Company ${companyId}`;
+    const safeFileName = `ESTC_Exam_Results_${displayName.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, '_')}_${examYear}.pdf`;
+    const PdfConstructor = window.jspdf?.jsPDF || window.jsPDF || window.jspdf?.default || window.jspdf;
+
+    if (typeof PdfConstructor === 'function') {
+      const doc = new PdfConstructor({ unit: 'pt', format: 'letter' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 40;
+      const maxWidth = pageWidth - margin * 2;
+      let y = 50;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.text(displayName, margin, y);
+      y += 24;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text(`ESTC Exam Results - ${examYear}`, margin, y);
+      y += 16;
+      doc.text('Royal Shepherd Nigeria Agbala Itura Division, Lagos', margin, y);
+      y += 24;
+
+      const addPageIfNeeded = (lineHeight = 16) => {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+          return true;
+        }
+        return false;
+      };
+
+      examGradeSections.forEach((section, index) => {
+        if (index > 0) {
+          y += 12;
+          addPageIfNeeded();
+        }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.text(section.label, margin, y);
+        y += 18;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+
+        const entries = examData[section.key] || [];
+        if (!entries.length) {
+          const lines = doc.splitTextToSize('No scores posted yet.', maxWidth);
+          lines.forEach((line) => {
+            addPageIfNeeded();
+            doc.text(line, margin, y);
+            y += 16;
+          });
+        } else {
+          entries.forEach((item) => {
+            const text = `${item.name || 'Candidate'} — ${item.score || 'No score'}`;
+            const lines = doc.splitTextToSize(text, maxWidth);
+            lines.forEach((line) => {
+              addPageIfNeeded();
+              doc.text(line, margin, y);
+              y += 16;
+            });
+            y += 2;
+          });
+        }
+      });
+
+      try {
+        const pdfBlob = doc.output('blob');
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(pdfBlob);
+        link.download = safeFileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(link.href);
+      } catch (error) {
+        console.warn('PDF download fallback:', error);
+        doc.save(safeFileName);
+      }
+      return;
+    }
+
     const rows = examGradeSections.map((section) => {
       const entries = examData[section.key] || [];
       const tableRows = entries.length
@@ -948,7 +1057,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       `;
     }).join('');
 
-    const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+    const printWindow = window.open('', '_blank');
     if (!printWindow) {
       window.alert('Please allow pop-ups so the PDF report can open for download.');
       return;
@@ -957,7 +1066,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     printWindow.document.write(`<!doctype html>
       <html>
         <head>
-          <title>ESTC Exam Results - ${escapeHtml(company.name || '')}</title>
+          <title>ESTC Exam Results - ${escapeHtml(displayName)}</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -1012,10 +1121,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         </head>
         <body>
           <div class="report-header">
-            <h1>${escapeHtml(company.name || '')}</h1>
+            <h1>${escapeHtml(displayName)}</h1>
             <p class="subheading">The Royal Shepherd Nigeria Agbala Itura Division, Lagos</p>
-            <p class="subheading">Company: ${escapeHtml(company.name || '')}</p>
-            <p class="subheading">ESTC Exam Results for ${escapeHtml(year || '')}</p>
+            <p class="subheading">Company: ${escapeHtml(displayName)}</p>
+            <p class="subheading">ESTC Exam Results for ${escapeHtml(examYear)}</p>
           </div>
           ${rows}
           <div class="report-footer">
@@ -1027,7 +1136,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     `);
     printWindow.document.close();
     printWindow.focus();
-    setTimeout(() => printWindow.print(), 250);
+    printWindow.onload = () => {
+      printWindow.print();
+    };
   }
 
   function renderFounderStory() {
@@ -1359,6 +1470,22 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
   }
 
+  function renderExcoAccessDenied() {
+    const excoForm = document.getElementById('excoDashboardForm');
+    if (!excoForm) return;
+    excoForm.innerHTML = `
+      <div class="dashboard-card glass-card">
+        <h3>Access Restricted</h3>
+        <p>Only verified admin users may open the EXCO dashboard.</p>
+        <button type="button" class="btn btn-secondary" id="openCommanderDashboardForExco">Open Admin Login</button>
+      </div>
+    `;
+    const button = document.getElementById('openCommanderDashboardForExco');
+    button?.addEventListener('click', () => {
+      window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
+    });
+  }
+
   function buildExcoDashboard() {
     if (!excoDashboardGrid) return;
     excoDashboardGrid.innerHTML = '';
@@ -1513,6 +1640,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
         state.commanderAccounts[email] = { password, verified: true, email };
         saveCommanderAccounts();
+        setActiveCommanderEmail(email);
         commanderNotice.textContent = `Admin account created for ${email}. Opening the admin dashboard.`;
         commanderNotice.style.color = 'var(--gold-400)';
         closeModal('commanderModal');
@@ -1532,6 +1660,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         return;
       }
 
+      setActiveCommanderEmail(email);
       commanderNotice.textContent = 'Commander access granted. Opening the commander dashboard.';
       commanderNotice.style.color = 'var(--gold-400)';
       closeModal('commanderModal');
@@ -1945,7 +2074,11 @@ excoDashboardForm?.addEventListener('submit', async (event) => {
       }
       if (window.location.pathname.includes('exco-dashboard.html')) {
         window.__royalShepherdExcoPath = true;
-        buildExcoDashboard();
+        if (!isCommanderLoggedIn()) {
+          renderExcoAccessDenied();
+        } else {
+          buildExcoDashboard();
+        }
       }
     }).catch((error) => {
       window.__royalShepherdBootstrapFailed = true;
