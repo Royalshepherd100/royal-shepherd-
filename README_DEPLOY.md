@@ -1,0 +1,28 @@
+# Render Deployment Guide
+
+This project is configured for deployment on Render using `render.yaml`.
+
+## Frontend
+- The frontend is served as a static site from the project root.
+- Render service name: `royal-shepherd-frontend`
+- Static site root: `/`
+- No build command is required.
+
+## Backend
+- The backend is a FastAPI app in `backend/main.py`.
+- Render service name: `royal-shepherd-backend`
+- Python root: `backend`
+- Install command: `pip install -r requirements/requirements.txt`
+- Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+
+## How to deploy on Render
+1. Sign in to Render at https://render.com.
+2. Create a new "Web Service" and connect your GitHub repo.
+3. Ensure Render detects `render.yaml` and uses it to deploy both services.
+4. If prompted, use branch `gh-pages`.
+5. Deploy the app.
+
+## Notes
+- The frontend and backend are deployed from the same repository using `render.yaml`.
+- The backend is available as a separate HTTP service.
+- If you change `render.yaml`, push the update to GitHub and re-deploy on Render.
