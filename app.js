@@ -159,7 +159,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       ]
     },
     {
-      title: 'Regional EXCO',
+      title: 'Regional EXCO Leadership',
       keys: [
         'national-organizing-secretary',
         'assistant-national-organizing-secretary',
@@ -170,7 +170,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       ]
     },
     {
-      title: 'Division EXCO',
+      title: 'Division EXCO Leadership',
       keys: [
         'pro-captain-olaitan-awoniyi',
         'financial-secretary-provost-anjola-olayiwola',
