@@ -144,7 +144,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'rs-major-general-j-p-akinyemi': '',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
     'rs-lt-colonel-o-olasupo': '',
-    'rs-captain-s-a-ilori': ''
+    'rs-captain-s-a-ilori': '',
+    'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
+    'assistant-national-organizing-secretary': ''
   };
 
   const featuredLeadershipGroups = [
@@ -1231,10 +1233,17 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       const photo = profile.photo || leadershipPhotoMap[key] || '';
       const imageSrc = resolveImagePath(photo);
+      const initials = (name || role || 'RS')
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join('')
+        .toUpperCase() || 'RS';
 
       card.innerHTML = `
         <div class="leadership-photo-wrap">
-          ${photo ? `<img class="leadership-photo" src="${imageSrc}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar empty" aria-hidden="true"></div>`}
+          ${photo ? `<img class="leadership-photo" src="${imageSrc}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar empty" aria-hidden="true">${escapeHtml(initials)}</div>`}
         </div>
         <div class="leadership-details">
           <h4>${escapeHtml(role)}</h4>
