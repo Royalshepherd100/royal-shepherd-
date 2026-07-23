@@ -42,6 +42,7 @@
   const excoDashboardGrid = document.querySelector('#excoDashboardModal .dashboard-grid, #excoDashboardGrid');
   const excoDashboardForm = document.getElementById('excoDashboardForm');
   const openExcoDashboardBtn = document.getElementById('openExcoDashboardBtn');
+  const openExcoDashboardFromAdminBtn = document.getElementById('openExcoDashboardFromAdmin');
   const commanderTrigger = document.querySelectorAll('.commander-trigger');
   const excoTrigger = document.querySelectorAll('.exco-trigger');
   const companyCards = document.querySelectorAll('.company-card');
@@ -150,7 +151,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     {
       title: 'CAC Authorities',
       keys: [
-        'founder-cac-agbala-itura-worldwide',
         'pastor-s-o-oladele',
         'bishop-kehinde-abiara',
         'rs-major-general-e-b-adegbite',
@@ -1848,6 +1848,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     });
 
     openExcoDashboardBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      openExcoDashboard();
+    });
+
+    openExcoDashboardFromAdminBtn?.addEventListener('click', (event) => {
       event.preventDefault();
       openExcoDashboard();
     });
