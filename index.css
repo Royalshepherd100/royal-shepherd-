@@ -618,7 +618,8 @@ h4 {
   color: var(--silver-200);
 }
 
-.officers-list {
+.officers-list,
+.exco-list {
   display: grid;
   gap: 1.2rem;
 }
@@ -1412,3 +1413,40 @@ textarea:focus {
     min-height: 280px;
   }
 }
+
+/* Toast Notification Styles */
+.toast-notification {
+  position: relative;
+  background: rgba(19, 32, 59, 0.95);
+  border: 1px solid var(--gold-400);
+  color: #fff;
+  padding: 0.85rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.toast-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-notification.hide {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.toast-notification i {
+  color: var(--gold-400);
+  font-size: 1.1rem;
+}
+

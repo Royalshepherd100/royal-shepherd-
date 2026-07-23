@@ -474,8 +474,60 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     localStorage.setItem('royalShepherdCommanderVerificationCodes', JSON.stringify(state.commanderVerificationCodes));
   }
 
+  let excoAutoSaveTimer = null;
+  const EXCO_AUTO_SAVE_DELAY_MS = 1200;
+
   function saveExcoProfiles() {
     localStorage.setItem('royalShepherdExcoProfiles', JSON.stringify(state.excoProfiles));
+  }
+
+  function saveExcoFormChanges(showToastOnSave = false) {
+    if (!excoDashboardForm || !excoDashboardGrid) return;
+
+    const formData = new FormData(excoDashboardForm);
+    for (const role of excoRoleDefinitions) {
+      const card = excoDashboardGrid.querySelector(`.dashboard-card[data-role="${role.key}"]`);
+      if (!card) continue;
+
+      const name = (formData.get(`${role.key}-name`) || '').toString().trim();
+      const email = (formData.get(`${role.key}-email`) || '').toString().trim();
+      const phone = (formData.get(`${role.key}-phone`) || '').toString().trim();
+      const bio = (formData.get(`${role.key}-bio`) || '').toString().trim();
+      const tempPhoto = card.dataset.tempPhoto;
+      const photoRemoved = card.dataset.photoRemoved === 'true';
+
+      const profile = { role: role.label, name, email, phone, bio };
+
+      if (tempPhoto) {
+        profile.photo = tempPhoto;
+      } else if (!photoRemoved && state.excoProfiles[role.key]?.photo) {
+        profile.photo = state.excoProfiles[role.key].photo;
+      }
+
+      if (name || email || phone || bio || profile.photo) {
+        state.excoProfiles[role.key] = profile;
+      } else {
+        delete state.excoProfiles[role.key];
+      }
+    }
+
+    saveExcoProfiles();
+    renderOfficerLeadership();
+
+    if (showToastOnSave) {
+      showToast('EXCO profile updates saved');
+    }
+  }
+
+  function scheduleExcoAutoSave() {
+    if (excoAutoSaveTimer) {
+      window.clearTimeout(excoAutoSaveTimer);
+    }
+
+    excoAutoSaveTimer = window.setTimeout(() => {
+      excoAutoSaveTimer = null;
+      saveExcoFormChanges(true);
+    }, EXCO_AUTO_SAVE_DELAY_MS);
   }
 
   function resizeImageFileToDataUrl(file, outputSize = 512) {
@@ -570,6 +622,43 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function showToast(message) {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toastContainer';
+      container.style.position = 'fixed';
+      container.style.bottom = '2rem';
+      container.style.right = '2rem';
+      container.style.zIndex = '99999';
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.gap = '0.5rem';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${escapeHtml(message)}</span>`;
+    container.appendChild(toast);
+
+    // Trigger reflow
+    toast.offsetHeight;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+      toast.addEventListener('transitionend', () => {
+        toast.remove();
+      }, { once: true });
+      // Fallback
+      setTimeout(() => {
+        toast.remove();
+      }, 500);
+    }, 3000);
   }
 
   function saveExamScores() {
@@ -677,12 +766,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     document.querySelectorAll('.exco-trigger').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
         event.preventDefault();
-        if (!isCommanderLoggedIn()) {
-          window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
-          return;
-        }
-        const page = trigger.dataset.dashboardPage || 'exco-dashboard.html';
-        window.open(page, '_blank', 'noopener,noreferrer');
+        openExcoDashboard();
       });
     });
   }
@@ -1020,125 +1104,60 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       });
 
       try {
-        const pdfBlob = doc.output('blob');
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(pdfBlob);
-        link.download = safeFileName;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(link.href);
-      } catch (error) {
-        console.warn('PDF download fallback:', error);
         doc.save(safeFileName);
+      } catch (error) {
+        console.warn('PDF download failed, trying Blob method:', error);
+        try {
+          const pdfBlob = doc.output('blob');
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(pdfBlob);
+          link.download = safeFileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(link.href);
+        } catch (innerError) {
+          console.error('All PDF download options failed:', innerError);
+          alert('Could not download PDF. Please try a different browser.');
+        }
       }
       return;
     }
 
-    const rows = examGradeSections.map((section) => {
-      const entries = examData[section.key] || [];
-      const tableRows = entries.length
-        ? entries.map((item) => `<tr><td>${escapeHtml(item.name || '')}</td><td>${escapeHtml(item.score || '')}</td></tr>`).join('')
-        : `<tr><td colspan="2">No scores posted yet.</td></tr>`;
+    // Fallback: Download results as a clean text file if jsPDF is unavailable
+    try {
+      const textLines = [];
+      textLines.push(displayName.toUpperCase());
+      textLines.push('='.repeat(displayName.length));
+      textLines.push(`ESTC Exam Results - ${examYear}`);
+      textLines.push('Royal Shepherd Nigeria Agbala Itura Division, Lagos');
+      textLines.push('');
 
-      return `
-        <section class="report-section">
-          <h2>${escapeHtml(section.label)}</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Candidate Name</th>
-                <th>Score</th>
-              </tr>
-            </thead>
-            <tbody>${tableRows}</tbody>
-          </table>
-        </section>
-      `;
-    }).join('');
+      examGradeSections.forEach((section) => {
+        textLines.push(`[${section.label}]`);
+        const entries = examData[section.key] || [];
+        if (!entries.length) {
+          textLines.push('No scores posted yet.');
+        } else {
+          entries.forEach((item) => {
+            textLines.push(`  - ${item.name || 'Candidate'}: ${item.score || 'No score'}`);
+          });
+        }
+        textLines.push('');
+      });
 
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      window.alert('Please allow pop-ups so the PDF report can open for download.');
-      return;
+      const textBlob = new Blob([textLines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(textBlob);
+      link.download = safeFileName.replace('.pdf', '.txt');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    } catch (fallbackError) {
+      console.error('Text fallback download failed:', fallbackError);
+      alert('Could not download exam results.');
     }
-
-    printWindow.document.write(`<!doctype html>
-      <html>
-        <head>
-          <title>ESTC Exam Results - ${escapeHtml(displayName)}</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              padding: 32px;
-              color: #111;
-              background: #fff;
-            }
-            .report-header {
-              border-bottom: 2px solid #d4af37;
-              padding-bottom: 16px;
-              margin-bottom: 24px;
-            }
-            .report-footer {
-              margin-top: 28px;
-              padding-top: 12px;
-              border-top: 1px solid #d0d0d0;
-              font-size: 12px;
-              color: #555;
-            }
-            h1 {
-              margin: 0 0 8px;
-              font-size: 28px;
-              color: #13203b;
-            }
-            .subheading {
-              margin: 0;
-              font-size: 14px;
-              color: #444;
-            }
-            .report-section {
-              margin-bottom: 24px;
-            }
-            h2 {
-              margin: 0 0 10px;
-              font-size: 18px;
-              color: #1d2a4f;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              font-size: 14px;
-            }
-            th, td {
-              border: 1px solid #c8c8c8;
-              padding: 10px;
-              text-align: left;
-            }
-            th {
-              background: #f2f2f2;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="report-header">
-            <h1>${escapeHtml(displayName)}</h1>
-            <p class="subheading">The Royal Shepherd Nigeria Agbala Itura Division, Lagos</p>
-            <p class="subheading">Company: ${escapeHtml(displayName)}</p>
-            <p class="subheading">ESTC Exam Results for ${escapeHtml(examYear)}</p>
-          </div>
-          ${rows}
-          <div class="report-footer">
-            <p>Royal Shepherd Nigeria Agbala Itura Division, Lagos</p>
-            <p>Generated from the latest saved ESTC exam record.</p>
-          </div>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.onload = () => {
-      printWindow.print();
-    };
   }
 
   function renderFounderStory() {
@@ -1161,67 +1180,65 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function renderOfficerLeadership() {
-    let officersList = document.querySelector('.officers-list');
-    if (!officersList) {
-      const foundersSection = document.querySelector('#founders .container');
-      if (foundersSection) {
-        officersList = document.createElement('div');
-        officersList.className = 'officers-list';
-        foundersSection.appendChild(officersList);
+    // 1. Render CAC Authorities
+    const officersList = document.querySelector('.officers-list');
+    if (officersList) {
+      officersList.innerHTML = '';
+      const authoritiesGroup = featuredLeadershipGroups.find(g => g.title === 'CAC Authorities');
+      if (authoritiesGroup) {
+        renderLeadershipGroup(officersList, authoritiesGroup);
       }
     }
 
-    if (!officersList) return;
+    // 2. Render EXCO Members
+    const excoList = document.querySelector('.exco-list');
+    if (excoList) {
+      excoList.innerHTML = '';
+      const excoGroup = featuredLeadershipGroups.find(g => g.title === 'EXCO Members');
+      if (excoGroup) {
+        renderLeadershipGroup(excoList, excoGroup);
+      }
+    }
+  }
 
-    officersList.innerHTML = '';
+  function renderLeadershipGroup(container, group) {
+    const groupWrapper = document.createElement('section');
+    groupWrapper.className = 'leadership-group';
 
-    featuredLeadershipGroups.forEach((group) => {
-      const groupWrapper = document.createElement('section');
-      groupWrapper.className = 'leadership-group';
+    const groupHeading = document.createElement('h3');
+    groupHeading.className = 'leadership-group-title';
+    groupHeading.textContent = group.title;
+    groupWrapper.appendChild(groupHeading);
 
-      const groupHeading = document.createElement('h3');
-      groupHeading.className = 'leadership-group-title';
-      groupHeading.textContent = group.title;
-      groupWrapper.appendChild(groupHeading);
+    const grid = document.createElement('div');
+    grid.className = 'leadership-grid';
 
-      const grid = document.createElement('div');
-      grid.className = 'leadership-grid';
+    group.keys.forEach((key) => {
+      const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
+      const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
+      const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
+      const role = leadershipTitleOverrides[key] || (profile.role || roleDefinition?.label || 'Leadership Post').trim();
 
-      group.keys.forEach((key) => {
-        const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
-        const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-        const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
-        const role = leadershipTitleOverrides[key] || (profile.role || roleDefinition?.label || 'Leadership Post').trim();
+      const card = document.createElement('article');
+      card.className = 'leadership-card';
 
-        const card = document.createElement('article');
-        card.className = 'leadership-card';
+      const photo = profile.photo || leadershipPhotoMap[key] || '';
+      const imageSrc = resolveImagePath(photo);
 
-        const initials = name
-          .split(' ')
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((part) => part[0] || '')
-          .join('')
-          .toUpperCase();
-
-        const photo = profile.photo || leadershipPhotoMap[key] || '';
-        const imageSrc = resolveImagePath(photo);
-
-        card.innerHTML = `
-          <div class="leadership-photo-wrap">
-            ${photo ? `<img class="leadership-photo" src="${imageSrc}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar empty" aria-hidden="true"></div>`}
-          </div>
-          <div class="leadership-details">
-            <h4>${escapeHtml(role)}</h4>
-            <p class="leadership-role">${escapeHtml(name || 'Enter name here')}</p>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      groupWrapper.appendChild(grid);
-      officersList.appendChild(groupWrapper);
+      card.innerHTML = `
+        <div class="leadership-photo-wrap">
+          ${photo ? `<img class="leadership-photo" src="${imageSrc}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar empty" aria-hidden="true"></div>`}
+        </div>
+        <div class="leadership-details">
+          <h4>${escapeHtml(role)}</h4>
+          <p class="leadership-role">${escapeHtml(name || 'Enter name here')}</p>
+        </div>
+      `;
+      grid.appendChild(card);
     });
+
+    groupWrapper.appendChild(grid);
+    container.appendChild(groupWrapper);
   }
 
   function renderCompanyLists() {
@@ -1538,6 +1555,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function openExcoDashboard() {
+    if (!isCommanderLoggedIn()) {
+      showToast('Admin access is required to open the EXCO dashboard.');
+      window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     buildExcoDashboard();
 
     if (window.location.pathname.includes('exco-dashboard.html')) {
@@ -1818,43 +1841,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       closeModal('commanderDashboardModal');
     });
 
-excoDashboardForm?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const formData = new FormData(excoDashboardForm);
-
-        for (const role of excoRoleDefinitions) {
-          const name = (formData.get(`${role.key}-name`) || '').toString().trim();
-          const email = (formData.get(`${role.key}-email`) || '').toString().trim();
-          const phone = (formData.get(`${role.key}-phone`) || '').toString().trim();
-          const bio = (formData.get(`${role.key}-bio`) || '').toString().trim();
-          const card = excoDashboardGrid?.querySelector(`.dashboard-card[data-role="${role.key}"]`);
-          const fileInput = card?.querySelector(`.exco-photo-input[data-role="${role.key}"]`);
-          const tempPhoto = card?.dataset.tempPhoto;
-          const photoRemoved = card?.dataset.photoRemoved === 'true';
-
-          const profile = { role: role.label, name, email, phone, bio };
-
-          if (fileInput?.files?.[0]) {
-            try {
-              profile.photo = await resizeImageFileToDataUrl(fileInput.files[0]);
-            } catch (err) {
-              console.warn('EXCO photo upload failed:', err);
-            }
-          } else if (tempPhoto) {
-            profile.photo = tempPhoto;
-          } else if (!photoRemoved && state.excoProfiles[role.key]?.photo) {
-            profile.photo = state.excoProfiles[role.key].photo;
-          }
-
-          if (name || email || phone || bio || profile.photo) {
-            state.excoProfiles[role.key] = profile;
-          } else {
-            delete state.excoProfiles[role.key];
-          }
-        }
-
-        saveExcoProfiles();
-        renderOfficerLeadership();
+    excoDashboardForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      saveExcoFormChanges(true);
       closeModal('excoDashboardModal');
     });
 
@@ -1862,6 +1851,9 @@ excoDashboardForm?.addEventListener('submit', async (event) => {
       event.preventDefault();
       openExcoDashboard();
     });
+
+    excoDashboardForm?.addEventListener('input', scheduleExcoAutoSave);
+    excoDashboardForm?.addEventListener('change', scheduleExcoAutoSave);
 
     excoDashboardGrid?.addEventListener('click', (event) => {
       const button = event.target.closest('.exco-photo-button');
@@ -1885,6 +1877,7 @@ excoDashboardForm?.addEventListener('submit', async (event) => {
         const uploadButton = card.querySelector('.exco-photo-button');
         if (uploadButton) uploadButton.textContent = 'Upload Picture';
       }
+      scheduleExcoAutoSave();
     });
 
     excoDashboardGrid?.addEventListener('change', async (event) => {
@@ -1913,6 +1906,7 @@ excoDashboardForm?.addEventListener('submit', async (event) => {
       } catch (error) {
         console.warn('Error preparing EXCO photo preview:', error);
       }
+      scheduleExcoAutoSave();
     });
 
     dashboardGrid?.addEventListener('click', (event) => {
