@@ -216,15 +216,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   };
 
   const defaultCompanyData = {
-    1: { name: 'Ikorodu Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    2: { name: '17th Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    3: { name: '28th Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    4: { name: 'Command Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    5: { name: 'Ipaja Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    6: { name: 'Ijaba Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    7: { name: '8th Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    8: { name: 'Mainland Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    9: { name: 'Lekki Akiling Company', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] }
+    1: { name: 'Oke Odo - 12th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    2: { name: 'Ikorodu - 15th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    3: { name: 'Iyesi - 17th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    4: { name: 'Sango - 28th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    5: { name: 'Command - 31st Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    6: { name: 'Ipaja - 38th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    7: { name: 'Ijaba - 44th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    8: { name: 'Ijoko - 48th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    9: { name: 'Ikeja - 49th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] }
   };
 
   function readStoredJson(primaryKey, fallbackKey) {
@@ -532,7 +532,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (!captainCompany) return;
 
     const currentValue = captainCompany.value || '';
-    const companyEntries = Object.entries(state.companyData || {});
+    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
 
     captainCompany.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
       const label = getCompanyDisplayName(companyId, company);
@@ -548,7 +548,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const enlistmentCompanySelect = document.getElementById('enlistmentCompany');
     if (!enlistmentCompanySelect) return;
 
-    const companyEntries = Object.entries(state.companyData || {});
+    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
     enlistmentCompanySelect.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
       const label = getCompanyDisplayName(companyId, company);
       return `<option value="${companyId}">${escapeHtml(label)}</option>`;
@@ -1002,6 +1002,44 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('data:')) return normalized;
     if (normalized.startsWith('image/')) return normalized;
     return `image/${normalized}`;
+  }
+
+  function handleStorageEvent(event) {
+    if (!event.key) return;
+
+    if (event.key === 'royalShepherdExcoProfiles') {
+      try {
+        const stored = JSON.parse(event.newValue || 'null');
+        state.excoProfiles = { ...defaultExcoProfiles, ...(stored || {}) };
+      } catch {
+        state.excoProfiles = { ...defaultExcoProfiles };
+      }
+      renderOfficerLeadership();
+      if (window.location.pathname.includes('exco-dashboard.html')) {
+        buildExcoDashboard();
+      }
+      return;
+    }
+
+    if (event.key === 'royalShepherdCompanies') {
+      try {
+        const stored = JSON.parse(event.newValue || 'null');
+        state.companyData = normalizeCompanyData(stored || {});
+      } catch {
+        state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
+      }
+      populateCaptainCompanySelect();
+      populateEnlistmentCompanySelect();
+      renderCompanyLists();
+      if (window.location.pathname.includes('captain-dashboard.html')) {
+        const queryParams = new URLSearchParams(window.location.search);
+        const companyId = queryParams.get('company') || state.activeCaptainCompany;
+        if (companyId && state.companyData[companyId]) {
+          buildCaptainDashboard(companyId);
+        }
+      }
+      return;
+    }
   }
 
   function renderGallery() {
@@ -1733,9 +1771,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     if (!commanderDashboardForm) return false;
 
+    if (commanderForm) {
+      commanderForm.style.display = isLoggedIn ? 'none' : '';
+      commanderForm.hidden = isLoggedIn;
+    }
+
     commanderDashboardForm.style.display = isLoggedIn ? '' : 'none';
-    openExcoDashboardFromAdminBtn?.classList.toggle('hidden', !isLoggedIn);
-    openExcoDashboardBtn?.classList.toggle('hidden', !isLoggedIn);
+    commanderDashboardForm.hidden = !isLoggedIn;
+
+    if (openExcoDashboardFromAdminBtn) {
+      openExcoDashboardFromAdminBtn.classList.toggle('hidden', !isLoggedIn);
+    }
+    if (openExcoDashboardBtn) {
+      openExcoDashboardBtn.classList.toggle('hidden', !isLoggedIn);
+    }
 
     if (!isLoggedIn) {
       if (commanderDashboardGrid) commanderDashboardGrid.innerHTML = '';
@@ -2372,6 +2421,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     window.addEventListener('scroll', () => {
       header?.classList.toggle('scrolled', window.scrollY > 50);
     });
+    window.addEventListener('storage', handleStorageEvent);
 
     bindMobileMenu();
     bindSmoothScrolling();
@@ -2395,6 +2445,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     });
     ensureDefaultCommanderAccount();
     ensureLegacyCaptainAccounts();
+    window.__royalShepherdState = state;
+    window.__royalShepherdRenderCommanderWorkspaceAccess = renderCommanderWorkspaceAccess;
+    window.__royalShepherdIsCommanderLoggedIn = isCommanderLoggedIn;
     window.__royalShepherdBootstrapStarted = true;
     bootstrapCompanyData().then(() => {
       window.__royalShepherdBootstrapResolved = true;
