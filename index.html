@@ -20,7 +20,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="index.css?v=5" />
+    <link rel="stylesheet" href="index.css?v=6" />
     <script defer src="assets/jspdf.umd.min.js"></script>
   </head>
   <body>
@@ -112,6 +112,7 @@
             <p>
               Our mission extends beyond ceremonial roles. We build character through responsibility, self-control, and teamwork while serving the church, the community, and the nation with humility.
             </p>
+            <a href="RS%20New%20Constitution%20Book.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open RS New Constitution Handbook</a>
           </div>
           <div class="glass-card about-card">
             <h3>Our Calling</h3>
@@ -462,13 +463,16 @@
             <p>A glimpse into our disciplined fellowship, parades, and training sessions.</p>
           </div>
 
-          <div class="gallery-panel glass-card">
+          <div class="gallery-panel glass-card is-collapsed">
             <div class="gallery-panel-inner">
-              <div class="gallery-filters" role="toolbar" aria-label="Gallery filters">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="parades">Parades</button>
-                <button class="filter-btn" data-filter="band">Band Corps</button>
-                <button class="filter-btn" data-filter="training">Training</button>
+              <div class="gallery-panel-header">
+                <div class="gallery-filters" role="toolbar" aria-label="Gallery filters">
+                  <button class="filter-btn active" data-filter="all">All</button>
+                  <button class="filter-btn" data-filter="parades">Parades</button>
+                  <button class="filter-btn" data-filter="band">Band Corps</button>
+                  <button class="filter-btn" data-filter="training">Training</button>
+                </div>
+                <button type="button" class="gallery-toggle btn btn-outline" aria-expanded="false">Open Gallery</button>
               </div>
 
               <div class="gallery-grid" aria-live="polite"></div>
@@ -548,9 +552,9 @@
         <div>
           <h3>Stay Connected</h3>
           <div class="social-links">
-            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://www.facebook.com/share/v/1BQQj5H6Hp/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/reel/DaIX5aoNw2g/?igsh=a3p3bG9jNmswdTFx" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
           </div>
           <div class="social-accounts">
             <p>Facebook: rs agbala itura div</p>
@@ -653,7 +657,7 @@
       <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="excoDashboardTitle">
         <button class="modal-close" id="excoDashboardClose" aria-label="Close exco dashboard">&times;</button>
         <h3 id="excoDashboardTitle">EXCO Dashboard</h3>
-        <p class="dashboard-intro">Create or update profiles for the General Secretary, PRO, Assistant Secretary, Band Master, Assistant Band Master, and Treasurer.</p>
+        <p class="dashboard-intro">Create or update profiles for the Divisional Commander, General Secretary, Divisional Secretary, PRO, Assistant Secretary, Band Master, Assistant Band Master, and Treasurer.</p>
         <form id="excoDashboardForm">
           <div class="dashboard-grid exco-dashboard-grid"></div>
           <div class="dashboard-actions">
@@ -702,6 +706,6 @@
     </div>
 
     <script defer src="gallery-data.js?v=3"></script>
-    <script defer src="app.js?v=5"></script>
+    <script defer src="app.js?v=6"></script>
   </body>
 </html>

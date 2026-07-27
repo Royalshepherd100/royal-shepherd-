@@ -507,6 +507,32 @@ h4 {
   justify-content: flex-start;
 }
 
+.company-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0.5rem 0 0.8rem;
+  color: var(--gold-400);
+  font-size: 0.9rem;
+}
+
+.company-stats span {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+}
+
+.company-toggle {
+  align-self: flex-start;
+  margin: 0.15rem 0 0.7rem;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  color: var(--white-100);
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
 .company-number {
   display: inline-block;
   font-size: 0.8rem;
@@ -940,11 +966,27 @@ h4 {
   border-radius: 999px;
 }
 
+.gallery-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+}
+
 .gallery-filters {
   display: flex;
   gap: 0.8rem;
   flex-wrap: wrap;
-  margin-bottom: 1.4rem;
+}
+
+.gallery-toggle {
+  min-width: 120px;
+}
+
+.gallery-panel.is-collapsed .gallery-panel-inner {
+  display: none;
 }
 
 .filter-btn {
@@ -1226,6 +1268,10 @@ textarea:focus {
   to { opacity: 1; transform: scale(1); }
 }
 
+.hidden {
+  display: none !important;
+}
+
 @media print {
   body > *:not(.print-report) {
     display: none !important;
@@ -1239,6 +1285,10 @@ textarea:focus {
     max-width: 900px;
     margin: 0 auto;
     font-family: Arial, sans-serif;
+  }
+
+  .hidden {
+    display: none !important;
   }
 
   .print-report h1,
