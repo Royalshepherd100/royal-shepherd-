@@ -251,6 +251,40 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return null;
   }
 
+  function showToast(message, timeout = 3000) {
+    try {
+      const toast = document.createElement('div');
+      toast.className = 'rs-toast';
+      toast.textContent = message;
+      Object.assign(toast.style, {
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        background: 'rgba(0,0,0,0.85)',
+        color: '#fff',
+        padding: '10px 14px',
+        borderRadius: '6px',
+        boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
+        zIndex: 99999,
+        opacity: '0',
+        transition: 'opacity 200ms ease, transform 200ms ease',
+        transform: 'translateY(6px)'
+      });
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+      });
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(6px)';
+        setTimeout(() => toast.remove(), 250);
+      }, timeout);
+    } catch (e) {
+      console.warn('Could not show toast:', e);
+    }
+  }
+
   const ACTIVE_COMMANDER_KEY = 'royalShepherdActiveCommander';
 
   function readStoredValue(key, fallback) {
@@ -2298,6 +2332,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       populateCaptainCompanySelect();
       populateEnlistmentCompanySelect();
       closeModal('commanderDashboardModal');
+      showToast('Commander dashboard saved', 3000);
     });
 
     excoDashboardForm?.addEventListener('submit', async (event) => {
