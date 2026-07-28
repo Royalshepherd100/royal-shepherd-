@@ -34,15 +34,15 @@ DATA_FILE = Path(__file__).resolve().parent / "data_store.json"
 
 def build_default_companies() -> Dict[str, Dict[str, Any]]:
     return {
-        "1": {"name": "Ikorodu Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "2": {"name": "17th Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "3": {"name": "28th Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "4": {"name": "Command Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "5": {"name": "Ipaja Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "6": {"name": "Ijaba Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "7": {"name": "8th Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "8": {"name": "Mainland Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "9": {"name": "Lekki Akiling Company", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "1": {"name": "Oke Odo - 12th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "2": {"name": "Ikorodu - 15th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "3": {"name": "Iyesi - 17th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "4": {"name": "Sango - 28th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "5": {"name": "Command - 31st Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "6": {"name": "Ipaja - 38th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "7": {"name": "Ijaba - 44th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "8": {"name": "Ijoko - 48th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "9": {"name": "Ikeja - 49th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
     }
 
 
