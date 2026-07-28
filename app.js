@@ -1274,40 +1274,63 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 40;
       const maxWidth = pageWidth - margin * 2;
-      let y = 50;
+      let y = margin + 10;
 
+      // Helper: draw a simple vertical gradient by painting narrow rectangles
+      function drawVerticalGradient(x, y0, w, h, startRgb, endRgb, steps = 40) {
+        const [r1, g1, b1] = startRgb;
+        const [r2, g2, b2] = endRgb;
+        for (let i = 0; i < steps; i++) {
+          const t = i / Math.max(1, steps - 1);
+          const r = Math.round(r1 + (r2 - r1) * t);
+          const g = Math.round(g1 + (g2 - g1) * t);
+          const b = Math.round(b1 + (b2 - b1) * t);
+          doc.setFillColor(r, g, b);
+          const sliceH = h / steps;
+          doc.rect(x, y0 + i * sliceH, w, sliceH + 0.5, 'F');
+        }
+      }
+
+      // Page header with gradient background
+      const headerH = 72;
+      drawVerticalGradient(margin - 10, y - 6, pageWidth - margin * 2 + 20, headerH, [16, 81, 150], [106, 168, 255], 60);
+      doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(18);
-      doc.text(displayName, margin, y);
-      y += 24;
+      doc.setFontSize(20);
+      doc.text(displayName, margin + 8, y + 20);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(12);
-      doc.text(`ESTC Exam Results - ${examYear}`, margin, y);
-      y += 16;
-      doc.text('Royal Shepherd Nigeria Agbala Itura Division, Lagos', margin, y);
-      y += 24;
+      doc.setFontSize(11);
+      doc.text(`ESTC Exam Results — ${examYear}`, margin + 8, y + 40);
+      doc.setTextColor(40, 40, 40);
+      y += headerH + 10;
 
-      const addPageIfNeeded = (lineHeight = 16) => {
+      const addPageIfNeeded = (lineHeight = 18) => {
         if (y > pageHeight - margin) {
           doc.addPage();
-          y = margin;
-          return true;
+          y = margin + 10;
         }
-        return false;
       };
 
       examGradeSections.forEach((section, index) => {
-        if (index > 0) {
-          y += 12;
-          addPageIfNeeded();
-        }
+        addPageIfNeeded();
 
+        // Section header bar
+        const barH = 20;
+        const barX = margin;
+        const barW = pageWidth - margin * 2;
+        // use a gentle color strip for each section
+        const sectionColor = index % 2 === 0 ? [14, 120, 70] : [200, 90, 40];
+        doc.setFillColor(...sectionColor);
+        doc.roundedRect(barX, y, barW, barH, 4, 4, 'F');
+        doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
-        doc.text(section.label, margin, y);
-        y += 18;
-        doc.setFont('helvetica', 'normal');
         doc.setFontSize(12);
+        doc.text(section.label, barX + 8, y + 14);
+        y += barH + 8;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(40, 40, 40);
 
         const entries = examData[section.key] || [];
         if (!entries.length) {
@@ -1319,16 +1342,18 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           });
         } else {
           entries.forEach((item) => {
+            addPageIfNeeded();
             const text = `${item.name || 'Candidate'} — ${item.score || 'No score'}`;
             const lines = doc.splitTextToSize(text, maxWidth);
             lines.forEach((line) => {
-              addPageIfNeeded();
               doc.text(line, margin, y);
               y += 16;
             });
-            y += 2;
+            y += 4;
           });
         }
+
+        y += 6;
       });
 
       try {
