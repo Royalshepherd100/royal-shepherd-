@@ -1303,7 +1303,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getCompanyMemberCount(company) {
-    return Number(company?.totalMembers || 0) || ((company?.anchor || []).length + (company?.junior || []).length + (company?.intermediate || []).length + (company?.senior || []).length + (company?.officer || []).length);
+    return Number(company?.totalMembers || 0) || (
+      (company?.anchor || []).filter(Boolean).length +
+      (company?.junior || []).filter(Boolean).length +
+      (company?.intermediate || []).filter(Boolean).length +
+      (company?.senior || []).filter(Boolean).length +
+      (company?.officer || []).filter(Boolean).length
+    );
   }
 
   function getCompanyNcoCount(company) {
@@ -1311,22 +1317,25 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getCompanyOfficerCount(company) {
-    return Number(company?.totalOfficers || 0) || (company?.officer || []).length;
+    return Number(company?.totalOfficers || 0) || (company?.officer || []).filter(Boolean).length;
   }
 
   function renderDivisionSummary() {
     let totalMembers = 0;
     let totalOfficers = 0;
-    // Active members display should reflect the commissioned officers count
-    const divisionActiveMembers = Array.isArray(state.commandStructure?.officers) ? state.commandStructure.officers : [];
+    // Active members display should reflect the commissioned officers who have names
+    const allCommandOfficers = Array.isArray(state.commandStructure?.officers) ? state.commandStructure.officers : [];
+    const commissionedWithNames = allCommandOfficers.filter((o) => (o && String(o.name || '').trim()));
 
     Object.values(state.companyData).forEach((company) => {
       totalMembers += getCompanyMemberCount(company);
       totalOfficers += getCompanyOfficerCount(company);
     });
 
-    // Use commissioned officers as the active member count (starts at zero)
-    totalMembers += divisionActiveMembers.length;
+    // Use commissioned officers with names as the active member count (starts at zero)
+    totalMembers += commissionedWithNames.length;
+    // Include commissioned officers in the officer total
+    totalOfficers += commissionedWithNames.length;
 
     if (divisionTotalMembers) {
       divisionTotalMembers.textContent = totalMembers;
