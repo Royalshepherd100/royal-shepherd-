@@ -10,7 +10,7 @@ def test_get_company_by_id_returns_company():
     response = client.get("/companies/1")
 
     assert response.status_code == 200
-    assert response.json()["name"] == "Ikorodu Akiling Company"
+    assert response.json()["name"] == "Oke Odo - 12th Akiling Regional Coy"
 
 
 def test_approve_application_assigns_member_to_company_and_section():
@@ -19,7 +19,7 @@ def test_approve_application_assigns_member_to_company_and_section():
         json={
             "companies": {
                 "1": {
-                    "name": "Ikorodu Akiling Company",
+                    "name": "Oke Odo - 12th Akiling Regional Coy",
                     "anchor": [],
                     "junior": [],
                     "intermediate": [],

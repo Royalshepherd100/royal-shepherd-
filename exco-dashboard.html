@@ -46,6 +46,10 @@
       </div>
     </main>
 
-    <script defer src="app.js?v=8"></script>
+    <script>
+      // Configure the local backend URL for this dashboard.
+      window.RS_BACKEND_URL = window.RS_BACKEND_URL || 'http://127.0.0.1:8000';
+    </script>
+    <script defer src="app.js?v=10"></script>
   </body>
 </html>

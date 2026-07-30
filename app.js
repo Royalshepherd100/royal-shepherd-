@@ -231,30 +231,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     9: { name: 'Ikeja - 49th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] }
   };
 
-  function readStoredJson(primaryKey, fallbackKey) {
-    const primaryValue = getStoredItem(primaryKey);
-    if (primaryValue) {
-      try {
-        return JSON.parse(primaryValue);
-      } catch (error) {
-        console.warn(`Could not parse ${primaryKey}.`, error);
-      }
-    }
-
-    if (fallbackKey) {
-      const fallbackValue = getStoredItem(fallbackKey);
-      if (fallbackValue) {
-        try {
-          return JSON.parse(fallbackValue);
-        } catch (error) {
-          console.warn(`Could not parse ${fallbackKey}.`, error);
-        }
-      }
-    }
-
-    return null;
-  }
-
   // Backend-backed storage helpers
   let __rsBackendCache = null;
   let __rsSaveTimer = null;
@@ -267,9 +243,54 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   }
 
+  function getAppStatePayload() {
+    return {
+      companies: state.companyData,
+      captainAccounts: state.captainAccounts,
+      commanderAccounts: state.commanderAccounts,
+      commanderVerificationCodes: state.commanderVerificationCodes,
+      captainRequests: state.captainRequests,
+      enlistmentApplications: state.enlistmentApplications,
+      divisionMembers: state.divisionMembers,
+      commandStructure: state.commandStructure,
+      founderStory: state.founderStory,
+      excoProfiles: state.excoProfiles,
+      examScores: state.examScores,
+      activeExamYear: state.activeExamYear,
+      galleryItems: state.galleryItems || [],
+      commanderSettings: state.commanderSettings,
+      activeCaptainCompany: state.activeCaptainCompany,
+      activeRole: getActiveRole()
+    };
+  }
+
+  async function apiGetState() {
+    return requestJson('/state', { method: 'GET' });
+  }
+
+  async function apiSaveState(payload) {
+    return requestJson('/state', { method: 'POST', body: JSON.stringify(payload) });
+  }
+
+  async function apiApproveApplication(applicationId) {
+    return requestJson(`/applications/${applicationId}/approve`, { method: 'POST' });
+  }
+
+  async function apiDenyApplication(applicationId) {
+    return requestJson(`/applications/${applicationId}/deny`, { method: 'POST' });
+  }
+
+  const rsBackend = {
+    getState: apiGetState,
+    saveState: apiSaveState,
+    approveApplication: apiApproveApplication,
+    denyApplication: apiDenyApplication
+  };
+  window.RoyalShepherdAPI = window.RoyalShepherdAPI || rsBackend;
+
   async function loadState() {
     try {
-      const payload = await loadSharedStateFromBackend();
+      const payload = await rsBackend.getState();
       if (payload) {
         __rsBackendCache = payload;
         return payload;
@@ -280,26 +301,26 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return null;
   }
 
+  async function loadStateWithRetry(attempts = 3, delayMs = 500) {
+    let lastError = null;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+      const payload = await loadState();
+      if (payload) {
+        return payload;
+      }
+      lastError = `loadState attempt ${attempt} failed`;
+      if (attempt < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+    console.warn('loadStateWithRetry: backend state unavailable after retries', lastError);
+    return null;
+  }
+
   async function saveState(payload) {
     try {
-      const body = payload || {
-        companies: state.companyData,
-        captainAccounts: state.captainAccounts,
-        commanderAccounts: state.commanderAccounts,
-        captainRequests: state.captainRequests,
-        enlistmentApplications: state.enlistmentApplications,
-        divisionMembers: state.divisionMembers,
-        commandStructure: state.commandStructure,
-        founderStory: state.founderStory,
-        excoProfiles: state.excoProfiles,
-        examScores: state.examScores,
-        activeExamYear: state.activeExamYear,
-        galleryItems: state.galleryItems || [],
-        // lightweight UI metadata
-        activeCaptainCompany: state.activeCaptainCompany,
-        activeRole: getActiveRole()
-      };
-      await requestJson('/state', { method: 'POST', body: JSON.stringify(body) });
+      const body = payload || getAppStatePayload();
+      await rsBackend.saveState(body);
       __rsBackendCache = body;
       return true;
     } catch (err) {
@@ -322,13 +343,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       'royalShepherdExamScores': 'examScores',
       'royalShepherdActiveExamYear': 'activeExamYear',
       'royalShepherdEnlistmentApplications': 'enlistmentApplications',
-      'royalShepherdGalleryItems': 'galleryItems'
+      'royalShepherdGalleryItems': 'galleryItems',
+      'royalShepherdActiveRole': 'activeRole',
+      'royalShepherdActiveCaptainCompany': 'activeCaptainCompany'
     };
     return map[key] || null;
   }
 
   function getStoredItem(key) {
-    // Only read from backend cache. Do not use localStorage for persistence anymore.
     try {
       if (__rsBackendCache && typeof __rsBackendCache === 'object') {
         const prop = mapStorageKeyToPayloadProp(key);
@@ -336,7 +358,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           const val = __rsBackendCache[prop];
           return (typeof val === 'string') ? String(val) : JSON.stringify(val);
         }
-        // if key stored verbatim in cache
         if (__rsBackendCache[key] !== undefined) {
           const v = __rsBackendCache[key];
           return (typeof v === 'string') ? v : JSON.stringify(v);
@@ -349,7 +370,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function setStoredItem(key, value) {
-    // Update backend cache mapping only (server is now authoritative)
     try {
       const prop = mapStorageKeyToPayloadProp(key);
       if (!__rsBackendCache) __rsBackendCache = {};
@@ -364,9 +384,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           try { return JSON.parse(String(value)); } catch { return value; }
         })();
       }
-
-      if (__rsSaveTimer) clearTimeout(__rsSaveTimer);
-      __rsSaveTimer = setTimeout(() => { saveState(__rsBackendCache); __rsSaveTimer = null; }, 600);
+      scheduleStateSave();
     } catch (e) {
       console.warn('setStoredItem backend write failed', e);
     }
@@ -381,69 +399,83 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       } else if (__rsBackendCache[key] !== undefined) {
         delete __rsBackendCache[key];
       }
-      if (__rsSaveTimer) clearTimeout(__rsSaveTimer);
-      __rsSaveTimer = setTimeout(() => { saveState(__rsBackendCache); __rsSaveTimer = null; }, 600);
+      scheduleStateSave();
     } catch (err) {
       console.warn('removeStoredItem backend update failed', err);
     }
   }
 
-  function showToast(message, timeout = 3000) {
+  function scheduleStateSave() {
+    if (__rsSaveTimer) clearTimeout(__rsSaveTimer);
+    __rsSaveTimer = setTimeout(() => {
+      saveState(__rsBackendCache).catch(() => {});
+      __rsSaveTimer = null;
+    }, 600);
+  }
+
+  async function saveAppState(immediate = false) {
+    __rsBackendCache = getAppStatePayload();
+    if (immediate) {
+      if (__rsSaveTimer) {
+        clearTimeout(__rsSaveTimer);
+        __rsSaveTimer = null;
+      }
+      return saveState(__rsBackendCache);
+    }
+    scheduleStateSave();
+  }
+
+  async function refreshSharedState() {
     try {
-      const toast = document.createElement('div');
-      toast.className = 'rs-toast';
-      toast.textContent = message;
-      Object.assign(toast.style, {
-        position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        background: 'rgba(0,0,0,0.85)',
-        color: '#fff',
-        padding: '10px 14px',
-        borderRadius: '6px',
-        boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
-        zIndex: 99999,
-        opacity: '0',
-        transition: 'opacity 200ms ease, transform 200ms ease',
-        transform: 'translateY(6px)'
-      });
-      document.body.appendChild(toast);
-      requestAnimationFrame(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
-      });
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(6px)';
-        setTimeout(() => toast.remove(), 250);
-      }, timeout);
-    } catch (e) {
-      console.warn('Could not show toast:', e);
+      const payload = await rsBackend.getState();
+      if (!payload || typeof payload !== 'object') return;
+      const current = JSON.stringify(__rsBackendCache || {});
+      const next = JSON.stringify(payload);
+      if (current === next) return;
+      __rsBackendCache = payload;
+      applySharedState(payload);
+      populateCaptainCompanySelect();
+      populateEnlistmentCompanySelect();
+      renderCompanyLists();
+      renderDivisionSummary();
+      renderOfficerLeadership();
+      renderFounderStory();
+      if (window.location.pathname.includes('commander-dashboard.html')) {
+        if (renderCommanderWorkspaceAccess()) {
+          buildCommanderDashboard();
+        }
+      }
+      if (window.location.pathname.includes('captain-dashboard.html')) {
+        const queryParams = new URLSearchParams(window.location.search);
+        const companyId = queryParams.get('company') || state.activeCaptainCompany;
+        if (companyId && state.companyData[companyId]) {
+          state.activeCaptainCompany = companyId;
+          buildCaptainDashboard(companyId);
+        }
+        renderCaptainWorkspaceAccess();
+      }
+      if (window.location.pathname.includes('exco-dashboard.html')) {
+        buildExcoDashboard();
+      }
+    } catch (err) {
+      console.warn('refreshSharedState failed', err);
     }
   }
 
   const ACTIVE_COMMANDER_KEY = 'royalShepherdActiveCommander';
 
-  function readStoredValue(key, fallback) {
-    const value = getStoredItem(key);
-    if (value === null) return fallback;
-    try {
-      return JSON.parse(value);
-    } catch {
-      return value;
-    }
-  }
-
   function getBackendBaseUrl() {
     const configured = (window.RS_BACKEND_URL || '').trim();
     if (configured) return configured.replace(/\/$/, '');
+    const meta = document.querySelector('meta[name="rs-backend-url"]')?.content?.trim();
+    if (meta) return meta.replace(/\/$/, '');
     if (window.location.protocol === 'file:') {
-      return null;
+      return 'http://127.0.0.1:8000';
     }
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://127.0.0.1:8000';
     }
-    return null;
+    return `${window.location.protocol}//${window.location.host}`;
   }
 
   async function requestJson(path, options = {}) {
@@ -468,46 +500,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return response.json();
   }
 
-  function persistLocalFallbacks() {
-    // Persist the aggregated app state to backend (server authoritative). This replaces localStorage usage.
-    const statePayload = {
-      companies: state.companyData,
-      captainAccounts: state.captainAccounts,
-      commanderAccounts: state.commanderAccounts,
-      captainRequests: state.captainRequests,
-      enlistmentApplications: state.enlistmentApplications,
-      divisionMembers: state.divisionMembers,
-      commandStructure: state.commandStructure,
-      founderStory: state.founderStory,
-      excoProfiles: state.excoProfiles,
-      examScores: state.examScores,
-      activeExamYear: state.activeExamYear,
-      galleryItems: state.galleryItems || [],
-      activeCaptainCompany: state.activeCaptainCompany,
-      activeRole: getActiveRole()
-    };
-    // schedule server save (debounced within saveState)
-    __rsBackendCache = { ...(__rsBackendCache || {}), ...statePayload };
-    if (__rsSaveTimer) clearTimeout(__rsSaveTimer);
-    __rsSaveTimer = setTimeout(() => { saveState(__rsBackendCache); __rsSaveTimer = null; }, 600);
-    // Update derived UI immediately in this tab so counts reflect saved changes
-    try {
-      if (typeof renderDivisionSummary === 'function') renderDivisionSummary();
-      if (typeof renderCompanyLists === 'function') renderCompanyLists();
-      if (typeof renderOfficerLeadership === 'function') renderOfficerLeadership();
-    } catch (err) {
-      console.warn('Could not refresh derived UI after persisting state.', err);
-    }
-  }
-
   async function loadSharedStateFromBackend() {
     try {
-      const payload = await requestJson('/state', { method: 'GET' });
+      const payload = await rsBackend.getState();
       if (payload && typeof payload === 'object') {
         return payload;
       }
     } catch (error) {
-      console.warn('Backend state unavailable, using local storage.', error);
+      console.warn('Backend state unavailable.', error);
     }
     return null;
   }
@@ -529,38 +529,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     state.examScores = payload.examScores || {};
     state.activeExamYear = payload.activeExamYear || String(new Date().getFullYear());
     state.galleryItems = Array.isArray(payload.galleryItems) ? payload.galleryItems : [];
-    state.activeCaptainCompany = null;
+    state.activeCaptainCompany = payload.activeCaptainCompany || '';
     state.activeCommanderEmail = getActiveCommanderEmail();
   }
 
   async function persistSharedState() {
-    persistLocalFallbacks();
-    const statePayload = {
-      companies: state.companyData,
-      captainAccounts: state.captainAccounts,
-      commanderAccounts: state.commanderAccounts,
-      captainRequests: state.captainRequests,
-      enlistmentApplications: state.enlistmentApplications,
-      divisionMembers: state.divisionMembers,
-      commandStructure: state.commandStructure,
-      founderStory: state.founderStory,
-      excoProfiles: state.excoProfiles,
-      examScores: state.examScores,
-      activeExamYear: state.activeExamYear,
-      galleryItems: state.galleryItems || [],
-      // include small UI metadata so backend becomes the single source of truth
-      activeCaptainCompany: state.activeCaptainCompany,
-      activeRole: getActiveRole()
-    };
-
-    try {
-      await requestJson('/state', {
-        method: 'POST',
-        body: JSON.stringify(statePayload)
-      });
-    } catch (error) {
-      console.warn('Could not sync to backend.', error);
-    }
+    await saveAppState(true);
   }
 
   const ACTIVE_ROLE_KEY = 'royalShepherdActiveRole';
@@ -675,22 +649,19 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   const state = {
     companyData: JSON.parse(JSON.stringify(defaultCompanyData)),
-    captainAccounts: normalizeAccountMap(readStoredJson('royalShepherdCaptains', 'royalShepherdCaptainAccounts')),
-    commanderAccounts: normalizeAccountMap(readStoredJson('royalShepherdCommanderAccounts', 'royalShepherdCommanderAccount')),
-    commanderVerificationCodes: readStoredJson('royalShepherdCommanderVerificationCodes', null) || {},
-    captainRequests: readStoredJson('royalShepherdCaptainRequests', null) || {},
-    enlistmentApplications: readStoredJson('royalShepherdEnlistmentApplications', null) || {},
-    commanderSettings: readStoredJson('royalShepherdCommanderSettings', null) || {},
-    excoProfiles: {
-      ...defaultExcoProfiles,
-      ...(readStoredJson('royalShepherdExcoProfiles', null) || {})
-    },
-    divisionMembers: readStoredJson('royalShepherdDivisionMembers', null) || { active: [] },
-    commandStructure: normalizeCommandStructure(readStoredJson('royalShepherdCommandStructure', null)),
-    founderStory: readStoredValue('royalShepherdFounderStory', defaultFounderStory),
-    examScores: readStoredJson('royalShepherdExamScores', null) || {},
-    activeExamYear: (getStoredItem('royalShepherdActiveExamYear') || String(new Date().getFullYear())),
-    activeCaptainCompany: getActiveCaptainCompany(),
+    captainAccounts: {},
+    commanderAccounts: {},
+    commanderVerificationCodes: {},
+    captainRequests: {},
+    enlistmentApplications: {},
+    commanderSettings: {},
+    excoProfiles: { ...defaultExcoProfiles },
+    divisionMembers: { active: [] },
+    commandStructure: normalizeCommandStructure({}),
+    founderStory: defaultFounderStory,
+    examScores: {},
+    activeExamYear: String(new Date().getFullYear()),
+    activeCaptainCompany: '',
     activeCommanderEmail: getActiveCommanderEmail(),
     galleryItems: []
   };
@@ -706,18 +677,21 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     if (!state.commanderAccounts[defaultEmail]) {
       state.commanderAccounts[defaultEmail] = { password: defaultPassword, verified: true, email: defaultEmail };
-      saveCommanderAccounts();
+      return true;
     }
+    return false;
   }
 
   function ensureLegacyCaptainAccounts() {
     const legacyEmails = ['captain@royalshepherd.com', 'admin@royalshepherd.com'];
+    let changed = false;
     legacyEmails.forEach((email) => {
       if (!state.captainAccounts[email]) {
         state.captainAccounts[email] = { password: 'royalshepherd2026', companyId: '1', email, verified: true };
+        changed = true;
       }
     });
-    saveCaptains();
+    return changed;
   }
 
   function getCompanyDisplayName(companyId, company = {}) {
@@ -791,59 +765,68 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function bootstrapCompanyData() {
-    const backendState = await loadSharedStateFromBackend();
+    let backendState = await loadStateWithRetry(3, 400);
     if (backendState) {
       __rsBackendCache = backendState;
       applySharedState(backendState);
-    } else {
-      const configuredUrl = getBackendBaseUrl();
-      if (!configuredUrl) {
-        showBackendStatus('Backend sync is disabled. Set window.RS_BACKEND_URL to your deployed backend URL.');
-      } else {
-        showBackendStatus(`Backend unavailable at ${configuredUrl}. Using local fallback state.`, 'error');
-      }
-
-      const localData = JSON.parse(getStoredItem('royalShepherdCompanies') || 'null');
-      if (localData && typeof localData === 'object') {
-        state.companyData = normalizeCompanyData(localData);
-      } else {
-        state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
-      }
+      window.__royalShepherdState = state;
+      return;
     }
-    await persistSharedState();
+
+    const configuredUrl = getBackendBaseUrl();
+    if (!configuredUrl) {
+      showBackendStatus('Backend sync is disabled. Set window.RS_BACKEND_URL to your deployed backend URL.');
+    } else {
+      showBackendStatus(`Backend unavailable at ${configuredUrl}. Using default in-memory state.`, 'error');
+    }
+
+    state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
+    state.captainAccounts = {};
+    state.commanderAccounts = {};
+    state.commanderVerificationCodes = {};
+    state.captainRequests = {};
+    state.enlistmentApplications = {};
+    state.commanderSettings = {};
+    state.excoProfiles = { ...defaultExcoProfiles };
+    state.divisionMembers = { active: [] };
+    state.commandStructure = normalizeCommandStructure({});
+    state.founderStory = defaultFounderStory;
+    state.examScores = {};
+    state.activeExamYear = String(new Date().getFullYear());
+    state.galleryItems = [];
+
+    if (configuredUrl) {
+      setTimeout(() => {
+        refreshSharedState().catch(() => {});
+      }, 1000);
+    }
   }
 
   async function saveCompanies() {
-    persistLocalFallbacks();
-    await persistSharedState();
+    await saveAppState(true);
   }
 
   function saveCaptains() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function saveCaptainRequests() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function saveCommanderAccounts() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function saveCommanderVerificationCodes() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   let excoAutoSaveTimer = null;
   const EXCO_AUTO_SAVE_DELAY_MS = 1200;
 
   function saveExcoProfiles() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function saveExcoFormChanges(showToastOnSave = false) {
@@ -970,18 +953,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function saveDivisionMembers() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function saveCommandStructure() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function saveFounderStory() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function escapeHtml(value) {
@@ -1011,6 +991,22 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     toast.className = 'toast-notification';
     toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${escapeHtml(message)}</span>`;
     container.appendChild(toast);
+
+    // Trigger reflow
+    toast.offsetHeight;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+      toast.addEventListener('transitionend', () => {
+        toast.remove();
+      }, { once: true });
+      // Fallback
+      setTimeout(() => {
+        toast.remove();
+      }, 500);
+    }, 3000);
 
     return toast;
   }
@@ -1050,31 +1046,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   }
 
-    // Trigger reflow
-    toast.offsetHeight;
-    toast.classList.add('show');
-
-    setTimeout(() => {
-      toast.classList.remove('show');
-      toast.classList.add('hide');
-      toast.addEventListener('transitionend', () => {
-        toast.remove();
-      }, { once: true });
-      // Fallback
-      setTimeout(() => {
-        toast.remove();
-      }, 500);
-    }, 3000);
-  }
-
   function saveExamScores() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function saveEnlistmentApplications() {
-    persistLocalFallbacks();
-    persistSharedState();
+    saveAppState(true).catch(() => {});
   }
 
   function openModal(id) {
@@ -1245,90 +1222,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('data:')) return normalized;
     if (normalized.startsWith('image/')) return normalized;
     return `image/${normalized}`;
-  }
-
-  function handleStorageEvent(event) {
-    if (!event.key) return;
-
-    if (event.key === 'royalShepherdExcoProfiles') {
-      try {
-        const stored = JSON.parse(event.newValue || 'null');
-        state.excoProfiles = { ...defaultExcoProfiles, ...(stored || {}) };
-      } catch {
-        state.excoProfiles = { ...defaultExcoProfiles };
-      }
-      renderOfficerLeadership();
-      if (window.location.pathname.includes('exco-dashboard.html')) {
-        buildExcoDashboard();
-      }
-      return;
-    }
-
-    if (event.key === 'royalShepherdCompanies') {
-      try {
-        const stored = JSON.parse(event.newValue || 'null');
-        state.companyData = normalizeCompanyData(stored || {});
-      } catch {
-        state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
-      }
-      populateCaptainCompanySelect();
-      populateEnlistmentCompanySelect();
-      renderCompanyLists();
-      if (window.location.pathname.includes('captain-dashboard.html')) {
-        const queryParams = new URLSearchParams(window.location.search);
-        const companyId = queryParams.get('company') || state.activeCaptainCompany;
-        if (companyId && state.companyData[companyId]) {
-          buildCaptainDashboard(companyId);
-        }
-      }
-      return;
-    }
-
-    // Sync division members across tabs
-    if (event.key === 'royalShepherdDivisionMembers') {
-      try {
-        const stored = JSON.parse(event.newValue || 'null');
-        state.divisionMembers = stored || { active: [] };
-      } catch {
-        state.divisionMembers = { active: [] };
-      }
-      renderDivisionSummary();
-      return;
-    }
-
-    // Sync command structure (commissioned officers) across tabs
-    if (event.key === 'royalShepherdCommandStructure') {
-      try {
-        const stored = JSON.parse(event.newValue || 'null');
-        state.commandStructure = normalizeCommandStructure(stored || {});
-      } catch {
-        state.commandStructure = normalizeCommandStructure({});
-      }
-      renderOfficerLeadership();
-      return;
-    }
-
-    // Sync founder story text
-    if (event.key === 'royalShepherdFounderStory') {
-      try {
-        state.founderStory = (event.newValue) ? JSON.parse(event.newValue) : defaultFounderStory;
-      } catch {
-        state.founderStory = event.newValue || defaultFounderStory;
-      }
-      renderFounderStory();
-      return;
-    }
-
-    // Sync exam scores (may affect rendered company score lists)
-    if (event.key === 'royalShepherdExamScores') {
-      try {
-        state.examScores = JSON.parse(event.newValue || '{}') || {};
-      } catch {
-        state.examScores = {};
-      }
-      renderCompanyLists();
-      return;
-    }
   }
 
   function renderGallery() {
@@ -2237,21 +2130,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       return;
     }
 
-    // Signal the EXCO page to allow rendering even when opened in a new tab
-    try {
-      setStoredItem('royalShepherdExcoOpenRequest', JSON.stringify({ from: 'commander', ts: Date.now() }));
-    } catch (e) {
-      console.warn('Could not set exco open flag in storage', e);
-    }
-
     buildExcoDashboard();
 
     if (window.location.pathname.includes('exco-dashboard.html')) {
-      try { removeStoredItem('royalShepherdExcoOpenRequest'); } catch(e) {}
       return;
     }
 
-    window.open('exco-dashboard.html', '_blank', 'noopener,noreferrer');
+    const targetUrl = 'exco-dashboard.html?excoOpenRequest=true';
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
   }
 
   function bindForms() {
@@ -2886,8 +2772,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     window.addEventListener('scroll', () => {
       header?.classList.toggle('scrolled', window.scrollY > 50);
     });
-    window.addEventListener('storage', handleStorageEvent);
-
     bindMobileMenu();
     bindSmoothScrolling();
     bindOpeners();
@@ -2937,20 +2821,17 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       }
       if (window.location.pathname.includes('exco-dashboard.html')) {
         window.__royalShepherdExcoPath = true;
-        const openRequest = (() => {
-          try {
-            return JSON.parse(getStoredItem('royalShepherdExcoOpenRequest') || 'null');
-          } catch {
-            return null;
-          }
-        })();
+        const queryParams = new URLSearchParams(window.location.search);
+        const openRequest = queryParams.get('excoOpenRequest') === 'true';
 
         if (!isCommanderLoggedIn() && !openRequest) {
           renderExcoAccessDenied();
         } else {
           buildExcoDashboard();
+          if (openRequest && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
         }
-        try { removeStoredItem('royalShepherdExcoOpenRequest'); } catch (e) {}
       }
     }).catch((error) => {
       window.__royalShepherdBootstrapFailed = true;

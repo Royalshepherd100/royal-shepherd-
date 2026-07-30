@@ -1,3 +1,357 @@
 {
-  "test": true
+  "companyData": {
+    "1": {
+      "name": "Oke Odo - 12th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "2": {
+      "name": "Ikorodu - 15th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "3": {
+      "name": "Iyesi - 17th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "4": {
+      "name": "Sango - 28th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "5": {
+      "name": "Command - 31st Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "6": {
+      "name": "Ipaja - 38th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "7": {
+      "name": "Ijaba - 44th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "8": {
+      "name": "Ijoko - 48th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    },
+    "9": {
+      "name": "Ikeja - 49th Akiling Regional Coy",
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "active": [],
+      "inactive": [],
+      "officers": []
+    }
+  },
+  "captainAccounts": {
+    "captain@royalshepherd.com": {
+      "password": "royalshepherd2026",
+      "companyId": "1",
+      "email": "captain@royalshepherd.com",
+      "verified": true
+    },
+    "admin@royalshepherd.com": {
+      "password": "royalshepherd2026",
+      "companyId": "1",
+      "email": "admin@royalshepherd.com",
+      "verified": true
+    }
+  },
+  "commanderAccounts": {
+    "commander@royalshepherd.com": {
+      "password": "royalshepherd2026",
+      "verified": true,
+      "email": "commander@royalshepherd.com",
+      "companyId": ""
+    }
+  },
+  "commanderVerificationCodes": {},
+  "captainRequests": {},
+  "enlistmentApplications": {
+    "app_1785426306105_89mw3wdwj": {
+      "id": "app_1785426306105_89mw3wdwj",
+      "fullName": "Test Member",
+      "email": "testmember-1785426306104@example.com",
+      "dob": "2010-05-01",
+      "phone": "08012345678",
+      "gender": "Male",
+      "company": "1",
+      "reason": "Joining for training and service.",
+      "submittedAt": "2026-07-30T15:45:06.105Z",
+      "status": "Pending"
+    }
+  },
+  "commanderSettings": {},
+  "excoProfiles": {
+    "founder-cac-agbala-itura-worldwide": {
+      "name": "Prophet (Dr) Samuel Kayode Abiara",
+      "email": "",
+      "phone": "",
+      "bio": "Founder CAC Agbala-Itura W/W."
+    },
+    "prophet-dr-s-k-abiara": {
+      "name": "Prophet (Dr) Samuel Kayode Abiara",
+      "email": "",
+      "phone": "",
+      "bio": "Founder CAC Agbala-Itura W/W."
+    },
+    "pastor-s-o-oladele": {
+      "name": "Pastor S.O Oladele",
+      "email": "",
+      "phone": "",
+      "bio": "CAC President W/W."
+    },
+    "pastor-e-olusoko": {
+      "name": "Pastor S.O Olusoko",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Superintendent."
+    },
+    "bishop-kehinde-abiara": {
+      "name": "Bishop Isaac Kehinde Abiara",
+      "email": "",
+      "phone": "",
+      "bio": "Agbala-Itura DCC Superintendent Lagos."
+    },
+    "rs-major-general-e-b-adegbite": {
+      "name": "Pastor E. B. Adegbite",
+      "email": "",
+      "phone": "",
+      "bio": "National Organizing Secretary."
+    },
+    "rs-brigadier-general-s-oludahunsi": {
+      "name": "Pastor S.O. Oluwadahunsi",
+      "email": "",
+      "phone": "",
+      "bio": "Assistant National Organizing Secretary."
+    },
+    "rs-major-general-j-p-akinyemi": {
+      "name": "Pastor J.P. Akinyemi",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Commander."
+    },
+    "rs-colonel-o-olowe": {
+      "name": "Colonel Olamide Olowe",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Deputy Commander."
+    },
+    "rs-lt-colonel-o-olasupo": {
+      "name": "Lieutenant Colonel (Elder) Olasupo Olukunmi",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Organizing Secretary."
+    },
+    "rs-captain-s-a-ilori": {
+      "name": "Captain Samuel A. Ilori",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Training Officer 1 / Acting Divisional Commander."
+    },
+    "akiling-region-superintendent": {
+      "name": "Pastor S.O Olusoko",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Superintendent."
+    },
+    "agbala-itura-dcc-superintendent-lagos": {
+      "name": "Bishop Isaac Kehinde Abiara",
+      "email": "",
+      "phone": "",
+      "bio": "Agbala-Itura DCC Superintendent Lagos."
+    },
+    "national-organizing-secretary": {
+      "name": "Pastor E. B. Adegbite",
+      "email": "",
+      "phone": "",
+      "bio": "National Organizing Secretary."
+    },
+    "assistant-national-organizing-secretary": {
+      "name": "Pastor S.O. Oluwadahunsi",
+      "email": "",
+      "phone": "",
+      "bio": "Assistant National Organizing Secretary."
+    },
+    "akiling-region-commander": {
+      "name": "Pastor J.P. Akinyemi",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Commander."
+    },
+    "akiling-region-deputy-commander": {
+      "name": "Colonel Olamide Olowe",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Deputy Commander."
+    },
+    "akiling-region-organizing-secretary": {
+      "name": "Lieutenant Colonel (Elder) Olasupo Olukunmi",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Organizing Secretary."
+    },
+    "akiling-region-training-officer-acting-divisional-commander": {
+      "name": "Captain Samuel A. Ilori",
+      "email": "",
+      "phone": "",
+      "bio": "Akiling Region Training Officer 1 / Acting Divisional Commander."
+    },
+    "pro-captain-olaitan-awoniyi": {
+      "name": "Captain Olaitan Awoniyi",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional PRO."
+    },
+    "financial-secretary-provost-anjola-olayiwola": {
+      "name": "Provost Anjola Olayiwola",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional Financial Secretary."
+    },
+    "general-secretary": {
+      "name": "",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional General Secretary."
+    },
+    "divisional-commander": {
+      "name": "",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional Commander."
+    },
+    "divisional-secretary": {
+      "name": "",
+      "email": "",
+      "phone": "",
+      "bio": "Assistant General Secretary."
+    },
+    "assistant-secretary": {
+      "name": "",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional Assistant Secretary."
+    },
+    "divisional-extra-post": {
+      "name": "",
+      "email": "",
+      "phone": "",
+      "bio": "Additional Divisional EXCO post."
+    },
+    "band-master-lieu-solomon-o-adeniji": {
+      "name": "Lieu. Solomon O. Adeniji",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional Band Master."
+    },
+    "assistant-band-master": {
+      "name": "",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional Assistant Band Master."
+    },
+    "treasurer": {
+      "name": "",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional Treasurer."
+    },
+    "training-officer-capt-segun": {
+      "name": "Capt. Segun",
+      "email": "",
+      "phone": "",
+      "bio": "Divisional Training Officer."
+    }
+  },
+  "divisionMembers": {
+    "active": []
+  },
+  "commandStructure": {
+    "officers": [
+      {
+        "rank": "Divisional Commander",
+        "name": ""
+      },
+      {
+        "rank": "Company Captain",
+        "name": ""
+      },
+      {
+        "rank": "Organising Secretary",
+        "name": ""
+      },
+      {
+        "rank": "Assistant Organising Secretary",
+        "name": ""
+      },
+      {
+        "rank": "PRO",
+        "name": ""
+      }
+    ]
+  },
+  "founderStory": "Prophet Samuel Kayode Abiara, fondly called Pa SK Abiara, is the revered founder of CAC Agbala Itura Worldwide and the former General Evangelist of CAC Worldwide. He is one of the spiritual pillars of Royal Shepherd and a great servant of God whose ministry has touched many lives through evangelism, discipline, and unwavering faith.\n\nCAC Agbala Itura stands as a spiritual home of comfort, holiness, and divine instruction, and it remains a landmark place of worship and impact in the life of the church and the nation.\n\nProphet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Obokun Local Government Area, Osun State. He was raised with humility and diligence, and his journey into ministry began through divine calling and faithful service. His life continues to inspire Royal Shepherd members to live in holiness, obedience, and service to God and humanity.",
+  "examScores": {},
+  "activeExamYear": "2026",
+  "activeCommanderEmail": null,
+  "galleryItems": [],
+  "activeRole": "admin"
 }
