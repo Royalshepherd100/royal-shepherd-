@@ -1,19 +1,19 @@
 services:
   - type: static_site
-    name: royal-shepherd-frontend
+    name: royal-shepherd
     env: static
-    branch: main
+    branch: gh-pages
     plan: starter
     root: .
     publishPath: .
     buildCommand: echo "No build required"
 
   - type: web_service
-    name: royal-shepherd-backend
+    name: "royal-shepherd bacl"
     env: python
-    branch: main
+    branch: gh-pages
     plan: starter
     root: backend
     buildCommand: pip install -r requirements/requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /
+    healthCheckPath: /state

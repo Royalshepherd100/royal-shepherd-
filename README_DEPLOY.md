@@ -4,13 +4,13 @@ This project is configured for deployment on Render using `render.yaml`.
 
 ## Frontend
 - The frontend is served as a static site from the project root.
-- Render service name: `royal-shepherd-frontend`
+- Render service name: `royal-shepherd`
 - Static site root: `/`
 - No build command is required.
 
 ## Backend
 - The backend is a FastAPI app in `backend/main.py`.
-- Render service name: `royal-shepherd-backend`
+- Render service name: `royal-shepherd bacl`
 - Python root: `backend`
 - Install command: `pip install -r requirements/requirements.txt`
 - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
@@ -24,5 +24,7 @@ This project is configured for deployment on Render using `render.yaml`.
 
 ## Notes
 - The frontend and backend are deployed from the same repository using `render.yaml`.
+- `render.yaml` is configured to deploy both services from the `gh-pages` branch.
 - The backend is available as a separate HTTP service.
+- If `https://royal-shepherd-bacl.onrender.com/state` returns 404, the backend service is not deployed or the service URL is wrong. Verify the correct backend URL in Render and update the page meta tag if needed.
 - If you change `render.yaml`, push the update to GitHub and re-deploy on Render.

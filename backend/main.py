@@ -112,15 +112,11 @@ app = FastAPI(title="Royal Shepherd Backend", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://royal-shepherd-frontend.onrender.com",
-        "https://royalshepherd100.github.io"
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/")
 def health_check():
