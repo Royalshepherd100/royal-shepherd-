@@ -20,7 +20,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="index.css?v=3" />
+    <link rel="stylesheet" href="index.css?v=7" />
+    <script defer src="assets/jspdf.umd.min.js?v=1"></script>
   </head>
   <body>
     <header class="site-header" id="top">
@@ -28,8 +29,8 @@
         <a class="brand" href="#home">
           <img
             class="brand-logo"
-            src="image/WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg"
-            alt="Royal Nigeria Agbala Itura Division logo"
+            src="image/rs logo.jpeg?v=2"
+            alt="Royal Shepherd logo"
           />
           <span>
             <strong>The Royal Shepherd Nigeria Agbala Itura Division</strong>
@@ -50,9 +51,8 @@
           <a href="#wings" class="nav-link">Our Wings</a>
           <a href="#gallery" class="nav-link">Gallery</a>
           <a href="#enlistment" class="nav-link cta-link">Join Division</a>
-          <button type="button" class="nav-link cta-link dashboard-trigger" id="dashboardTrigger">Captain Dashboard</button>
-          <button type="button" class="nav-link cta-link commander-trigger">Commander Dashboard</button>
-          <button type="button" class="nav-link cta-link exco-trigger">EXCO Dashboard</button>
+          <a href="captain-dashboard.html" target="_blank" rel="noopener" class="nav-link cta-link captain-trigger" data-dashboard-page="captain-dashboard.html">Captain Dashboard</a>
+          <a href="commander-dashboard.html" target="_blank" rel="noopener" class="nav-link cta-link commander-trigger" data-dashboard-page="commander-dashboard.html">Admin Dashboard</a>
         </nav>
       </div>
     </header>
@@ -67,14 +67,14 @@
               The Royal Shepherd Nigeria Agbala Itura Division, Lagos is the disciplined, service-minded youth arm of CAC Agbala Itura, raising godly leaders through order, courage, and practical church impact.
             </p>
             <div class="hero-actions">
-              <button type="button" class="btn btn-gold captain-trigger">Register Now</button>
+              <a href="captain-dashboard.html" target="_blank" rel="noopener" class="btn btn-gold captain-trigger" data-dashboard-page="captain-dashboard.html">Register Now</a>
               <a href="#about" class="btn btn-outline">Learn More</a>
             </div>
           </div>
           <div class="hero-visual">
             <div class="ring"></div>
             <div class="hero-image-card">
-              <img src="Screenshot-2026-07-11-132711.png" alt="Royal Shepherds emblem" />
+              <img src="image/new division image.jpeg?v=2" alt="New division logo" />
             </div>
           </div>
         </div>
@@ -87,11 +87,11 @@
             <span>Years of Service</span>
           </article>
           <article>
-            <strong>150+</strong>
+            <strong id="homeTotalMembers">150+</strong>
             <span>Active Members</span>
           </article>
           <article>
-            <strong>15+</strong>
+            <strong id="homeTotalOfficers">15+</strong>
             <span>Commissioned Officers</span>
           </article>
           <article>
@@ -112,6 +112,7 @@
             <p>
               Our mission extends beyond ceremonial roles. We build character through responsibility, self-control, and teamwork while serving the church, the community, and the nation with humility.
             </p>
+            <a href="RS%20New%20Constitution%20Book.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open RS New Constitution Handbook</a>
           </div>
           <div class="glass-card about-card">
             <h3>Our Calling</h3>
@@ -122,6 +123,83 @@
               <li>Community impact with compassion and order.</li>
             </ul>
           </div>
+        </div>
+      </section>
+
+      <section class="section highlight-section" id="highlights">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Event Highlights</p>
+            <h2 class="text-gradient">Emblem Specialized Training Course (4th Edition), Akiling Regional Command</h2>
+            <p>Watch the highlights from the just concluded course and stay connected with Royal Shepherd social media for more updates.</p>
+          </div>
+          <div class="highlight-grid glass-card">
+            <article class="highlight-card">
+              <h3>FACEBOOK</h3>
+              <p>Follow our official Facebook highlights and turn on notifications.</p>
+              <a href="https://www.facebook.com/share/v/1BQQj5H6Hp/?mibextid=wwXIfr" target="_blank" rel="noopener" class="btn btn-outline">Watch on Facebook</a>
+            </article>
+            <article class="highlight-card">
+              <h3>INSTAGRAM</h3>
+              <p>See the latest reel from the course and engage with our post.</p>
+              <a href="https://www.instagram.com/reel/DaIX5aoNw2g/?igsh=a3p3bG9jNmswdTFx" target="_blank" rel="noopener" class="btn btn-outline">Watch on Instagram</a>
+            </article>
+            <article class="highlight-card">
+              <h3>TIKTOK</h3>
+              <p>Catch the short highlight video and connect with our Tiktok community.</p>
+              <a href="https://vt.tiktok.com/ZSCUfKPcw/" target="_blank" rel="noopener" class="btn btn-outline">Watch on TikTok</a>
+            </article>
+            <article class="highlight-card">
+              <h3>YOUTUBE</h3>
+              <p>Watch the full highlight reel on YouTube and subscribe for more.</p>
+              <a href="https://youtu.be/7nhiV4wmuPA?si=2Ex41976RW1wc4b0" target="_blank" rel="noopener" class="btn btn-outline">Watch on YouTube</a>
+            </article>
+          </div>
+          <p class="text-center">Follow, Like, Comment and Turn on Notifications to stay updated on our posts across all social media platforms.</p>
+        </div>
+      </section>
+
+      <section class="section" id="laws">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Memorize and Practice</p>
+            <h2 class="text-gradient">The Ten Laws of Royal Shepherd</h2>
+          </div>
+          <div class="laws-grid">
+            <ol class="laws-list">
+              <li>Love God with all your heart and above all else.</li>
+              <li>Love your fellow human beings as yourself and be always kind and helpful.</li>
+              <li>Accept Jesus Christ as your Lord and Saviour, confess Him and remain firmly loyal to Him for ever.</li>
+              <li>Study the Holy Bible daily and be always guided by the word of God.</li>
+              <li>Be prayerful at all times and pray for others always.</li>
+              <li>Always lead a holy life; be clean in thought, word and deed.</li>
+              <li>Attend church services regularly; participate actively and be useful.</li>
+              <li>Be loyal and obedient to the Royal Shepherds officers and its policies and regulations.</li>
+              <li>Receive, possess and maintain the Holy Spirit of God and always be controlled by Him.</li>
+              <li>Preach Christ’s Gospel everyday and be ever thirsty for opportunities to save souls.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="founders">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Founder</p>
+          </div>
+          <div class="founder-card glass-card"></div>
+          <div class="officers-list"></div>
+        </div>
+      </section>
+
+      <section class="section" id="exco-leadership">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">EXCO Leadership</p>
+            <h2 class="text-gradient">Executive Committee (EXCO)</h2>
+            <p>Our dedicated Executive Committee members overseeing the division's operations and spiritual progress.</p>
+          </div>
+          <div class="exco-list"></div>
         </div>
       </section>
 
@@ -166,126 +244,173 @@
             <h2 class="text-gradient">The Royal Nigeria Agbala Itura Division, Lagos</h2>
             <p>Each company is a distinct unit within the Royal Nigeria Agbala Itura Division family. Use the captain dashboard to update members, officers, and sections.</p>
             <div class="section-actions">
-              <button type="button" class="btn btn-outline dashboard-trigger">Captain Dashboard</button>
+              <a href="captain-dashboard.html" target="_blank" rel="noopener" class="btn btn-outline dashboard-trigger" data-dashboard-page="captain-dashboard.html">Captain Dashboard</a>
+            </div>
+          </div>
+
+          <div class="division-summary glass-card">
+            <div class="summary-stat">
+              <span class="summary-label">Total Division Members</span>
+              <strong id="divisionTotalMembers">0</strong>
+            </div>
+            <div class="summary-stat">
+              <span class="summary-label">Total Ranked Officers</span>
+              <strong id="divisionTotalOfficers">0</strong>
             </div>
           </div>
 
           <div class="company-grid">
             <article class="company-card glass-card" data-company="1">
               <span class="company-number">01</span>
-              <h3>Company 1</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Oke Odo - 12th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 1</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="2">
               <span class="company-number">02</span>
-              <h3>Company 2</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Ikorodu - 15th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 2</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="3">
               <span class="company-number">03</span>
-              <h3>Company 3</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Iyesi - 17th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 3</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="4">
               <span class="company-number">04</span>
-              <h3>Company 4</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Sango - 28th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 4</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="5">
               <span class="company-number">05</span>
-              <h3>Company 5</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Command - 31st Akiling Regional Coy</h3>
+              <p class="company-caption">Company 5</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="6">
               <span class="company-number">06</span>
-              <h3>Company 6</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Ipaja - 38th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 6</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="7">
               <span class="company-number">07</span>
-              <h3>Company 7</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Ijaba - 44th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 7</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="8">
               <span class="company-number">08</span>
-              <h3>Company 8</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Ijoko - 48th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 8</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
             <article class="company-card glass-card" data-company="9">
               <span class="company-number">09</span>
-              <h3>Company 9</h3>
-              <p class="company-caption">Pending name</p>
+              <h3>Ikeja - 49th Akiling Regional Coy</h3>
+              <p class="company-caption">Company 9</p>
               <div class="company-details">
-                <h4>Active Members</h4>
-                <ul class="company-list" data-list="active"></ul>
-                <h4>None Active Members</h4>
-                <ul class="company-list" data-list="inactive"></ul>
-                <h4>Ranked Officers</h4>
-                <ul class="company-list" data-list="officers"></ul>
+                <h4>Anchor Section</h4>
+                <ul class="company-list" data-list="anchor"></ul>
+                <h4>Junior Section</h4>
+                <ul class="company-list" data-list="junior"></ul>
+                <h4>Intermediate Section</h4>
+                <ul class="company-list" data-list="intermediate"></ul>
+                <h4>Senior Section</h4>
+                <ul class="company-list" data-list="senior"></ul>
+                <h4>Officer Section</h4>
+                <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
           </div>
@@ -330,39 +455,6 @@
         </div>
       </section>
 
-      <section class="section officers-section" id="officers">
-        <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow">Command Structure</p>
-            <h2 class="text-gradient">Officers and Commanders</h2>
-            <p>List the leadership hierarchy from the divisional commander to the lowest commissioned rank in order.</p>
-          </div>
-
-          <div class="officers-list glass-card">
-            <div class="officer-row">
-              <span class="officer-rank">Divisional Commander</span>
-              <span class="officer-name">Enter name here</span>
-            </div>
-            <div class="officer-row">
-              <span class="officer-rank">Company Captain</span>
-              <span class="officer-name">Enter name here</span>
-            </div>
-            <div class="officer-row">
-              <span class="officer-rank">organising secetary</span>
-              <span class="officer-name">Enter name here</span>
-            </div>
-            <div class="officer-row">
-              <span class="officer-rank">assistant organising secetary</span>
-              <span class="officer-name">Enter name here</span>
-            </div>
-            <div class="officer-row">
-              <span class="officer-rank">Lowest Rank</span>
-              <span class="officer-name">Enter name here</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section class="section gallery-section" id="gallery">
         <div class="container">
           <div class="section-heading">
@@ -371,14 +463,21 @@
             <p>A glimpse into our disciplined fellowship, parades, and training sessions.</p>
           </div>
 
-          <div class="gallery-filters" role="toolbar" aria-label="Gallery filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="parades">Parades</button>
-            <button class="filter-btn" data-filter="band">Band Corps</button>
-            <button class="filter-btn" data-filter="training">Training</button>
-          </div>
+          <div class="gallery-panel glass-card is-collapsed">
+            <div class="gallery-panel-inner">
+              <div class="gallery-panel-header">
+                <div class="gallery-filters" role="toolbar" aria-label="Gallery filters">
+                  <button class="filter-btn active" data-filter="all">All</button>
+                  <button class="filter-btn" data-filter="parades">Parades</button>
+                  <button class="filter-btn" data-filter="band">Band Corps</button>
+                  <button class="filter-btn" data-filter="training">Training</button>
+                </div>
+                <button type="button" class="gallery-toggle btn btn-outline" aria-expanded="false">Open Gallery</button>
+              </div>
 
-          <div class="gallery-grid" aria-live="polite"></div>
+              <div class="gallery-grid" aria-live="polite"></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -418,13 +517,9 @@
                   </select>
                 </label>
                 <label>
-                  <span>Preferred Wing</span>
-                  <select name="wing" id="wing" required>
-                    <option value="">Select</option>
-                    <option>Band Corps</option>
-                    <option>Drill Team</option>
-                    <option>Security &amp; Logistics</option>
-                    <option>Spiritual Wing</option>
+                  <span>Preferred Company</span>
+                  <select name="company" id="enlistmentCompany" required>
+                    <option value="">Select Company</option>
                   </select>
                 </label>
               </div>
@@ -457,9 +552,9 @@
         <div>
           <h3>Stay Connected</h3>
           <div class="social-links">
-            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://www.facebook.com/share/v/1BQQj5H6Hp/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/reel/DaIX5aoNw2g/?igsh=a3p3bG9jNmswdTFx" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
           </div>
           <div class="social-accounts">
             <p>Facebook: rs agbala itura div</p>
@@ -491,17 +586,17 @@
           </label>
           <label>
             <span>Company</span>
-            <select id="captainCompany" required>
+              <select id="captainCompany" required>
               <option value="">Select Company</option>
-              <option value="1">Company 1</option>
-              <option value="2">Company 2</option>
-              <option value="3">Company 3</option>
-              <option value="4">Company 4</option>
-              <option value="5">Company 5</option>
-              <option value="6">Company 6</option>
-              <option value="7">Company 7</option>
-              <option value="8">Company 8</option>
-              <option value="9">Company 9</option>
+              <option value="1">Oke Odo - 12th Akiling Regional Coy</option>
+              <option value="2">Ikorodu - 15th Akiling Regional Coy</option>
+              <option value="3">Iyesi - 17th Akiling Regional Coy</option>
+              <option value="4">Sango - 28th Akiling Regional Coy</option>
+              <option value="5">Command - 31st Akiling Regional Coy</option>
+              <option value="6">Ipaja - 38th Akiling Regional Coy</option>
+              <option value="7">Ijaba - 44th Akiling Regional Coy</option>
+              <option value="8">Ijoko - 48th Akiling Regional Coy</option>
+              <option value="9">Ikeja - 49th Akiling Regional Coy</option>
             </select>
           </label>
 
@@ -562,7 +657,7 @@
       <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="excoDashboardTitle">
         <button class="modal-close" id="excoDashboardClose" aria-label="Close exco dashboard">&times;</button>
         <h3 id="excoDashboardTitle">EXCO Dashboard</h3>
-        <p class="dashboard-intro">Create or update profiles for the General Secretary, PRO, Assistant Secretary, Band Master, Assistant Band Master, and Treasurer.</p>
+        <p class="dashboard-intro">Create or update profiles for the Divisional Commander, General Secretary, Divisional Secretary, PRO, Assistant Secretary, Band Master, Assistant Band Master, and Treasurer.</p>
         <form id="excoDashboardForm">
           <div class="dashboard-grid exco-dashboard-grid"></div>
           <div class="dashboard-actions">
@@ -601,7 +696,7 @@
       <div class="modal-backdrop" data-close="true"></div>
       <div class="modal-content glass-card gallery-preview-modal" role="dialog" aria-modal="true" aria-labelledby="galleryPreviewTitle">
         <button class="modal-close" id="galleryClose" aria-label="Close gallery preview">&times;</button>
-        <img id="galleryPreviewImage" class="gallery-preview-image" src="" alt="Gallery preview" />
+        <img id="galleryPreviewImage" class="gallery-preview-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Gallery preview" />
         <div class="gallery-preview-copy">
           <span class="gallery-preview-category" id="galleryPreviewCategory"></span>
           <h3 id="galleryPreviewTitle">Gallery Preview</h3>
@@ -610,24 +705,11 @@
       </div>
     </div>
 
-    <script src="gallery-data.js?v=3"></script>
     <script>
-      // Inline menu toggle - attach directly
-      (function() {
-        const menuToggle = document.getElementById('menuToggle');
-        const navMenu = document.getElementById('navMenu');
-        if (menuToggle && navMenu) {
-          menuToggle.onclick = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const isOpen = navMenu.classList.toggle('open');
-            menuToggle.classList.toggle('open', isOpen);
-            menuToggle.setAttribute('aria-expanded', String(isOpen));
-            return false;
-          };
-        }
-      })();
+      // Configure the public backend URL for shared site state.
+      window.RS_BACKEND_URL = window.RS_BACKEND_URL || 'https://royal-shepherd-backend.onrender.com';
     </script>
-    <script src="app.js?v=3"></script>
+    <script defer src="gallery-data.js?v=5"></script>
+    <script defer src="app.js?v=10"></script>
   </body>
 </html>

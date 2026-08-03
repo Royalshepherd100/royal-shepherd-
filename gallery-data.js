@@ -1,7 +1,6 @@
-﻿const galleryData = [
+﻿window.galleryData = [
   { src: 'parade.png', category: 'parades', title: 'parade', description: 'Moments from parade' },
-  { src: 'Screenshot 2026-07-11 132711.png', category: 'parades', title: 'Screenshot 2026-07-11 132711', description: 'Moments from Screenshot 2026-07-11 132711' },
-  { src: 'WhatsApp Image 2026-07-11 at 1.29.21 PM.jpeg', category: 'parades', title: '2026-07-11 at 1.29.21 PM', description: 'Moments from 2026-07-11 at 1.29.21 PM' },
+  { src: 'WhatsApp-Image-2026-07-11-at-1.29.21-PM.jpeg', category: 'parades', title: '2026-07-11 at 1.29.21 PM', description: 'Moments from 2026-07-11 at 1.29.21 PM' },
   { src: 'WhatsApp Image 2026-07-12 at 7.52.56 AM.jpeg', category: 'training', title: '2026-07-12 at 7.52.56 AM', description: 'Moments from 2026-07-12 at 7.52.56 AM' },
   { src: 'WhatsApp Image 2026-07-12 at 7.52.57 AM (1).jpeg', category: 'training', title: '2026-07-12 at 7.52.57 AM (1)', description: 'Moments from 2026-07-12 at 7.52.57 AM (1)' },
   { src: 'WhatsApp Image 2026-07-12 at 7.52.57 AM (2).jpeg', category: 'training', title: '2026-07-12 at 7.52.57 AM (2)', description: 'Moments from 2026-07-12 at 7.52.57 AM (2)' },
@@ -207,5 +206,8 @@
   { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM (2).jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM (2)', description: 'Moments from 2026-07-12 at 7.58.21 AM (2)' },
   { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM (3).jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM (3)', description: 'Moments from 2026-07-12 at 7.58.21 AM (3)' },
   { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM.jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM', description: 'Moments from 2026-07-12 at 7.58.21 AM' },
-]
+  { src: 'RS Colonel O. Olowe.jpeg', category: 'officers', title: 'RS Colonel O. Olowe', description: 'Leadership spotlight post for Colonel O. Olowe — a distinguished Royal Shepherd officer in focus.' },
+  { src: 'RS Major General E. B. Adegbite.jpeg', category: 'officers', title: 'RS Major General E. B. Adegbite', description: 'Leadership spotlight post for Major General E. B. Adegbite — a proud Royal Shepherd figure and officer.' },
+  { src: 'new division image.jpeg', category: 'parades', title: 'New Division Image', description: 'New division moment for the Royal Shepherd gallery post.' }
+];
 

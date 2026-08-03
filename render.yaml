@@ -2,16 +2,16 @@ services:
   - type: static_site
     name: royal-shepherd-frontend
     env: static
-    branch: gh-pages
+    branch: main
     plan: starter
     root: .
-    publishPath: /
+    publishPath: .
     buildCommand: echo "No build required"
 
   - type: web_service
     name: royal-shepherd-backend
     env: python
-    branch: gh-pages
+    branch: main
     plan: starter
     root: backend
     buildCommand: pip install -r requirements/requirements.txt
