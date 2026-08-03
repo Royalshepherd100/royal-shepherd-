@@ -112,7 +112,10 @@ app = FastAPI(title="Royal Shepherd Backend", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://royal-shepherd-frontend.onrender.com",
+        "https://royalshepherd100.github.io"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
