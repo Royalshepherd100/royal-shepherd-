@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://royalshepherd100.github.io/royal-shepherd/sitemap.xml
