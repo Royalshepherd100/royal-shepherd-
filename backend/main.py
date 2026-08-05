@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -29,7 +30,83 @@ class CompanyBulkPayload(BaseModel):
     companies: List[CompanyPayload]
 
 
-DATA_FILE = Path(__file__).resolve().parent / "data_store.json"
+DEFAULT_DATA_FILE = Path(__file__).resolve().parent / "data_store.json"
+DATA_FILE = Path(os.environ.get("RS_DATA_FILE", DEFAULT_DATA_FILE))
+REQUEST_COLLECTION_KEYS = (
+    "captainRequests",
+    "companyDashboardRequests",
+    "dashboardRequests",
+    "companyRequests",
+    "pendingRequests",
+    "pendingCompanyRequests",
+)
+
+
+def merge_state_value(existing: Any, incoming: Any) -> Any:
+    if isinstance(existing, dict) and isinstance(incoming, dict):
+        merged = dict(existing)
+        for key, value in incoming.items():
+            if isinstance(value, dict) and isinstance(merged.get(key), dict):
+                merged[key] = merge_state_value(merged.get(key), value)
+            elif isinstance(value, list):
+                if value:
+                    merged[key] = value
+                elif isinstance(merged.get(key), list) and merged.get(key):
+                    merged[key] = merged.get(key)
+                else:
+                    merged[key] = []
+            elif isinstance(value, dict):
+                if value:
+                    merged[key] = merge_state_value(merged.get(key), value)
+                elif isinstance(merged.get(key), dict) and merged.get(key):
+                    merged[key] = merged.get(key)
+                else:
+                    merged[key] = {}
+            elif value in (None, ""):
+                if existing is not None and existing != "" and existing != {} and existing != []:
+                    merged[key] = existing
+                else:
+                    merged[key] = value
+            else:
+                merged[key] = value
+        return merged
+
+    if isinstance(existing, list) and isinstance(incoming, list):
+        if incoming:
+            return incoming
+        if existing:
+            return existing
+        return []
+
+    if incoming in (None, ""):
+        return existing if existing not in (None, "", [], {}) else incoming
+
+    return incoming
+
+
+def normalize_state_payload(payload: Dict[str, Any] | None, existing_state: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    default_state = build_default_state()
+    merged_state = dict(default_state)
+    if existing_state:
+        merged_state.update(existing_state)
+
+    if not isinstance(payload, dict):
+        return merged_state
+
+    for key, value in payload.items():
+        if key in REQUEST_COLLECTION_KEYS:
+            continue
+        merged_state[key] = merge_state_value(merged_state.get(key), value)
+
+    request_payload: Dict[str, Any] = {}
+    for key in REQUEST_COLLECTION_KEYS:
+        if isinstance(payload.get(key), dict):
+            request_payload = merge_state_value(request_payload, payload[key])
+
+    if request_payload:
+        merged_state["captainRequests"] = merge_state_value(merged_state.get("captainRequests", {}), request_payload)
+
+    return merged_state
 
 
 def build_default_companies() -> Dict[str, Dict[str, Any]]:
@@ -68,10 +145,7 @@ def load_state() -> Dict[str, Any]:
         try:
             payload = json.loads(DATA_FILE.read_text(encoding="utf-8"))
             if isinstance(payload, dict):
-                state = build_default_state()
-                state.update(payload)
-                state["companies"] = payload.get("companies") or build_default_companies()
-                return state
+                return normalize_state_payload(payload)
         except json.JSONDecodeError:
             pass
     return build_default_state()
@@ -130,9 +204,13 @@ def get_state():
 
 @app.post("/state")
 def save_full_state(payload: Dict[str, Any]):
+    merged_state = normalize_state_payload(payload, store)
     store.clear()
-    store.update(payload)
+    store.update(merged_state)
     save_state()
+    print("[RS-BACKEND] Members before save", store.get("companies", {}))
+    print("[RS-BACKEND] Payload sent to backend", payload)
+    print("[RS-BACKEND] Backend state after save", store.get("companies", {}))
     return store
 
 
