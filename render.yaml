@@ -2,7 +2,7 @@ services:
   - type: static_site
     name: royal-shepherd
     env: static
-    branch: gh-pages
+    branch: main
     plan: starter
     root: .
     publishPath: .
@@ -11,7 +11,7 @@ services:
   - type: web_service
     name: "royal-shepherd bacl"
     env: python
-    branch: gh-pages
+    branch: main
     plan: starter
     root: backend
     buildCommand: pip install -r requirements/requirements.txt
