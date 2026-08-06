@@ -1,8 +1,8 @@
 (() => {
   console.log('app.js starting');
-  // Force the verified Render backend for all deployed pages.
+  // Force the canonical Render backend for all deployed pages.
   // This overrides any stale fallback embedded in cached HTML or scripts.
-  window.RS_BACKEND_URL = 'https://royal-shepherd-bacl.onrender.com';
+  window.RS_BACKEND_URL = 'https://royal-shepherd-bac1.onrender.com';
   window.__rsAppJsLoaded = true;
   const header = document.querySelector('.site-header');
   const menuToggle = document.getElementById('menuToggle');
@@ -576,17 +576,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const ACTIVE_COMMANDER_KEY = 'royalShepherdActiveCommander';
 
   function getBackendBaseUrl() {
-    const configured = (window.RS_BACKEND_URL || '').trim();
-    if (configured) return configured.replace(/\/$/, '');
-    const meta = document.querySelector('meta[name="rs-backend-url"]')?.content?.trim();
-    if (meta) return meta.replace(/\/$/, '');
-    if (window.location.protocol === 'file:') {
-      return 'http://127.0.0.1:8000';
-    }
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://127.0.0.1:8000';
-    }
-    return `${window.location.protocol}//${window.location.host}`;
+    // Always return the canonical Render backend host (no local fallbacks).
+    return 'https://royal-shepherd-bac1.onrender.com';
   }
 
   async function requestJson(path, options = {}) {
